@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#faf6ec">
+<title>稀树草原庭院 · 杭州版全隐藏智能水肥（v3 更新版）</title>
+<style>
+  :root{
+    --bg-top:#faf6ec;
+    --bg-bottom:#efe5cf;
+    --card:#fffdf7;
+    --ink:#2c2a20;
+    --muted:#7a725c;
+    --accent:#c08f35;
+    --accent-deep:#9a6f1f;
+    --accent-soft:#f6ecd4;
+    --line:#e6dbc0;
+    --good:#5f8a4e;
+    --good-soft:#eef4e7;
+    --warn:#b3562f;
+    --warn-soft:#f8ebe3;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(60,50,20,.06),0 10px 28px rgba(60,50,20,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
+    color:var(--ink);line-height:1.75;font-size:15px;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px;}
+  a{color:inherit;}
+
+  header.hero{padding:56px 0 32px;}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.06em;color:var(--accent-deep);border:1px solid rgba(192,143,53,.5);background:rgba(255,255,255,.5);padding:5px 14px;border-radius:999px;}
+  .kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  h1.title{font-size:34px;line-height:1.3;font-weight:800;margin:20px 0 14px;letter-spacing:-.01em;}
+  p.lede{color:var(--muted);font-size:16px;max-width:700px;}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:28px;}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}
+  .stat b{display:block;font-size:20px;color:var(--accent-deep);}
+  .stat span{font-size:12.5px;color:var(--muted);}
+
+  nav.toc{display:flex;flex-wrap:wrap;gap:8px;margin:32px 0 8px;padding:14px 16px;background:var(--accent-soft);border-radius:var(--radius);}
+  nav.toc a{font-size:13px;color:var(--accent-deep);text-decoration:none;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.6);}
+
+  section{padding:40px 0;border-top:1px solid var(--line);}
+  section h2{font-size:22px;font-weight:800;margin-bottom:6px;}
+  section p.desc{color:var(--muted);margin-bottom:20px;max-width:680px;}
+
+  .diff{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;margin-bottom:10px;}
+  .diff.change{background:var(--warn-soft);color:var(--warn);}
+  .diff.new{background:var(--good-soft);color:var(--good);}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:14px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+  th,td{padding:10px 12px;text-align:left;border-bottom:1px solid var(--line);}
+  th{background:var(--accent-soft);color:var(--accent-deep);font-weight:700;font-size:13px;}
+  tr:last-child td{border-bottom:none;}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;}
+  tr.total td{font-weight:800;background:var(--good-soft);}
+
+  .flow{display:flex;flex-direction:column;gap:0;}
+  .flow .step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);}
+  .flow .arrow{text-align:center;color:var(--muted);padding:4px 0;font-size:13px;}
+  .flow .step b{color:var(--accent-deep);}
+
+  .badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;background:var(--good-soft);color:var(--good);font-weight:700;}
+  .badge.pro{background:var(--warn-soft);color:var(--warn);}
+
+  .decision{border-left:3px solid var(--accent);padding-left:14px;margin-bottom:16px;}
+  .decision .q{font-weight:700;margin-bottom:4px;}
+  .decision .a{color:var(--good);font-weight:700;}
+
+  footer{padding:40px 0 60px;text-align:center;color:var(--muted);font-size:13px;}
+
+  @media(max-width:640px){
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .grid2,.grid3{grid-template-columns:1fr;}
+    h1.title{font-size:26px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <span class="kicker">杭州 · 居家 DIY 项目 · v3 更新版</span>
+  <h1 class="title">种一片草原，让它自己喝水、自己吃饭</h1>
+  <p class="lede">全隐藏地埋滴灌 + 文丘里水肥一体 + 华为智慧生活双钥匙 + 云端 AI 看长势 + 彩云天气触发。本版基于上一版做了三处修正：砍掉自制自动集雨网、点缀带正式转正为第三分区、补齐风险与决策记录。</p>
+
+  <div class="stats">
+    <div class="stat"><b>¥7,135</b><span>一次性部署成本</span></div>
+    <div class="stat"><b>¥510+</b><span>年运维成本</span></div>
+    <div class="stat"><b>3 个</b><span>自动灌溉分区</span></div>
+    <div class="stat"><b>0 件</b><span>地表可见设备</span></div>
+  </div>
+
+  <nav class="toc">
+    <a href="#changes">本版改动</a>
+    <a href="#arch">系统架构</a>
+    <a href="#zones">三分区</a>
+    <a href="#water">水肥与天气</a>
+    <a href="#vision">云端长势</a>
+    <a href="#cost">成本</a>
+    <a href="#risk">风险</a>
+    <a href="#decisions">决策记录</a>
+    <a href="#build">施工分工</a>
+    <a href="#boundary">与0604边界</a>
+  </nav>
+</header>
+
+<section id="changes">
+  <h2>本版改动一览</h2>
+  <p class="desc">相对上一版（¥7,285）的三处修正，全部来自你本轮的拍板。</p>
+  <div class="grid3">
+    <div class="card">
+      <span class="diff change">砍掉</span>
+      <p><b>自动集雨网</b>整个执行机构（网面/推杆/卷轴/限位开关）不做。理由：自制无成品件，需扛台风，长期可靠性和维护成本被低估；屋面本身集雨潜力已远超全年用水量，这块"锦上添花"的收益配不上它的工程风险。</p>
+    </div>
+    <div class="card">
+      <span class="diff change">升级</span>
+      <p>雨水罐从 1000L <b>升级到 1500L</b>，弥补砍掉集雨网后的调蓄能力，伏旱期可撑 6~8 周，冗余更充足。</p>
+    </div>
+    <div class="card">
+      <span class="diff new">转正</span>
+      <p><b>点缀带（8㎡）</b>从"预留不浇"改为正式第三分区，接入微滴灌，第 3 个鸿蒙水阀正式启用（BOM 金额本来就含这个阀，这版把文档说法和实际清单对齐）。</p>
+    </div>
+  </div>
+</section>
+
+<section id="arch">
+  <h2>系统架构（四把钥匙，去掉一个执行机构）</h2>
+  <p class="desc">决策逻辑不变：任一钥匙不满足就硬切断。彩云天气 API 保留，但不再驱动机构开合，只做"预报有雨/台风预警 → 暂停"的软判断。</p>
+  <div class="flow">
+    <div class="step"><b>云端/应用层</b> — 华为智慧生活 App · 彩云天气 API · 云端视觉大模型</div>
+    <div class="arrow">↓</div>
+    <div class="step"><b>决策层（四把钥匙，任一不满足即切断）</b><br>钥匙① App 直控分区（鸿蒙水阀 ×3）　钥匙② ESP32 湿度/雨量/水位硬判断　钥匙③ 云端长势诊断（写回建议，非硬性阻断）　钥匙④ 彩云预报（有雨/台风 → 暂停）</div>
+    <div class="arrow">↓</div>
+    <div class="step"><b>水源层</b> — 屋面雨水 → 首雨弃流 → <b>1500L 罐</b>（缓冲/调峰）→ 自来水补位</div>
+    <div class="arrow">↓</div>
+    <div class="step"><b>管网层</b> — 120目过滤 → 主切断电磁阀 → 文丘里施肥旁通 → 三分区地埋滴灌</div>
+  </div>
+</section>
+
+<section id="zones">
+  <h2>三分区，三种需水（点缀带已转正）</h2>
+  <p class="desc">灌溉按植物需水分三档，各浇各的，绝不一刀切。</p>
+  <div class="grid3">
+    <div class="card">
+      <span class="badge">雨养为主 · 晴热期补水</span>
+      <h3 style="margin:10px 0 6px;">草坪区 · 35㎡</h3>
+      <p>16mm 地埋滴灌管，管距 40cm、滴头 30cm。杭州雨多，以"靠天 + 湿度兜底"为主，仅晴热少雨季补水；水肥一体时顺便补肥。</p>
+    </div>
+    <div class="card">
+      <span class="badge">靠天为主 · 偶补</span>
+      <h3 style="margin:10px 0 6px;">树木区 · 2~3 棵</h3>
+      <p>每树 4 个滴箭/涌泉头，沿树冠滴水线环形补水。大树根系深，基本靠天，仅持续干旱时补一点。</p>
+    </div>
+    <div class="card">
+      <span class="diff new" style="margin-bottom:6px;">转正</span>
+      <h3 style="margin:0 0 6px;">点缀带 · 8㎡</h3>
+      <p>微滴灌正式接入，独立鸿蒙水阀直控，按同一套湿度阈值旱养逻辑运行（阈值可比草坪更严格，因为观赏草更耐旱）。施肥支路暂不延伸到这里，以后要养花再接一段管即可。</p>
+    </div>
+  </div>
+</section>
+
+<section id="water">
+  <h2>水肥一体与天气触发（简化版）</h2>
+  <p class="desc">文丘里施肥器不变；天气触发从"驱动机构"简化为"暂停信号"。</p>
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-bottom:8px;">文丘里水肥一体</h3>
+      <p>主管旁通文丘里施肥器，水流负压自动吸肥，浇水即施肥，无需外接电力。生长期每 2~3 周一次薄肥（平衡型 1:1000），梅雨季减少施肥防徒长。</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:8px;">彩云天气 · 第四把钥匙（简化）</h3>
+      <p>预报未来 1~2 小时持续降雨 → 暂停/延后浇水施肥；台风预警 → 强制暂停 + 排水系统待命。本地翻斗雨量计实测兜底，预报失灵也不漏判。<b>不再驱动任何机构，只做判断信号</b>，去掉了原方案里最脆弱的一个执行环节。</p>
+    </div>
+  </div>
+  <table style="margin-top:14px;">
+    <tr><th>杭州雨水水账</th><th>数值</th><th>口径</th></tr>
+    <tr><td>三分区非雨季峰值需水</td><td class="num">约 100~240 L/周</td><td>含新转正的点缀带</td></tr>
+    <tr><td>屋面年集雨潜力</td><td class="num">约 17,000~21,000 L</td><td>20㎡ 屋面 × 1450mm × 有效系数</td></tr>
+    <tr><td>夏季伏旱最长无雨期</td><td class="num">约 2~3 周</td><td>杭州气候</td></tr>
+    <tr><td>1500L 罐可撑无雨期</td><td class="num">约 6~8 周</td><td>砍集雨网后的冗余验证</td></tr>
+  </table>
+</section>
+
+<section id="vision">
+  <h2>云端 AI 长势分析（保留全自动化）</h2>
+  <p class="desc">按你的决定，这部分维持完整闭环，但风险章节里补上了"AI 掉线时怎么办"的降级逻辑。</p>
+  <div class="flow">
+    <div class="step">摄像头每天 1~2 次定时截图</div>
+    <div class="arrow">↓</div>
+    <div class="step">上传云端视觉大模型 API — 返回草色指数/覆盖度/枯黄原因/建议动作</div>
+    <div class="arrow">↓</div>
+    <div class="step">写回 ESP32 — 缺肥→触发施肥场景 · 缺水→补水 · 过湿/病害→停水停肥 · 长势好→自动降频</div>
+  </div>
+  <p style="margin-top:14px;color:var(--muted);font-size:14px;">费用：每天 2 次 × 全年约 ¥200（多数平台免费额度内）。<b>关键设计</b>：ESP32 的浇水判断始终以土壤湿度传感器为唯一硬裁判，AI 只影响施肥频次和"建议动作"，不是浇水的必要条件——所以下面风险表里这条的对策才成立。</p>
+</section>
+
+<section id="cost">
+  <h2>更新后成本</h2>
+  <p class="desc">相对上一版 ¥7,285，本版 <b>-¥150</b>，降在"天气与集雨网"模块，加在"雨水收集模块"（罐子升级）。</p>
+  <table>
+    <tr><th>模块</th><th>上一版</th><th>本版</th><th>说明</th></tr>
+    <tr><td>① 灌溉主体</td><td class="num">¥2,225</td><td class="num">¥2,225</td><td>不变，3 阀早已在预算内</td></tr>
+    <tr><td>② 感知与决策层</td><td class="num">¥670</td><td class="num">¥670</td><td>不变</td></tr>
+    <tr><td>③ 雨水收集模块</td><td class="num">¥1,810</td><td class="num">¥2,160</td><td>罐从 1000L → 1500L，约 +¥350</td></tr>
+    <tr><td>④ 水肥一体化模块</td><td class="num">¥430</td><td class="num">¥430</td><td>不变</td></tr>
+    <tr><td>⑤ 云端长势分析</td><td class="num">¥500</td><td class="num">¥500</td><td>不变，保留全自动化</td></tr>
+    <tr><td>⑥ 天气与集雨网</td><td class="num">¥550</td><td class="num">¥50</td><td>砍集雨网 -¥500，仅保留API</td></tr>
+    <tr><td>⑦ 排水系统</td><td class="num">¥400</td><td class="num">¥400</td><td>不变</td></tr>
+    <tr><td>⑧ 数据屏</td><td class="num">¥350</td><td class="num">¥350</td><td>不变</td></tr>
+    <tr><td>草皮/草种</td><td class="num">¥350</td><td class="num">¥350</td><td>不变</td></tr>
+    <tr class="total"><td>总计（不含摄像头/树）</td><td class="num">¥7,285</td><td class="num">¥7,135</td><td>-¥150</td></tr>
+  </table>
+</section>
+
+<section id="risk">
+  <h2>风险与对策（补齐的方法论缺口）</h2>
+  <table>
+    <tr><th>风险</th><th>影响</th><th>对策</th></tr>
+    <tr><td>滴头堵塞</td><td>局部草皮干死</td><td>120目过滤+首雨弃流，季度冲洗支管末端</td></tr>
+    <tr><td>冬季冻裂</td><td>埋管报废</td><td>11月底前排水阀+主管泄水，拆易冻件，春季回装试压</td></tr>
+    <tr><td>电磁阀卡死/失控跑水</td><td>水费损失</td><td>App+ESP32 双重最长浇灌时限，可选加流量计报警</td></tr>
+    <tr><td>罐体长藻生蚊</td><td>水质变差</td><td>遮光防蚊盖+定期清洗，雨水只入滴灌不入生活用水</td></tr>
+    <tr><td>ESP32断电/离线</td><td>无法自动浇</td><td>默认"关闭"（安全侧），App手动兜底，可选接UPS</td></tr>
+    <tr><td><b>云端AI服务不可用/涨价/下线</b></td><td>长势分析中断</td><td>浇水判断始终以湿度传感器为唯一硬裁判，不依赖AI；AI掉线时施肥自动退回"周期+非雨天"保守规则；服务恢复不影响基础运行</td></tr>
+    <tr><td>1500L罐满载约1.5吨</td><td>地基下沉/位移</td><td>地上放置须做混凝土/砖砌基础找平；若地埋，防水层施工建议找工人</td></tr>
+    <tr><td>草皮建立期失败</td><td>返工</td><td>前2~3个月勤补水促扎根，杭州3~4月/9~10月是播种窗口</td></tr>
+  </table>
+</section>
+
+<section id="decisions">
+  <h2>决策记录（累计归档）</h2>
+  <div class="decision">
+    <div class="q">D1 · 智能水阀方案</div>
+    <div class="a">已定：方案甲（鸿蒙智联电动球阀直控，非插座+电磁阀）</div>
+  </div>
+  <div class="decision">
+    <div class="q">D2 · 自动集雨网怎么处理</div>
+    <div class="a">砍掉，改用更大罐子（1500L），仅靠屋面集雨</div>
+  </div>
+  <div class="decision">
+    <div class="q">D3 · 点缀带现在要不要浇水</div>
+    <div class="a">正式转正为第三分区，现在就浇</div>
+  </div>
+  <div class="decision">
+    <div class="q">D4 · 云端AI长势分析怎么定位</div>
+    <div class="a">保留全自动分析+自动联动施肥浇水，AI掉线时降级为纯传感器/周期规则</div>
+  </div>
+</section>
+
+<section id="build">
+  <h2>施工纲要 · 自己动手 vs 找工人</h2>
+  <p class="desc">全模块不涉及强电改造、燃气、结构承重开洞，绝大部分可自己动手，只有一处例外。</p>
+  <table>
+    <tr><th>工序</th><th>归属</th><th>理由</th></tr>
+    <tr><td>放线分区/挖沟铺管/装阀滤器/加装施肥支路/接线传感器/App配置/装7寸屏/覆土铺草/入冬泄水</td><td><span class="badge">自己动手</span></td><td>24V以下低压弱电，无结构改动，普通人可完成</td></tr>
+    <tr><td>排水盲沟+渗水井</td><td><span class="badge">自己动手</span></td><td>常规园艺土方工程；若需接入小区市政雨水管网，那段先问物业，必要时找工人</td></tr>
+    <tr><td>1500L雨水罐安装（地上放置）</td><td><span class="badge">自己动手</span></td><td>只需做混凝土/砖砌基础找平</td></tr>
+    <tr><td>1500L雨水罐安装（若选地埋）</td><td><span class="badge pro">找工人</span></td><td>满载约1.5吨，防水层施工专业性要求高，符合"防水层破坏后需专业修复"这条原则</td></tr>
+  </table>
+  <p style="margin-top:12px;color:var(--muted);font-size:14px;">建议默认走<b>地上放置</b>方案，规避唯一的找工人风险点，除非院子空间确实不够。</p>
+</section>
+
+<section id="boundary">
+  <h2>与 0604（摄像头监测微环境）的边界</h2>
+  <div class="grid2">
+    <div class="card">
+      <h3 style="margin-bottom:8px;">归属 0601</h3>
+      <p>摄像头取图 → 云端视觉API分析 → 长势/树冠/日照诊断 → 写回ESP32驱动浇水施肥剪枝建议——这条"服务于灌溉决策"的链路已在本模块落地。</p>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:8px;">归属 0604</h3>
+      <p>与灌溉无关的监测需求：安防异常检测、人员/宠物识别、夜间红外等。两个模块共用同一台摄像头硬件（已有，不重复采购）。</p>
+    </div>
+  </div>
+  <p style="margin-top:10px;color:var(--muted);font-size:14px;">开 0604 对话时建议在开场白里注明"长势分析已在0601完成，0604范围仅限灌溉之外的监测"，避免重复设计。</p>
+</section>
+
+<footer>
+  种一片草原，让它自己喝水、自己吃饭 · 杭州 · 稀树草原庭院全隐藏智能水肥 v3 · 部署约 ¥7,135 · 年运维约 ¥510+（不含摄像头/树）
+</footer>
+
+</div>
+</body>
+</html>
