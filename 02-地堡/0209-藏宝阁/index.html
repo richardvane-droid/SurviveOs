@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0209 藏宝阁 · 方案原理推演</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap');
+
+  :root{
+    --paper:#e7dfc7;
+    --paper-deep:#ddd3b3;
+    --ink:#2a2318;
+    --ink-soft:#5a5040;
+    --jade:#4b5d45;
+    --jade-deep:#374530;
+    --seal:#8a2e21;
+    --brass:#a1793f;
+    --line:#c9bd97;
+    --card:#f1ebd9;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Noto Sans SC',sans-serif;
+    font-weight:300;
+    line-height:1.85;
+  }
+  h1,h2,h3,.serif{font-family:'Noto Serif SC',serif;}
+
+  .shell{
+    display:grid;
+    grid-template-columns:220px 1fr;
+    max-width:1180px;
+    margin:0 auto;
+  }
+  @media (max-width:860px){ .shell{grid-template-columns:1fr;} }
+
+  nav.spine{
+    position:sticky; top:0; align-self:start; height:100vh; overflow-y:auto;
+    padding:48px 18px 40px 32px; border-right:1px solid var(--line);
+  }
+  @media (max-width:860px){
+    nav.spine{ position:static; height:auto; border-right:none; border-bottom:1px solid var(--line);
+      padding:20px 24px; display:flex; gap:14px; overflow-x:auto; white-space:nowrap; }
+  }
+  nav.spine .tag{ font-family:'Noto Serif SC',serif; font-size:13px; color:var(--brass); letter-spacing:.14em; margin-bottom:22px; display:block; }
+  @media (max-width:860px){ nav.spine .tag{display:none;} }
+  nav.spine a{ display:block; color:var(--ink-soft); text-decoration:none; font-size:14px; padding:7px 0;
+    border-left:2px solid transparent; padding-left:12px; margin-left:-13px; transition:color .2s, border-color .2s; }
+  nav.spine a:hover{ color:var(--ink); border-left-color:var(--brass); }
+
+  header.hero{ padding:64px 48px 40px; border-bottom:1px solid var(--line); }
+  @media (max-width:860px){ header.hero{padding:40px 24px 28px;} }
+  .eyebrow-seal{ display:inline-flex; align-items:center; gap:10px; font-family:'Noto Serif SC',serif; font-size:13px;
+    color:var(--seal); border:1px solid var(--seal); padding:4px 12px; border-radius:2px; margin-bottom:28px; }
+  .hero-figure{ display:flex; align-items:baseline; gap:20px; flex-wrap:wrap; margin-bottom:18px; }
+  .hero-figure .num{ font-family:'Noto Serif SC',serif; font-weight:700; font-size:96px; line-height:1; color:var(--ink); }
+  .hero-figure .num sup{font-size:30px; margin-left:4px;}
+  .hero-figure .cap{ max-width:360px; font-size:15px; color:var(--ink-soft); }
+  h1.title{ font-size:32px; margin:10px 0 6px; font-weight:700; }
+  .subtitle{ font-size:16px; color:var(--ink-soft); font-weight:400; max-width:640px; }
+  .dims{ margin-top:24px; display:flex; gap:28px; flex-wrap:wrap; }
+  .dims .d{ font-size:13px; color:var(--ink-soft); }
+  .dims .d b{ display:block; font-family:'Noto Serif SC',serif; font-size:20px; color:var(--ink); font-weight:600; }
+
+  main{padding:8px 48px 80px;}
+  @media (max-width:860px){ main{padding:8px 24px 60px;} }
+
+  section{ padding:52px 0; border-bottom:1px solid var(--line); max-width:760px; }
+  section:last-child{border-bottom:none;}
+
+  .section-num{ font-family:'Noto Serif SC',serif; color:var(--brass); font-size:13px; letter-spacing:.1em; margin-bottom:10px; }
+  h2{ font-size:24px; margin:0 0 20px; font-weight:600; }
+  h3{ font-size:16px; font-weight:600; margin:28px 0 10px; color:var(--ink); }
+  p{margin:0 0 14px; font-size:15px;}
+  ul,ol{margin:0 0 16px; padding-left:22px;}
+  li{margin-bottom:6px; font-size:15px;}
+  strong{font-weight:600;}
+
+  .lead{ font-size:17px; color:var(--ink); background:var(--card); border-left:3px solid var(--jade); padding:18px 22px; border-radius:2px; }
+
+  .lattice{ height:26px; margin:36px 0; background-image: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px 22px); opacity:.7; }
+
+  table{ width:100%; border-collapse:collapse; margin:18px 0 24px; font-size:14px; }
+  th,td{ text-align:left; padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th{ font-family:'Noto Serif SC',serif; font-weight:600; color:var(--ink-soft); font-size:13px; }
+
+  .tag-diy{ display:inline-block; font-size:12px; padding:2px 8px; border-radius:2px; background:rgba(75,93,69,.15); color:var(--jade-deep); font-family:'Noto Serif SC',serif; }
+  .tag-pro{ display:inline-block; font-size:12px; padding:2px 8px; border-radius:2px; background:rgba(138,46,33,.12); color:var(--seal); font-family:'Noto Serif SC',serif; }
+  .tag-check{ display:inline-block; font-size:12px; padding:2px 8px; border-radius:2px; background:rgba(161,121,63,.18); color:var(--brass); font-family:'Noto Serif SC',serif; }
+
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:20px 0; }
+  @media (max-width:600px){ .grid2{grid-template-columns:1fr;} }
+  .box{ background:var(--card); padding:18px 20px; border-radius:3px; border:1px solid var(--line); }
+  .box h4{ margin:0 0 8px; font-family:'Noto Serif SC',serif; font-size:14px; color:var(--ink); }
+  .box p{font-size:13.5px; margin:0; color:var(--ink-soft);}
+
+  .decision{ background:var(--card); border:1px solid var(--line); border-left:3px solid var(--seal); padding:16px 20px; margin-bottom:14px; border-radius:2px; }
+  .decision .q{ font-family:'Noto Serif SC',serif; font-weight:600; margin-bottom:6px; font-size:15px; }
+  .decision .opts{font-size:13.5px; color:var(--ink-soft);}
+
+  .risk{ display:flex; gap:14px; margin-bottom:16px; padding-bottom:16px; border-bottom:1px dashed var(--line); }
+  .risk:last-child{border-bottom:none;}
+  .risk .r-title{ min-width:150px; font-family:'Noto Serif SC',serif; font-weight:600; font-size:14px; color:var(--seal); }
+  .risk .r-body{font-size:14px; color:var(--ink-soft);}
+
+  .floorplan{ background:var(--card); border:1px solid var(--line); border-radius:3px; padding:20px; margin:20px 0; font-size:13px; color:var(--ink-soft); }
+  .floorplan svg{ display:block; margin:0 auto 14px; }
+
+  footer{ padding:40px 48px 60px; color:var(--ink-soft); font-size:13px; max-width:760px; }
+  footer a{color:var(--brass);}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <nav class="spine">
+    <span class="tag">0209 · 藏宝阁</span>
+    <a href="#concl">结论先行</a>
+    <a href="#goals">目标与约束</a>
+    <a href="#design">设计理念</a>
+    <a href="#arch">空间架构</a>
+    <a href="#zones">分区详设</a>
+    <a href="#smart">智能联动</a>
+    <a href="#cost">成本核算</a>
+    <a href="#build">施工纲要</a>
+    <a href="#risk">风险</a>
+    <a href="#decide">决策点</a>
+  </nav>
+
+  <div>
+    <header class="hero">
+      <div class="eyebrow-seal">地堡 · 02区 · 0209 · 高架床下密室</div>
+      <div class="hero-figure">
+        <div class="num">3<sup>㎡</sup></div>
+        <div class="cap">1.5m × 2m，藏在高架床下方、帐篷大小的一间独立小室——比故宫三希堂临窗外间（4.8㎡）还要再小一圈。</div>
+      </div>
+      <h1 class="title">藏宝阁：床下三平米的帐篷密室</h1>
+      <p class="subtitle">封闭式，只留一道帆布推拉门。里面一张写字台，能看书、能喝茶，茶器明放；四壁除了书，还贴满同一条精神血脉上的影视文艺作品海报。这是整套暖村系统里唯一不追求"功能齐全"的房间——它存在的意义不是产出，是让人能像猫一样蜷进一个刚好包裹住自己、又不孤单的角落。</p>
+      <div class="dims">
+        <div class="d"><b>1.5m × 2m</b>占地尺寸</div>
+        <div class="d"><b>1.7m</b>净高（已实测确认，能坐直，弯腰进出）</div>
+        <div class="d"><b>40cm</b>帆布滑动门，开在一条2m长墙上</div>
+      </div>
+    </header>
+
+    <main>
+
+      <section id="concl">
+        <div class="section-num">01</div>
+        <h2>结论先行</h2>
+        <p class="lead">0209 藏宝阁的最终形态确定为：高架床下方一间 1.5×2m、净高 1.7m 的全封闭小室，唯一开口是一条 2m 长墙上开出的 40cm 宽帆布滑动口，另一条长墙紧贴既有结构墙，帐篷一般的尺度和质感。里面放一张标准宽度写字台和一把久坐椅，够看书、够喝茶——不再是此前设想的"内外两间套房"结构，那套结构在 3㎡ 的实际尺度下已经不成立，直接推翻重做。</p>
+        <p>它依然延续三希堂"用最小的空间装最大密度的精神世界"这条设计内核，只是走得比三希堂更彻底——不分内外，直接做成一个单室的"茧"：门一拉上，人就整个被书、被海报、被帆布、被昏黄的灯光包住，像猫一样缩进一个刚好容得下自己的角落。这版方案新增的核心目标是"精神共处"——不招待真人访客，但让四壁站满同样选择"为自己造一处退守之地"的人和作品，翻书抬头就能"遇见"他们。</p>
+      </section>
+
+      <div class="lattice"></div>
+
+      <section id="goals">
+        <div class="section-num">02</div>
+        <h2>核心目标 / 硬性约束 / 已有条件</h2>
+
+        <h3>核心目标（按优先级）</h3>
+        <ol>
+          <li><strong>长期久坐阅读的身体舒适度优先</strong>——这轮调整的核心变量：从"能坐一会儿"换成"能坐得住不累"，家具选型服从这一条，哪怕因此牺牲一部分"包裹感"。</li>
+          <li><strong>把标准尺寸家具安进 3㎡ 而不显局促</strong>——1.5m 宽写字台 + 人体工学椅，留出进出和转身的余地，不是"矮、薄、贴墙"能解决的了，需要重新排布。</li>
+          <li><strong>与"同类"精神共处</strong>——不招待真人访客，但要让四壁站满同样选择"为自己造一处退守之地"的人和作品，翻书抬头就能"遇见"他们。</li>
+          <li><strong>写字台承担多重功能</strong>——阅读/书写为主，茶器明放于一角，随手可用。</li>
+          <li><strong>帆布门要有"帐篷"的识别感</strong>——布料、颜色、拉合的手感本身就是进入这个空间的仪式感，不只是一道门。</li>
+          <li><strong>安静独处优先</strong>——灯光/温湿度等调控要隐形化，绝不做成炫技的智能展示间。</li>
+        </ol>
+
+        <h3>硬性约束（不可谈判）</h3>
+        <ul>
+          <li>占地严格限制在 1.5m×2m，净高 1.7m——所有家具尺寸必须先在这个包络体积里排布验证，不能先选家具再凑空间。</li>
+          <li>入口是一条 2m 长墙上开出的 40cm 宽帆布滑动口，另一条 2m 长墙紧贴既有结构墙面，不做开口——密闭性和"藏"的私密感由此而来，但也意味着通风、隔音、防潮都要专门补偿方案（见风险一节）。</li>
+          <li>藏宝阁挂在高架床结构上/紧邻高架床下方，任何固定件（书格、灯具、轨道）都要考虑对床架承重结构的影响，不能想当然打孔。</li>
+          <li>沿用项目统一的华为智慧生活 + HomeAssistant + ESPHome 双钥匙标准，但这个房间要做"减法"——只保留环境安全类的最小自动化。</li>
+          <li>器件/家具选型限定在淘宝、天猫、京东、1688（新品）与闲鱼（二手）等大陆主流平台可买到的商品。</li>
+        </ul>
+
+        <h3>已有条件</h3>
+        <ul>
+          <li>位置、尺寸、净高（1.7m，已实测确认）、门的材质（帆布软帘）都已经明确，这一版方案直接按这些参数排布，不再是占位阶段的模糊设想。</li>
+          <li>高架床是<strong>现有结构</strong>，不是新建——意味着承重核查要走"查说明书/联系厂家/现场手动验重"这条路径，不能在设计阶段就把挂载点预埋进结构里。</li>
+          <li>藏品核心清单已明确（见下方分区详设"核心书单"），另需容纳一套瓷器银器茶具、写字台上一盏台灯。</li>
+          <li>写字台紧靠一条 1.5m 端墙布置，40cm 滑动门开在 2m 长墙上、位于写字台的对侧端（远离写字台的一端）——位置关系已经确认，示意图和效果图按此定稿。</li>
+          <li>用户已确认帆布软帘密闭性有限，房间不额外考虑主动通风——这版方案据此把通风相关的装置和成本都拿掉了。</li>
+        </ul>
+      </section>
+
+      <div class="lattice"></div>
+
+      <section id="design">
+        <div class="section-num">03</div>
+        <h2>设计理念</h2>
+
+        <h3>为什么直接做单室，放弃"内外两间"的三希堂式结构</h3>
+        <p>上一版参照三希堂"外间+里间"的隔扇套间结构，是在假设面积有 5~8㎡ 的前提下成立的。现在实际尺度只有 3㎡，再切一道隔扇只会让两边都无法使用——这版方案的取舍是：把"分层递进"的心理效果，从"空间上的两道门"改成"帆布门本身+进门后的坐姿转换"来实现——弯腰钻进去、坐下、拉上帘子，这个动作序列本身就是一次完整的"切换仪式"，不需要额外一道隔断来强化。</p>
+
+        <h3>为什么顶部加一圈环绕洗墙灯带，而不是只靠台灯</h3>
+        <p>台灯是任务照明，光斑集中在写字台一小片，书格和海报墙大部分时间是暗的——这和"精神共处"的设计目标是矛盾的：陪伴你的书和海报如果常年隐在暗处，"翻书抬头就能遇见他们"就变成一句空话。方案在顶部（贴天花的位置，也就是围合层的顶边）加一圈环绕 LED 灯带，光线沿墙面上沿往下洗，正好覆盖两侧书格墙和写字台后方的海报墙。灯带走氛围/展示照明，台灯走近距离任务照明，两者分工，也可以联动调光——比如"入舱"时灯带自动开启烘托氛围，专注阅读时只留台灯。</p>
+
+        <h3>为什么海报墙分三类——名言、影像、自己的声音同台碰撞</h3>
+        <p>这版把海报墙从单一的"电影海报"扩成三个声部：<strong>名言警句</strong>——从核心书单里摘出的原句，是古人直接的文字；<strong>电影海报</strong>——同一条精神血脉上的当代/近代作品影像，是"同类"的视觉化身；<strong>对话金句</strong>——从这次设计过程里那段豆包对话中挑出代表你自己观点的段落，是你自己此刻的声音。三类内容物理上贴在同一面墙、同一个房间里，等于让古人的文字、他人的影像、你自己的话在这几平米里同台碰撞——这比单纯的"电影海报墙"更贴合"精神共处"这个设计目标，因为共处的三方（古人/同类/自己）都在场，不是只有别人的作品单方面陪着你。</p>
+
+        <h3>为什么用海报墙实现"精神共处"，而不是真实社交</h3>
+        <p>这版方案回应了此前豆包对话里反复出现的一条心理线索：这套系统的私密房间不是为了招待人看的，你明确说过"作为稀有动物也不希望被围观，自己乐呵就好"。但"精神共处"和"不被围观"并不矛盾——藏宝阁要陪伴的不是访客，是同一条精神血脉上的"同类"：陶渊明弃官归田造南山草屋、苏轼被贬黄州亲手筑雪堂、梭罗在瓦尔登湖边伐木造屋、王维经营辋川别业、李渔造芥子园、袁枚买下随园、宫崎骏晚年一边画《红猪》里那个半隐居的飞行员一边买地护林、李宗盛45岁在甪直租厂房做吉他、丘吉尔40岁低谷时拿起画笔——这些人和《我们买了座动物园》《最大的小小农场》《人生果实》《克拉克森的农场》《小森林》这些真实或半自传的重建故事，共享同一种"人到中年为自己造一件不急用的东西"的心理状态。书墙放的是他们的文字，墙面放的是他们的影像——人不必真的进来，坐在这几㎡里翻书抬头，四壁都是走过同一条路的人，这就是"精神共处"在物理空间上的实现方式，也是这个房间和普通书房最大的不同。</p>
+
+        <h3>为什么改用标准写字台 + 人体工学椅，推翻上一版的"矮桌坐垫"方案</h3>
+        <p>上一版按净高估计区间推出"矮桌+坐垫"的方案，逻辑是"净高有限就该坐姿低矮化"。但这版你给出了更明确的使用方式——长期猫在这里阅读，而且你一直习惯用标准尺寸写字台，这说明真正的约束条件不是净高，是"能不能坐得住不累"。跪坐或盘腿短时间没问题，长时间阅读会累，这和整个"避难所"想要的松弛状态是矛盾的。所以这版方案直接推翻矮桌方案，改用你熟悉的标准写字台（宽 1.5m，基本占满房间整个宽度，横向布置在房间最深处的端墙）配一把专门为久坐设计的人体工学椅。两侧纵深墙面的书格墙保持不变，和端墙的写字台并不冲突。</p>
+        <p>净高实测确认为 1.7m 之后，可以给出更明确的结论：标准高度写字台（约72~75cm）搭配座椅后，坐直时头顶到床板大约还有 30~40cm 的余量（视身高和坐姿而定），够用，但不算宽裕——椅子选型上仍然建议偏保守（见下方"分区详设"和"风险"），不要为了追求靠背高度或头枕舒适度而把这点余量吃掉。</p>
+
+        <h3>为什么选帆布软帘而不是木质轨道门</h3>
+        <p>你选的是帆布/软帘式方案——这个选择本身就定义了这个房间的气质：它不是一间缩小版的书房，是一顶名副其实的"帐篷"。帆布的代价是隔音差，这一点不回避，方案里会用夹层加厚布料、门框内衬软质密封条来部分弥补，但不追求做到木门级别的隔音效果，因为那样反而会丢掉"帐篷感"这个最初想要的东西。你把门的宽度进一步收窄到 40cm、开在长墙上而不是端墙整宽——这比上一版设想的更"藏"：不是一进门就豁然开朗，而是先侧身钻过一条窄缝，这个动作本身比宽门更接近"帐篷"和"洞穴"的体感，但也意味着进出时肩宽是否够用需要实测确认（见风险一节）。</p>
+
+        <h3>为什么茶器明放，而不是收纳起来</h3>
+        <p>这版方案调整了上一版"瓷银茶具需要软衬收纳盒藏起来"的判断——你明确希望茶器明放。取舍很清楚：明放会增加磕碰和银器氧化变色的概率，但也让茶器本身成为这个房间"藏品"的一部分，和墙上的海报、格架上的书一样，是"可以随时看见"的陪伴物，而不是用完就收走的工具。方案改为用一个防滑毛毡托盘承托茶器、固定摆放位置，用降低使用频率带来的位移风险来换取"随时可见"的陈设效果。</p>
+
+        <h3>为什么收纳全部上墙，不做落地书架</h3>
+        <p>3㎡ 里如果放一个常规落地书架，写字台和椅子占掉的地面会更紧张。方案把所有藏书收纳都做成贴墙的浅层格架（进深 15~20cm 左右，够放单排书），沿两侧墙面往上做到顶，把纵向空间用满，把宝贵的地面留给写字台、椅子和人进出的通道。</p>
+      </section>
+
+      <div class="lattice"></div>
+
+      <section id="arch">
+        <div class="section-num">04</div>
+        <h2>系统总体架构</h2>
+        <p>在 3㎡ 的尺度下，架构收成五层，每一层都直接服务于"能不能待得住"或"能不能被陪伴"：</p>
+
+        <div class="grid2">
+          <div class="box">
+            <h4>围合层</h4>
+            <p>高架床床板作顶、周边轻质隔板作壁、帆布软帘作门——四面围合出一个独立小室，不依赖地堡结构本身的墙体。</p>
+          </div>
+          <div class="box">
+            <h4>家具层</h4>
+            <p>1.5m 宽标准写字台（占满端墙）+ 人体工学久坐椅 + 贴墙浅层书格，把地面和墙面分别用满，互不占用彼此的空间。</p>
+          </div>
+          <div class="box">
+            <h4>共处层</h4>
+            <p>四壁的海报墙——名言警句是古人的文字，电影海报是同类的影像，对话金句是自己的声音，三者同台构成这个房间独有的精神共处感。</p>
+          </div>
+          <div class="box">
+            <h4>氛围层</h4>
+            <p>暖光台灯（任务照明）+ 顶部环绕洗墙灯带（氛围/展示照明）+ 被动防潮除湿小件、明放的茶器——服务于"待得住"而不是"看起来智能"。</p>
+          </div>
+          <div class="box">
+            <h4>隐私层</h4>
+            <p>帆布门的拉合动作本身就是仪式，配合门磁触发的"入舱模式"手机免打扰联动。</p>
+          </div>
+        </div>
+
+        <div class="floorplan">
+          <svg width="480" height="220" viewBox="0 0 480 220" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="20" width="300" height="180" fill="none" stroke="#a1793f" stroke-width="2"/>
+            <text x="150" y="14" font-size="11" fill="#5a5040" text-anchor="middle" font-family="Noto Sans SC">2m（进深）</text>
+            <text x="8" y="115" font-size="11" fill="#5a5040" text-anchor="middle" transform="rotate(-90 8 115)" font-family="Noto Sans SC">1.5m（面宽）</text>
+            <rect x="24" y="22" width="270" height="12" fill="#ddd3b3" stroke="#c9bd97"/>
+            <text x="160" y="31" font-size="9" fill="#5a5040" text-anchor="middle" font-family="Noto Sans SC">书格墙（连续满长，贴既有结构墙）</text>
+            <rect x="24" y="186" width="80" height="12" fill="#8a2e21" stroke="#8a2e21"/>
+            <text x="64" y="195" font-size="9" fill="#f1ebd9" text-anchor="middle" font-family="Noto Sans SC">40cm滑动门</text>
+            <rect x="118" y="186" width="146" height="12" fill="#ddd3b3" stroke="#c9bd97"/>
+            <text x="191" y="195" font-size="9" fill="#5a5040" text-anchor="middle" font-family="Noto Sans SC">局部书格</text>
+            <rect x="266" y="22" width="52" height="176" fill="#f1ebd9" stroke="#8a2e21" stroke-width="1.5"/>
+            <text x="292" y="110" font-size="10" fill="#2a2318" text-anchor="middle" transform="rotate(-90 292 110)" font-family="Noto Sans SC">标准写字台·宽1.5m</text>
+            <rect x="195" y="82" width="46" height="56" rx="5" fill="none" stroke="#4b5d45" stroke-width="1.5"/>
+            <text x="218" y="107" font-size="9" fill="#374530" text-anchor="middle" font-family="Noto Sans SC">人体</text>
+            <text x="218" y="118" font-size="9" fill="#374530" text-anchor="middle" font-family="Noto Sans SC">工学椅</text>
+          </svg>
+          示意布局（俯视）：门是开在下方长墙上的 40cm 滑动口（靠近门厅一端），上方长墙紧贴既有结构墙做连续满长书格，下方长墙门洞以外的部分做局部书格，最深处的端墙整宽布置写字台，椅子居中面向写字台。
+        </div>
+      </section>
+
+      <div class="lattice"></div>
+
+      <section id="zones">
+        <div class="section-num">05</div>
+        <h2>分区详细设计</h2>
+
+        <h3>核心书单（首批入藏）</h3>
+        <p>取自此前豆包对话"母题地图"里整理的文艺作品清单，作为藏宝阁书格的首批入藏核心——数量不大（约10本级），书格设计上按这批为基准、再留出约2~3倍的余量空间给后续增补。</p>
+        <table>
+          <tr><th>作品</th><th>作者/来源</th></tr>
+          <tr><td>《瓦尔登湖》</td><td>梭罗</td></tr>
+          <tr><td>《神秘岛》</td><td>凡尔纳</td></tr>
+          <tr><td>《鲁滨逊漂流记》</td><td>笛福</td></tr>
+          <tr><td>《归园田居》</td><td>陶渊明</td></tr>
+          <tr><td>《桃花源记》</td><td>陶渊明</td></tr>
+          <tr><td>《闲情偶寄》</td><td>李渔</td></tr>
+          <tr><td>《随园诗话》《随园食单》</td><td>袁枚</td></tr>
+          <tr><td>《浮生六记》</td><td>沈复</td></tr>
+          <tr><td>《陶庵梦忆》</td><td>张岱</td></tr>
+        </table>
+
+        <h3>海报墙（三类内容 · 精神共处的核心载体）</h3>
+        <p>三类内容按空间叙事分配墙面：进门先看到"自己的声音"，坐下面对"同类的影像"，四周书格间穿插"古人的文字"——像是先照见自己，再和同类打个照面，最后被历代文字包围着坐下来读书。</p>
+        <table>
+          <tr><th>类别</th><th>墙面区域</th><th>内容与规格</th></tr>
+          <tr><td><strong>① 名言警句海报</strong><br>古人的文字</td><td>两条长墙书格上方的窄条带（灯带下方），每侧约15~20cm宽</td><td>从核心书单（《瓦尔登湖》《桃花源记》《浮生六记》《闲情偶寄》《随园诗话》等）摘录代表性原句，做成简约字体排版海报，8~15张小尺寸卡片/明信片式排布，穿插在书格之间，与书本身呼应</td></tr>
+          <tr><td><strong>② 电影海报</strong><br>同类的影像</td><td>主墙（写字台后方端墙），约1.2~1.5m宽×1~1.3m高</td><td>《红猪》《我们买了座动物园》《最大的小小农场》《人生果实》《克拉克森的农场》《小森林》《老人与海》《大河恋》，6~10张主视觉海报，坐在写字台前正对这面墙</td></tr>
+          <tr><td><strong>③ 对话金句海报</strong><br>自己的声音</td><td>对侧端墙（近门一端，进门第一眼看到的墙）</td><td>从这次设计藏宝阁的豆包对话中挑选代表你自己观点的段落（比如关于"避难所""自己乐呵就好""为自己造一件不急用的东西"这类段落），做成2~4张海报，作为进门的第一重照面</td></tr>
+        </table>
+        <p>三类内容的具体文字最终以你的选择为准，方案先给出候选池和空间分配逻辑；类别①②的原文/影像来自他人作品，落地前请按下方"风险"一节的版权提醒处理，类别③是你自己的对话内容，没有这层顾虑。</p>
+
+        <h4 style="font-family:'Noto Serif SC',serif;font-size:14px;margin:20px 0 8px;color:#2a2318;">候选文字（已核实原文，供挑选）</h4>
+        <table>
+          <tr><th>类别</th><th>候选原文</th><th>出处</th></tr>
+          <tr><td>①名言警句</td><td>"人无癖不可与交，以其无深情也"</td><td>张岱《陶庵梦忆·祁止祥癖》</td></tr>
+          <tr><td>①名言警句</td><td>"布衣菜饭，可乐终身，不必作远游计也"</td><td>沈复《浮生六记·闺房记乐》</td></tr>
+          <tr><td>①名言警句</td><td>"久在樊笼里，复得返自然"</td><td>陶渊明《归园田居》</td></tr>
+          <tr><td>①名言警句</td><td>"予性最癖，不喜盆内之花，笼中之鸟"</td><td>李渔《闲情偶寄》</td></tr>
+          <tr><td>③对话金句</td><td>"你在外面被这个世界安排，在这儿，你安排一个世界"</td><td>豆包对话（40岁体验一节）</td></tr>
+          <tr><td>③对话金句</td><td>"自己乐呵，是生命力最干净的形态"</td><td>豆包对话（自己乐呵就好一节）</td></tr>
+          <tr><td>③对话金句</td><td>"游乐场给快乐，避难所给安全"</td><td>豆包对话（折中比例一节）</td></tr>
+          <tr><td>③对话金句</td><td>"最好的门，是你几乎忘记它存在的那扇"</td><td>豆包对话（四重门五重门一节）</td></tr>
+        </table>
+        <p>①类还差《随园诗话》（袁枚）一句没有确认到合适的短句，可以留空或后续单独核实；②类电影海报涉及正版海报图像，方案不在这里生成/复刻实际海报画面，采购阶段建议直接找官方周边或授权印刷品。</p>
+
+        <h3>家具</h3>
+        <table>
+          <tr><th>项目</th><th>规格建议</th></tr>
+          <tr><td>标准写字台</td><td>宽 150cm × 深 50~60cm × 高 72~75cm（标准写字台高度），横向占满端墙宽度，靠房间最深处布置。台面一角固定摆放台灯和明放的茶器</td></tr>
+          <tr><td>人体工学椅</td><td>净高已确认 1.7m——建议椅子<strong>总高度（座面到靠背/头枕最高点）控制在 130cm 以内</strong>，为头顶预留约 40cm 余量；座高可调节，建议调至 42~46cm；带头枕的款式如果会让总高超过130cm，优先选头枕可拆卸或矮背无头枕款；椅宽不超过60cm，避免占用过多进出通道</td></tr>
+          <tr><td>瓷银茶具展示</td><td>明放于写字台一角，用防滑毛毡托盘承托、固定摆放位置，降低磕碰滑落风险；不做收纳盒，让茶器本身成为可见的陈设</td></tr>
+          <tr><td>书格墙（两侧长墙）</td><td>进深 15~20cm 浅层格架。紧贴既有结构墙的一条长墙做连续满长书格（约2m，是主书格墙）；开门的一条长墙只在40cm门洞之外的约1.6m范围内做局部书格。按核心书单约10本+余量设计，总容量预留 25~35 本左右即可，不需要做满墙密集书墙</td></tr>
+        </table>
+
+        <h3>帆布门（开在长墙上的40cm滑动口）</h3>
+        <table>
+          <tr><th>项目</th><th>规格建议</th></tr>
+          <tr><td>位置与宽度</td><td>开在其中一条 2m 长墙上，净宽约 40cm 的滑动口，需要在轻质隔板上先做一个 40cm 宽的框洞再装轨道，不是整面墙做成门；另一条 2m 长墙紧贴既有结构墙，无需额外起框，直接在其内侧做书格墙即可</td></tr>
+          <tr><td>轨道</td><td>吊装滑轨固定在框洞上沿（连接高架床床板底部结构），需先核实承重点（高架床为现有结构，承重信息按说明书/厂家确认或现场手动验重）</td></tr>
+          <tr><td>布料</td><td>加厚棉帆布或双层布（外层帐篷感厚帆布+内层遮光夹层），颜色建议深靛蓝或藏青，呼应"藏"的私密感</td></tr>
+          <tr><td>五金</td><td>磁吸边条或魔术贴收边，保证拉合后基本贴合、开合顺手，不需要额外锁具</td></tr>
+        </table>
+
+        <h3>环境调控（隐形、迷你化）</h3>
+        <table>
+          <tr><th>子系统</th><th>方案</th></tr>
+          <tr><td>任务照明</td><td>写字台上一盏可调光暖光台灯，避免顶光直射脸部；银器对光照和潮气敏感，台灯选低发热的 LED 暖光款，别选卤素灯</td></tr>
+          <tr><td>氛围/展示照明</td><td>顶部（贴天花处）环绕一圈 LED 洗墙灯带，360°沿墙面上沿布置，覆盖两侧书格墙和写字台后方海报墙；建议暖白光（2700~3000K）、可调光，用24V灯带或分两点供电，避免7m长条单端供电导致远端变暗</td></tr>
+          <tr><td>防潮</td><td>被动式除湿盒/除湿包（体积小、无需插电），同时兼顾书籍防潮和银器防氧化发黑——空间太小放不下常规除湿机，也不需要</td></tr>
+          <tr><td>通风</td><td>不额外加装主动通风装置——帆布软帘密闭性本身有限，缝隙足够日常透气，这版方案按你的判断把风扇/通风口从必装项里去掉</td></tr>
+        </table>
+      </section>
+
+      <div class="lattice"></div>
+
+      <section id="smart">
+        <div class="section-num">06</div>
+        <h2>智能生态联动</h2>
+        <p>3㎡ 的封闭小室，智能化要做到"看不见但管用"，这里只保留三件事：</p>
+        <ul>
+          <li><strong>温湿度 + 空气质量传感器</strong>：ESPHome 迷你传感器，主要监测湿度（防书籍受潮、防银器氧化）；CO₂ 监测保留作为兜底——既然不装主动通风装置，这颗传感器就是唯一能提醒"该拉开帘子透透气了"的手段，异常时 HomeAssistant 推送提醒。</li>
+          <li><strong>入舱模式自动化</strong>：门磁传感器感应帆布门拉合，触发手机免打扰/专注模式（华为智慧生活场景自动化），同时联动洗墙灯带开启（暖白、中等亮度），台灯手动开关不纳入自动化，避免总是全亮；拉开门自动恢复免打扰设置，灯带保持手动开关。</li>
+          <li><strong>App 端极简展示</strong>：华为智慧生活只保留一张状态卡片（温湿度+空气质量+灯带开关/亮度），不接摄像头、不做复杂面板。</li>
+        </ul>
+      </section>
+
+      <div class="lattice"></div>
+
+      <section id="cost">
+        <div class="section-num">07</div>
+        <h2>成本核算（方案阶段估算区间）</h2>
+        <p>尺度缩小后，成本也大幅收窄。以下为方案阶段粗估，进入"设备电商平台选型"阶段会逐件核实大陆主流平台的实时价格。</p>
+        <table>
+          <tr><th>项目</th><th>估算区间</th><th>说明</th></tr>
+          <tr><td>标准写字台（宽1.5m）</td><td>¥300~800</td><td>闲鱼/淘宝二手实木或一体成型书桌均可，注意先量端墙实际宽度</td></tr>
+          <tr><td>人体工学久坐椅</td><td>¥400~1,200</td><td>按净高1.7m选型，总高度控制在130cm以内，头枕可拆卸款优先</td></tr>
+          <tr><td>两侧书格墙（材料+五金）</td><td>¥300~700</td><td>自己动手安装，木料+置物架五金，按25~35本容量核算，用料比原方案更省</td></tr>
+          <tr><td>帆布软帘门（含轨道五金）</td><td>¥300~700</td><td>成品帐篷帘或定制均可，需先量好床架尺寸</td></tr>
+          <tr><td>茶器防滑毛毡托盘</td><td>¥30~80</td><td>明放展示用，固定茶器摆放位置</td></tr>
+          <tr><td>暖光台灯</td><td>¥60~180</td><td>低发热 LED 暖光款，避免银器受热氧化</td></tr>
+          <tr><td>环绕LED洗墙灯带</td><td>¥300~650</td><td>约7m周长，含灯带、铝槽/扩散罩、驱动电源，建议24V款或两点供电</td></tr>
+          <tr><td>海报墙（打印/装裱+无痕挂钩）</td><td>¥300~800</td><td>约14~25张，含名言警句、电影海报、对话金句三类，按主墙统一画框+其余小尺寸卡片式排布估算，具体以最终文字/片单和呈现风格而定</td></tr>
+          <tr><td>温湿度+空气质量传感器</td><td>¥100~250</td><td>ESPHome 兼容款</td></tr>
+          <tr><td>除湿盒/除湿包</td><td>¥30~80</td><td>被动式，无需插电</td></tr>
+          <tr><td>门磁传感器</td><td>¥30~80</td><td></td></tr>
+          <tr><td><strong>一次性合计</strong></td><td><strong>约 ¥2,150~5,520</strong></td><td>标准写字台+人体工学椅+洗墙灯带比原方案贵一截，但换来长期久坐的舒适度和书墙/海报墙的展示效果；高架床本身为现有结构不计入</td></tr>
+          <tr><td>年度使用成本</td><td>约 ¥80~150/年</td><td>除湿包更换+用电+银器保养用品</td></tr>
+        </table>
+      </section>
+
+      <div class="lattice"></div>
+
+      <section id="build">
+        <div class="section-num">08</div>
+        <h2>施工纲要</h2>
+        <p>3㎡ 尺度下，这个模块基本不涉及结构性施工，只有一处需要提前确认：</p>
+        <ol>
+          <li>
+            <span class="tag-check">先确认</span>
+            <strong>高架床承重结构核查</strong>——床是现有结构，没有设计阶段预埋挂载点的机会，需要先查说明书/联系厂家确认承重上限；如果查不到具体数据，用沙袋等重物做一次手动加载测试再正式挂书格，不能凭感觉钻孔。这一步不是"找工人"，但要认真核实。
+          </li>
+          <li>
+            <span class="tag-check">先确认</span>
+            <strong>按 1.7m 净高比对椅子参数再下单</strong>——净高已实测确认，下单前把候选椅子的"座高+靠背/头枕总高"参数和 130cm 的建议上限对一遍，别只看"人体工学椅"这个品类名就直接下单，型号之间总高度差异不小。
+          </li>
+          <li>
+            <span class="tag-diy">自己动手</span>
+            <strong>两侧书格墙安装</strong>——常规木作，普通人在家可完成，按核心书单+余量的容量做，不需要做满墙。
+          </li>
+          <li>
+            <span class="tag-diy">自己动手</span>
+            <strong>长墙轻质隔板 + 40cm 门洞框安装</strong>——开门的一条长墙先做轻质隔板，中间预留40cm宽框洞再装滑轨和布帘；另一条长墙紧贴既有结构墙，不需要额外起墙。
+          </li>
+          <li>
+            <span class="tag-diy">自己动手</span>
+            <strong>标准写字台组装、人体工学椅摆放</strong>——常规家具组装，注意先确认能否从门口整体搬入，或选可拆卸/分件组装的款式。
+          </li>
+          <li>
+            <span class="tag-diy">自己动手</span>
+            <strong>茶器明放摆位</strong>——用防滑毛毡托盘固定茶器在写字台一角的位置。
+          </li>
+          <li>
+            <span class="tag-diy">自己动手</span>
+            <strong>海报墙上墙</strong>——统一用无痕挂钩或画框钉固定，不在床架承重结构上钻孔；建议先在地面铺开排布试位，再逐张上墙，避免装完发现比例不对要返工。
+          </li>
+          <li>
+            <span class="tag-diy">自己动手</span>
+            <strong>顶部环绕洗墙灯带安装</strong>——沿围合层顶边（书格墙顶部、门框上沿、写字台端墙上沿）走一圈铝槽和灯带，接驱动电源；7m长条建议从两处供电（如两个对角）保证亮度均匀，不要单端供电到底。
+          </li>
+          <li>
+            <span class="tag-diy">自己动手</span>
+            <strong>台灯、传感器安装与 ESPHome 配置</strong>——均为低压弱电，跟随已有的 0201/0602 模块的成熟做法即可，注意所有电器选用 USB/低压供电，不接强电改造。</li>
+        </ol>
+      </section>
+
+      <div class="lattice"></div>
+
+      <section id="risk">
+        <div class="section-num">09</div>
+        <h2>风险</h2>
+
+        <div class="risk">
+          <div class="r-title">净高与磕头</div>
+          <div class="r-body">净高已确认为 1.7m：标准写字台（72~75cm）配人体工学椅后，坐直时头顶到床板大约还有 30~40cm 余量，够用但不宽裕，起身、转身时仍要留意。兜底：椅子总高度（座面到靠背/头枕最高点）控制在 130cm 以内，优先选头枕可拆卸或矮背款；日常起身前养成先低头确认的习惯。</div>
+        </div>
+        <div class="risk">
+          <div class="r-title">通风（已知取舍）</div>
+          <div class="r-body">你已经判断帆布软帘密闭性有限、不需要额外通风装置，这版方案尊重这个判断，去掉了风扇和通风口。留了一颗 CO₂ 传感器作为唯一的兜底——万一某天感觉闷，它能提醒你拉开帘子透气，而不是完全没有信号。</div>
+        </div>
+        <div class="risk">
+          <div class="r-title">用电安全</div>
+          <div class="r-body">帆布材质密闭空间里使用电器，必须用低压/USB 或 12~24V 直流供电的台灯和 LED 灯带，禁止使用明火（蜡烛、熏香炉）或大功率电器，电线走线要贴边固定、不贴着帆布走，避免绊倒或布料长期接触发热部件；灯带选正规产品、走线整齐，不要为了美观把驱动电源藏进书格夹层导致散热不良。</div>
+        </div>
+        <div class="risk">
+          <div class="r-title">床架承重</div>
+          <div class="r-body">书格墙+藏书的重量长期挂在既有高架床结构上，如果承重核查没做实，存在结构隐患。兜底：安装前务必核实承重上限（查说明书或手动加载测试），书格容量按核心书单+适量余量设计，不做满墙密集书墙。</div>
+        </div>
+        <div class="risk">
+          <div class="r-title">瓷器银器磕碰与氧化</div>
+          <div class="r-body">你确认茶器明放，这里如实标出代价：3㎡ 空间人进出难免磕碰，明放的瓷器怕摔，银器长期暴露在空气里氧化发黑的速度会比收纳起来快。兜底：用防滑毛毡托盘固定摆放位置降低移位风险，银器定期用软布擦拭保养，除湿盒同时兼顾防潮防氧化。这是你主动选择的取舍，方案不建议改回收纳，只是把风险说清楚。</div>
+        </div>
+        <div class="risk">
+          <div class="r-title">海报的版权与固定方式</div>
+          <div class="r-body">海报墙里"名言警句"和"电影海报"两类涉及他人作品，仅限私人非商业陈列，不做批量翻印售卖；采购时优先选官方授权周边、正版书籍内页复刻，或个人自制排版打印，而不是大规模盗印品。"对话金句"一类是你自己的对话内容，没有这层顾虑。固定方式统一用无痕挂钩/画框钉，不在承重结构上钻孔，也不影响后续需要时的拆换。</div>
+        </div>
+        <div class="risk">
+          <div class="r-title">40cm 开口够不够钻</div>
+          <div class="r-body">成年人肩宽坐姿/侧身通过时一般需要 40~50cm 净空，40cm 属于刚好够用但偏紧的下限。兜底：正式裁布/装轨道前，先用纸箱或胶带在实际位置模拟一个40cm的洞口，自己侧身试钻几次，确认舒适再动工，避免布料裁好了才发现太窄。</div>
+        </div>
+        <div class="risk">
+          <div class="r-title">快速脱离能力</div>
+          <div class="r-body">封闭小空间，帆布门的开合必须足够顺手，任何时候都要能一把拉开——不加锁具、不做复杂机关，这条延续此前"迷宫悖论"的提醒：私密不能牺牲进出的自由。40cm的窄口比宽门更需要留意这一条。</div>
+        </div>
+      </section>
+
+      <div class="lattice"></div>
+
+      <section id="decide">
+        <div class="section-num">10</div>
+        <h2>决策点（需要你拍板）</h2>
+
+        <div class="decision">
+          <div class="q">帆布门的颜色/图案有偏好吗？</div>
+          <div class="opts">深靛蓝/藏青是方案默认建议（呼应"藏"的气质），如果你有其他偏好（比如更暖的赭石色、或者带手工印染纹样），可以直接定下来，会影响采购方向。</div>
+        </div>
+        <div class="decision">
+          <div class="q">候选文字里要不要增删，或者直接定稿？</div>
+          <div class="opts">已给出①③两类的候选原文（见上方表格），①类还缺一句袁枚《随园诗话》没找到合适短句；③类摘自豆包对话，也可以换成你觉得更代表自己的其他段落。定下来之后就可以进入打印/装裱的选型阶段了。</div>
+        </div>
+        <div class="decision">
+          <div class="q">电影海报候选清单要不要增删？</div>
+          <div class="opts">目前主墙候选是《红猪》《我们买了座动物园》《最大的小小农场》《人生果实》《克拉克森的农场》《小森林》《老人与海》《大河恋》。如果你有特别想放的具体几部（或者想去掉某几部），告诉我就好。</div>
+        </div>
+        <div class="decision">
+          <div class="q">海报呈现风格：统一画框，还是做旧拼贴/剪报风？</div>
+          <div class="opts">统一画框更整洁、有秩序感，也更容易区分三个类别（比如用不同颜色画框区分名言/电影/对话）；做旧拼贴风更贴合"帐篷+旧书"的整体气质，但对排布手艺要求更高，容易显乱。</div>
+        </div>
+        <div class="decision">
+          <div class="q">核心书单之外，是否还有其他想优先纳入的书籍/手稿？</div>
+          <div class="opts">目前书格按"母题地图"清单里的约10本+余量设计，如果你还有其他明确想放进去的书目（比如更私人的手稿、笔记），可以一并告诉我，我会把书格容量和分区再核一遍。</div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer>
+      <p>本页为 0209 藏宝阁「方案原理推演」阶段产出（v10：名言警句/对话金句已给出核实过的候选原文，海报墙样图已生成）。剩下的决策点不卡进度，可以直接进入「设备电商平台选型」阶段。</p>
+      <p>页面生成于 2026-09-03，涉及具体型号/价格的内容在采购前需用 WebSearch 复核实时价格与链接有效性。</p>
+    </footer>
+  </div>
+</div>
+</body>
+</html>
