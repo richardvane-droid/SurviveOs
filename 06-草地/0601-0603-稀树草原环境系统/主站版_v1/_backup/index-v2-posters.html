@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>稀树草原庭院 · 全隐藏智能灌溉</title>
+<style>
+  :root{
+    --bg-top:#faf6ec;
+    --bg-bottom:#efe5cf;
+    --card:#fffdf7;
+    --ink:#2c2a20;
+    --muted:#7a725c;
+    --accent:#c08f35;
+    --accent-deep:#9a6f1f;
+    --accent-soft:#f6ecd4;
+    --line:#e6dbc0;
+    --good:#5f8a4e;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(60,50,20,.06),0 10px 28px rgba(60,50,20,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
+    color:var(--ink);line-height:1.75;font-size:15px;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px;}
+
+  header.hero{padding:64px 0 40px;text-align:left;}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.14em;color:var(--accent-deep);border:1px solid rgba(192,143,53,.5);background:rgba(255,255,255,.5);padding:5px 14px;border-radius:999px;}
+  .kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  h1.title{font-size:40px;line-height:1.25;font-weight:800;letter-spacing:.01em;margin-top:20px;}
+  .hero .sub{margin-top:16px;color:var(--muted);font-size:15.5px;max-width:760px;}
+  .metrics{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;}
+  .metric{flex:1 1 150px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 16px;box-shadow:var(--shadow);}
+  .metric .k{font-size:12.5px;color:var(--muted);}
+  .metric .v{font-size:24px;font-weight:800;color:var(--ink);margin-top:1px;}
+
+  section.block{margin:26px 0 8px;}
+  .sec-label{font-size:12px;font-weight:700;letter-spacing:.28em;color:var(--accent-deep);}
+  .sec-title{font-size:24px;font-weight:800;margin:6px 0 4px;}
+  .sec-lead{color:var(--muted);font-size:14.5px;max-width:760px;}
+  .sec-hint{color:var(--accent-deep);font-size:13px;margin-top:6px;}
+
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-top:18px;}
+  .layer{display:flex;flex-direction:column;gap:8px;margin:6px 0;}
+  .layer-label{font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.05em;display:flex;align-items:center;gap:8px;}
+  .layer-label::after{content:"";flex:1;height:1px;background:var(--line);}
+  .row{display:flex;flex-wrap:wrap;gap:10px;}
+  .comp{
+    position:relative;display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1 1 170px;
+    background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px;cursor:pointer;
+    transition:border-color .18s,transform .18s,box-shadow .18s;text-decoration:none;color:inherit;
+  }
+  .comp:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 20px rgba(120,90,30,.12);}
+  .comp .ic{font-size:22px;line-height:1;}
+  .comp .nm{font-weight:700;font-size:14px;margin-top:6px;}
+  .comp .sb{font-size:12px;color:var(--muted);}
+  .comp .tag2{display:inline-block;font-size:11px;color:var(--accent-deep);background:var(--accent-soft);border-radius:999px;padding:1px 8px;margin-top:6px;align-self:flex-start;}
+  .arrow{text-align:center;color:var(--accent-deep);font-size:15px;line-height:1;padding:2px 0;opacity:.8;}
+  .flow-note{margin-top:12px;font-size:13px;color:var(--muted);background:var(--accent-soft);border:1px solid var(--line);border-radius:10px;padding:9px 13px;}
+
+  #tip{position:fixed;z-index:60;max-width:280px;background:#2c2a20;color:#f6f0e0;font-size:12.5px;line-height:1.55;border-radius:10px;padding:9px 12px;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 10px 24px rgba(0,0,0,.22);}
+  #tip.on{opacity:1;}
+
+  .zgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px;}
+  .zcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;}
+  .zcard .art{height:152px;overflow:hidden;}
+  .zcard .art img{width:100%;height:100%;object-fit:cover;display:block;}
+  .zcard .zlabel{font-size:12px;font-weight:700;color:var(--accent-deep);letter-spacing:.06em;padding:14px 16px 0;}
+  .zcard h3{font-size:18px;font-weight:800;padding:2px 16px 0;}
+  .zcard p{font-size:13.5px;color:var(--muted);padding:6px 16px 0;}
+  .zcard .key{margin:10px 16px 14px;font-size:12px;color:var(--good);background:#eef4e7;border-radius:8px;padding:5px 9px;}
+
+  .wlist{display:flex;flex-direction:column;gap:14px;margin-top:18px;}
+  .wcard{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+  .wcard .ic{font-size:30px;flex:none;width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);border-radius:13px;}
+  .wcard h3{font-size:16.5px;font-weight:800;}
+  .wcard p{font-size:13.5px;color:var(--muted);margin-top:4px;}
+
+  .egrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px;}
+  .ecard{display:flex;flex-direction:column;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);text-decoration:none;color:inherit;transition:transform .18s,border-color .18s;}
+  .ecard:hover{transform:translateY(-2px);border-color:var(--accent);}
+  .ecard .ic{font-size:24px;}
+  .ecard h3{font-size:16px;font-weight:800;}
+  .ecard p{font-size:13px;color:var(--muted);flex:1;}
+  .ecard .go{color:var(--accent-deep);font-weight:700;font-size:13px;}
+  .poster{margin:18px 0 6px;}
+  .poster img{display:block;width:100%;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow);}
+  .poster .cap{font-size:12.5px;color:var(--muted);margin-top:6px;}
+
+  /* 硬件专题总览 */
+  .hw-groups{margin-top:18px;display:flex;flex-direction:column;gap:18px;}
+  .hw-group h3{font-size:15px;font-weight:800;color:var(--accent-deep);display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .hw-group h3::after{content:"";flex:1;height:1px;background:var(--line);}
+  .hw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .hwcard{display:flex;flex-direction:column;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px 15px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:transform .16s,border-color .16s;}
+  .hwcard:hover{transform:translateY(-2px);border-color:var(--accent);}
+  .hwcard .ic{font-size:24px;}
+  .hwcard .nm{font-weight:700;font-size:14px;margin-top:4px;}
+  .hwcard .sb{font-size:11.5px;color:var(--muted);}
+  .hwcard .price{font-size:12px;color:var(--good);margin-top:6px;font-weight:700;}
+
+  /* 器件详情 */
+  [data-view]{animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .detail-top{display:flex;align-items:center;gap:14px;margin:26px 0 4px;flex-wrap:wrap;}
+  .btn-back{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:10px 16px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;box-shadow:var(--shadow);min-height:44px;}
+  .btn-back:hover{border-color:var(--accent);}
+  .detail-body{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 28px;margin-top:14px;}
+  .detail-body h2{font-size:24px;font-weight:800;}
+  .detail-body h3{font-size:15.5px;font-weight:800;color:var(--accent-deep);margin:22px 0 8px;display:flex;align-items:center;gap:8px;}
+  .detail-body h3::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--accent);}
+  .detail-body p,.detail-body li{font-size:14px;color:#4a463a;margin:4px 0;}
+  .detail-body ul{padding-left:20px;}
+  .hw-head{display:flex;align-items:center;gap:16px;}
+  .hw-head .bigic{font-size:44px;width:76px;height:76px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);border-radius:16px;flex:none;}
+  .hw-meta{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{font-size:12px;color:var(--accent-deep);background:var(--accent-soft);border-radius:999px;padding:2px 10px;}
+  .buy-row{display:flex;gap:10px;align-items:baseline;border:1px solid var(--line);border-radius:10px;padding:9px 13px;margin:6px 0;background:#fdfbf4;}
+  .buy-row .ch{flex:none;font-weight:700;color:var(--good);font-size:13px;min-width:54px;}
+  .buy-row .kw{font-size:13px;color:var(--ink);flex:1;}
+  .buy-row .pr{flex:none;font-size:13px;color:var(--accent-deep);font-weight:700;white-space:nowrap;}
+  .xy-box{border:1px dashed var(--accent);background:var(--accent-soft);border-radius:10px;padding:11px 14px;margin:8px 0;}
+  .xy-box .t{font-size:13px;font-weight:800;color:var(--accent-deep);}
+  .xy-box p{font-size:13.5px;color:#6b4a1d;margin:3px 0;}
+  .diagram-fig{margin:10px 0;border:1px solid var(--line);border-radius:12px;background:#fcfdfa;padding:8px;text-align:center;}
+  .diagram-fig svg{width:100%;height:auto;max-width:560px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px;}
+  th{background:var(--accent-soft);color:var(--accent-deep);text-align:left;font-weight:700;padding:8px 11px;border-bottom:2px solid var(--accent);white-space:nowrap;}
+  td{padding:7px 11px;border-bottom:1px solid var(--line);vertical-align:top;}
+  td.num,th.num{text-align:right;white-space:nowrap;}
+  tr.sub td{background:var(--accent-soft);font-weight:700;}
+  tr.total td{background:var(--accent-soft);font-weight:800;color:var(--accent-deep);font-size:14px;}
+  .tbl-wrap{overflow-x:auto;}
+
+  .steps{counter-reset:st;margin-top:10px;}
+  .step{display:flex;gap:14px;margin:12px 0;}
+  .step .no{counter-increment:st;flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .step .no::before{content:counter(st);}
+  .step .bd{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:#fdfbf4;}
+  .step .bd b{color:var(--ink);}
+  .step .bd p,.step .bd li{font-size:13.5px;color:var(--muted);margin:3px 0;}
+  .step .bd ul{padding-left:18px;}
+
+  footer{text-align:center;padding:36px 20px 48px;color:var(--muted);font-size:13px;}
+  footer .t{font-size:14px;font-weight:700;color:var(--ink);}
+
+  @media (max-width:820px){
+    h1.title{font-size:29px;}
+    .sec-title{font-size:20px;}
+    .zgrid,.egrid,.hw-grid{grid-template-columns:1fr 1fr;}
+    .metrics{flex-direction:column;}
+    .metric{flex:1 1 auto;}
+    .comp{min-width:100%;}
+    .wcard{flex-direction:column;}
+    .wcard .ic{width:100%;}
+    .hw-head{flex-direction:column;align-items:flex-start;}
+  }
+  @media (max-width:480px){ .hw-grid{grid-template-columns:1fr;} }
+</style>
+</head>
+<body>
+
+<!-- ===== 首页 ===== -->
+<div data-view="home">
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">居家 DIY 项目</span>
+    <h1 class="title">种一片草原，<br>让它自己喝水</h1>
+    <p class="sub">一套完全藏在地下的庭院智能灌溉：16mm 地埋滴灌 + 华为智慧生活 App 远程控制 + ESP32 湿度闭环 + 1000L 雨水收集。地表零设备、全程零人工浇灌，稀树草原风格一点不被破坏。</p>
+    <div class="metrics">
+      <div class="metric"><div class="k">总造价</div><div class="v">≈ ¥5,100</div></div>
+      <div class="metric"><div class="k">预算余量</div><div class="v">≈ ¥450</div></div>
+      <div class="metric"><div class="k">自动分区</div><div class="v">3 个</div></div>
+      <div class="metric"><div class="k">地表设备</div><div class="v">0 件</div></div>
+      <div class="metric"><div class="k">土壤传感器</div><div class="v">4 路</div></div>
+    </div>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/GYcSrjMcai" alt="稀树草原风格庭院效果图" loading="lazy"><div class="cap">稀树草原风格庭院 · 效果图（示意图，供整体氛围参考）</div></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="block">
+    <div class="sec-label">SYSTEM OVERVIEW</div>
+    <h2 class="sec-title">系统架构总览</h2>
+    <p class="sec-lead">从雨水到每一滴入土，一整条链路的每一个环节都在这张图里。</p>
+    <p class="sec-hint">鼠标悬停查看简介，点击进入该器件的硬件专题页。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/XFwWVoqdLY" alt="系统全链路水流示意" loading="lazy"><div class="cap">系统全链路 · 水从雨到根（示意海报）</div></div>
+    <div class="diagram">
+      <div class="layer">
+        <div class="layer-label">云端 / 应用层</div>
+        <div class="row">
+          <a class="comp" data-id="app" href="#water"><div class="ic">📱</div><div class="nm">华为智慧生活 App</div><div class="sb">遥控 · 定时 · 场景 · 小艺</div><span class="tag2">人机界面</span></a>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="layer">
+        <div class="layer-label">控制层 · 双钥匙（App 管"想不想浇"，ESP32 管"该不该浇"）</div>
+        <div class="row">
+          <a class="comp" data-id="valve" href="#hwitem?id=hw-valve"><div class="ic">🔑</div><div class="nm">鸿蒙智联智能水阀 ×3</div><div class="sb">钥匙① · App 直控分区</div><span class="tag2">华为生态</span></a>
+          <a class="comp" data-id="esp32" href="#hwitem?id=hw-esp32"><div class="ic">🧠</div><div class="nm">ESP32 决策板</div><div class="sb">钥匙② · 湿度 / 雨量 / 水位</div><span class="tag2">本地逻辑</span></a>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="layer">
+        <div class="layer-label">水源层 · 雨水优先，自来水兜底</div>
+        <div class="row">
+          <a class="comp" data-id="tank" href="#hwitem?id=hw-tank"><div class="ic">🌧️</div><div class="nm">雨水罐 1000L</div><div class="sb">首雨弃流 · 防蚊</div></a>
+          <a class="comp" data-id="pump" href="#hwitem?id=hw-pump"><div class="ic">⚙️</div><div class="nm">自吸泵</div><div class="sb">约 800L/h</div></a>
+          <a class="comp" data-id="tap" href="#hwitem?id=hw-backup"><div class="ic">🚰</div><div class="nm">自来水补位</div><div class="sb">低水位自动切入</div></a>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="layer">
+        <div class="layer-label">管网层 · 全地埋</div>
+        <div class="row">
+          <a class="comp" data-id="filter" href="#hwitem?id=hw-filter"><div class="ic">🌀</div><div class="nm">120 目过滤器</div><div class="sb">地埋滴灌刚需</div></a>
+          <a class="comp" data-id="mainvalve" href="#hwitem?id=hw-solenoid"><div class="ic">🚦</div><div class="nm">主切断电磁阀</div><div class="sb">ESP32 硬切断</div></a>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="layer">
+        <div class="layer-label">执行层 · 水从根系层渗出（地表零设备）</div>
+        <div class="row">
+          <a class="comp" data-id="dripline" href="#hwitem?id=hw-dripline"><div class="ic">🟢</div><div class="nm">地埋滴灌管 16mm</div><div class="sb">草坪 35㎡ · 埋深 10cm</div></a>
+          <a class="comp" data-id="tree" href="#hwitem?id=hw-dripj"><div class="ic">🌳</div><div class="nm">树下滴箭</div><div class="sb">沿滴水线 · 靠天为主</div></a>
+          <a class="comp" data-id="spot" href="#hwitem?id=hw-dripj"><div class="ic">🌸</div><div class="nm">点缀带微滴灌</div><div class="sb">为以后局部养花打底</div></a>
+        </div>
+      </div>
+      <div class="layer" style="margin-top:8px;">
+        <div class="row" style="justify-content:flex-end;">
+          <a class="comp" data-id="soil" href="#hwitem?id=hw-moisture" style="flex:1 1 170px;max-width:220px;"><div class="ic">🌱</div><div class="nm">土壤湿度 ×4</div><div class="sb">埋根系层 · 回传 ESP32</div><span class="tag2">浇水的唯一裁判</span></a>
+        </div>
+      </div>
+      <div class="flow-note">💡 提示：悬停查看简介，点击进入硬件专题页。整条链路每一环都在地下或密封阀箱里——地表只看得见草和树。</div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-label">THREE ZONES</div>
+    <h2 class="sec-title">三分区，三种需水</h2>
+    <p class="sec-lead">灌溉按植物需水分三档：草坪、树木、点缀带各浇各的，绝不一刀切。已按你的选择——观赏效果优先的草种、点缀带浇水为未来养花打底。</p>
+    <div class="zgrid">
+      <div class="zcard">
+        <div class="art"><img src="https://aka.doubaocdn.com/s/icEbFxbCTQ" alt="草坪区地埋滴灌效果" loading="lazy"></div>
+        <div class="zlabel">每周 1 次 · 浇透</div>
+        <h3>草坪区 · 35㎡</h3>
+        <p>16mm 地埋滴灌管，管距 40cm、滴头 30cm，水从根系层直接渗出。观赏型耐旱混播草皮，旱季每周一次浇透促根深扎。</p>
+        <div class="key">高羊茅耐旱混播 · 绿期长、观赏性好</div>
+      </div>
+      <div class="zcard">
+        <div class="art"><img src="https://aka.doubaocdn.com/s/dUYgexmV4Y" alt="树木区滴箭补水效果" loading="lazy"></div>
+        <div class="zlabel">靠天为主 · 偶补</div>
+        <h3>树木区 · 2~3 棵（已栽）</h3>
+        <p>每树 4 个滴箭/涌泉头，沿树冠滴水线环形补水。大树建成后根系深，基本靠天，仅持续干旱时补一点。</p>
+        <div class="key">树已栽好 · 成本不计入</div>
+      </div>
+      <div class="zcard">
+        <div class="art"><img src="https://aka.doubaocdn.com/s/psOuSZeOZF" alt="点缀带花境与微滴灌效果" loading="lazy"></div>
+        <div class="zlabel">预留待用 · 现旱养</div>
+        <h3>点缀带 · 8㎡</h3>
+        <p>观赏草丛现在旱养不浇；预埋微滴灌管，等你想在局部养花时，随时接入新分区即可，不用再动土。</p>
+        <div class="key">为以后局部养花打基础</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-label">WHY THIS PROJECT</div>
+    <h2 class="sec-title">为什么这样设计</h2>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/KwrZeqCUq9" alt="双钥匙控制逻辑示意" loading="lazy"><div class="cap">双钥匙控制 · 手机「想不想浇」＋ 单片机「该不该浇」，任一断开都不出水</div></div>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🌿</div><div><h3>稀树草原，就该旱养</h3><p>低耗水、深根系是草原的本性。这套系统不做"天天浇水"，只在土壤含水量低于阈值时精确补水、一次浇透——水费、电费、人工都省到最低，草还越长越耐旱。</p></div></div>
+      <div class="wcard"><div class="ic">🔑</div><div><h3>双钥匙控制，不会乱浇</h3><p>华为智慧生活 App 管"想不想浇"（遥控 / 定时 / 场景 / 小艺），ESP32 管"该不该浇"（湿度 / 雨量 / 水位）。两把钥匙串联，任一断开都不出水——App 开了计划，土壤够湿或在下雨，系统自动停手。</p></div></div>
+      <div class="wcard"><div class="ic">💧</div><div><h3>雨水优先，自来水兜底</h3><p>1000L 雨水罐 + 首雨弃流，连雨期几乎零水费；罐空自动切自来水补位，全程无人值守。地下管网 + 密封阀箱，地表零设备，草原视觉一点不被破坏。</p></div></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="sec-label">EXPLORE</div>
+    <h2 class="sec-title">深入了解每个部分</h2>
+    <p class="sec-lead">从硬件到施工，从雨水水账到华为 App 配置，每个专题都有完整的清单和步骤。</p>
+    <div class="egrid">
+      <a class="ecard" href="#hw"><div class="ic">🔧</div><h3>硬件专题</h3><p>16 个核心器件的结构、原理、购买渠道与闲鱼价，一器件一专题页逐一拆解。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#build"><div class="ic">🛠️</div><h3>施工指南</h3><p>从放线挖沟、铺管装阀、接线调参到入冬泄水，一步一图走完 DIY 全过程。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#water"><div class="ic">🌧️</div><h3>雨水与华为联动</h3><p>雨水收集水账 + 华为智慧生活 App 场景配置教程，双水源如何自动切换。</p><span class="go">开始探索 →</span></a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="t">种一片草原，让它自己喝水</div>
+  <div style="margin-top:4px;">稀树草原庭院 · 全隐藏智能灌溉 · 总造价约 ¥5,100</div>
+</footer>
+</div>
+
+<!-- ===== 硬件专题总览 ===== -->
+<div data-view="hw" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#">← 返回首页</a><span class="sec-label" style="color:var(--accent-deep)">HARDWARE</span></div>
+    <div class="detail-body">
+      <h2>硬件专题 · 16 个器件逐一拆解</h2>
+      <p>每个器件一页：讲清它是干什么的、内部结构、工作原理，以及去哪买、新品和闲鱼大概多少钱。点卡片进入专题页。</p>
+      <div class="poster"><img src="https://aka.doubaocdn.com/s/Xt6sZUUU7T" alt="系统硬件全家福" loading="lazy"><div class="cap">系统硬件全家福 · 16 个器件（示意海报）</div></div>
+      <div class="hw-groups" id="hw-groups"></div>
+      <div class="poster"><img src="https://aka.doubaocdn.com/s/DUBoYN0W7P" alt="地埋滴灌迷宫流道原理" loading="lazy"><div class="cap">地埋滴灌原理 · 迷宫流道消能、压力补偿、均匀出水（示意海报）</div></div>
+      <h3>完整 BOM 采购清单（含草皮，不含人工与树）</h3>
+      <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>项目</th><th>规格</th><th>数量</th><th class="num">单价</th><th class="num">小计</th></tr></thead>
+        <tbody>
+          <tr><td>鸿蒙智联智能水阀</td><td>电动球阀 · 智慧生活 App 控制</td><td>3</td><td class="num">260</td><td class="num">780</td></tr>
+          <tr><td>主切断电磁阀</td><td>24VAC 常闭</td><td>1</td><td class="num">110</td><td class="num">110</td></tr>
+          <tr><td>24VAC 变压器</td><td>供电电磁阀</td><td>1</td><td class="num">80</td><td class="num">80</td></tr>
+          <tr><td>地埋 PC 滴灌管</td><td>16mm · 草坪 35㎡</td><td>90m</td><td class="num">2.5</td><td class="num">225</td></tr>
+          <tr><td>微滴灌管 + 配件</td><td>点缀带预留</td><td>1 套</td><td class="num">80</td><td class="num">80</td></tr>
+          <tr><td>树下滴灌</td><td>滴箭 / 涌泉头</td><td>1 套</td><td class="num">180</td><td class="num">180</td></tr>
+          <tr><td>PE 主管 + 配件</td><td>20mm</td><td>50m</td><td class="num">5</td><td class="num">250</td></tr>
+          <tr><td>叠片过滤器</td><td>120 目</td><td>1</td><td class="num">90</td><td class="num">90</td></tr>
+          <tr><td>阀箱 + 控制箱</td><td>地埋密封盒</td><td>2</td><td class="num">80</td><td class="num">160</td></tr>
+          <tr><td>冬季泄水件</td><td>排水阀 / 坡度件</td><td>1 批</td><td class="num">120</td><td class="num">120</td></tr>
+          <tr><td>线缆杂项</td><td>控制线 / 卡箍 / 密封</td><td>1 批</td><td class="num">150</td><td class="num">150</td></tr>
+          <tr class="sub"><td colspan="4">小计 ① 灌溉主体</td><td class="num">2,225</td></tr>
+          <tr><td>ESP32 开发板 + 继电器</td><td>本地逻辑</td><td>1</td><td class="num">80</td><td class="num">80</td></tr>
+          <tr><td>电容式土壤湿度传感器</td><td>防水 · 埋地</td><td>4</td><td class="num">80</td><td class="num">320</td></tr>
+          <tr><td>雨量传感器</td><td>翻斗式</td><td>1</td><td class="num">90</td><td class="num">90</td></tr>
+          <tr><td>水位开关 / 浮球</td><td>雨水罐</td><td>1</td><td class="num">60</td><td class="num">60</td></tr>
+          <tr><td>防水接线盒 / 电缆</td><td>户外级</td><td>1 批</td><td class="num">120</td><td class="num">120</td></tr>
+          <tr class="sub"><td colspan="4">小计 ② 感知与决策层</td><td class="num">670</td></tr>
+          <tr><td>PE 储水罐</td><td>1000L · 地上 / 埋地</td><td>1</td><td class="num">950</td><td class="num">950</td></tr>
+          <tr><td>首雨弃流器 + 滤网</td><td>雨落管截留</td><td>1</td><td class="num">160</td><td class="num">160</td></tr>
+          <tr><td>自吸泵</td><td>约 800L/h</td><td>1</td><td class="num">350</td><td class="num">350</td></tr>
+          <tr><td>自来水补位阀 + 单向阀</td><td>低水位切入</td><td>1 套</td><td class="num">200</td><td class="num">200</td></tr>
+          <tr><td>雨水管路件</td><td>弯头 / 浮球 / 溢流</td><td>1 批</td><td class="num">150</td><td class="num">150</td></tr>
+          <tr class="sub"><td colspan="4">小计 ③ 雨水收集模块</td><td class="num">1,810</td></tr>
+          <tr><td>草皮 / 草种</td><td>高羊茅耐旱混播 · 35㎡</td><td>1</td><td class="num">350</td><td class="num">350</td></tr>
+          <tr class="total"><td colspan="4">总计（设备 + 草皮，不含人工与树）</td><td class="num">≈ 5,055</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin-top:8px;">新品价格为 2026 年淘宝 / 1688 / 京东零售区间；闲鱼价为二手行情区间（随成色浮动）。单价与《硬件专题》各页一致，小计按本项目用量计算。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 器件详情 ===== -->
+<div data-view="hwitem" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#hw">← 返回硬件专题</a><span class="sec-label" style="color:var(--accent-deep)">HARDWARE</span></div>
+    <div class="detail-body" id="hwitem-body"></div>
+  </div>
+</div>
+
+<!-- ===== 详情：施工指南 ===== -->
+<div data-view="build" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#">← 返回首页</a><span class="sec-label" style="color:var(--accent-deep)">BUILD GUIDE</span></div>
+    <div class="detail-body">
+      <h2>施工指南 · 自己动手</h2>
+      <p>按"放线 → 挖沟 → 铺管 → 装阀 → 接线 → 试压 → 覆土铺草 → 调试 → 入冬泄水"推进，50㎡ 约 2~3 天集中施工 + 2 周建立期调参。</p>
+      <div class="poster"><img src="https://aka.doubaocdn.com/s/WRvKaBKghu" alt="地埋滴灌施工流程" loading="lazy"><div class="cap">施工流程一览 · 放线 → 挖沟 → 铺管 → 装阀 → 覆土铺草（示意海报）</div></div>
+      <div class="steps">
+        <div class="step"><div class="no"></div><div class="bd"><b>放线分区</b><p>标出草坪 / 树木 / 点缀带，画主管与滴灌管走向（主管 30~40cm 深，滴灌管 10cm 深，带坡度向排水阀）。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>挖沟铺管</b><p>先铺 PE 主管，再铺 16mm 滴灌管（迷宫纹朝上），树下布滴箭；避免锐弯、石子压管。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>装阀与滤器</b><p>阀箱内装：120 目过滤器 → 主切断电磁阀 → 分区分水管接鸿蒙智能水阀。所有接头密封，试压查漏。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>接线与传感器</b><p>拉 24V 控制线 + 电源线进阀箱；ESP32 接 4 路湿度传感器（埋 10~15cm）+ 雨量 + 水位，全部防水入密封箱。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>华为 App 配置</b><p>鸿蒙水阀配网进智慧生活 App → 建定时场景（凌晨窗口）→ 绑定小艺语音；ESP32 设湿度阈值（草坪 25% / 40%）。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>覆土铺草 + 建立期</b><p>回填压实、铺耐旱草皮。前 2~3 个月勤补水促扎根，之后切到旱养模式。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>入冬泄水（北京必做）</b><p>11 月前：打开各支管排水阀 + 主管放水，拆下易冻件；春季回装、试压、重新校准阈值。</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 详情：雨水与华为联动 ===== -->
+<div data-view="water" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#">← 返回首页</a><span class="sec-label" style="color:var(--accent-deep)">RAIN &amp; HUAWEI</span></div>
+    <div class="detail-body">
+      <h2>雨水收集 · 华为智慧生活联动</h2>
+      <div class="poster"><img src="https://aka.doubaocdn.com/s/BivgVjGtsY" alt="雨水收集系统原理" loading="lazy"><div class="cap">雨水收集原理 · 屋面 → 弃流 → 储罐 → 泵 → 滴灌（示意海报）</div></div>
+      <h3>雨水水账</h3>
+      <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>项目</th><th>估算</th><th>口径</th></tr></thead>
+        <tbody>
+          <tr><td>建成后需水</td><td>约 140~250 L/周</td><td>耐旱草皮 35㎡ × 4~6mm/周；树基本靠天</td></tr>
+          <tr><td>夏季最长无雨期</td><td>1~2 周（北京）</td><td>1000L 罐 ≈ 可撑 4 周，安全</td></tr>
+          <tr><td>年集雨潜力</td><td>20㎡ 屋面 ≈ 6000~11000 L/年</td><td>550~600mm 年降雨 × 有效系数</td></tr>
+          <tr><td>自来水角色</td><td>仅补位</td><td>连雨期几乎用不到</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3>华为智慧生活 App 配置步骤</h3>
+      <ul>
+        <li><b>配网：</b>鸿蒙智联智能水阀通电进入配网态 → 打开智慧生活 App → 右上角"+"添加设备 → 扫码/搜索添加。</li>
+        <li><b>定时场景：</b>首页家居 → 智慧场景 → 新建自动场景 → 触发条件选"每天 04:00" → 执行任务选"打开草坪区水阀 60 分钟"。</li>
+        <li><b>小艺语音：</b>在 App 里启用语音控制后，对小艺说"给草坪浇 20 分钟"即可手动补水。</li>
+        <li><b>双水源切换：</b>ESP32 读罐内水位，低水位自动打开自来水补位电磁阀；水位恢复即关。全程无需在 App 操作。</li>
+      </ul>
+      <div class="flow-note" style="margin-top:14px;">💡 生态边界说明：华为智慧生活 App 原生生态里的土壤湿度传感器很少，所以湿度闭环放本地 ESP32（第二把钥匙），App 负责开关 / 定时 / 场景 / 语音。这是目前"华为 App + 湿度自动化"最可靠、最便宜的组合。</div>
+    </div>
+  </div>
+</div>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+/* ===== 架构图部件（用于悬停简介） ===== */
+var COMPONENTS = {
+  app:{intro:"你在手机上看到的唯一界面——遥控、定时、场景、小艺语音都在这里。"},
+  valve:{intro:"第一把钥匙，决定想不想浇。App 里手动 / 定时 / 场景控制每个分区。"},
+  esp32:{intro:"第二把钥匙，决定该不该浇。读湿度 / 雨量 / 水位后硬切断主阀。"},
+  tank:{intro:"优先水源。连雨期几乎零水费，1000L 可撑 4 周无雨。"},
+  pump:{intro:"把雨水压力送进地下管网，驱动地埋滴灌。"},
+  tap:{intro:"罐空自动切入，绝不旱着。"},
+  filter:{intro:"地埋滴灌的刚需——不精滤，滴头一堵就是大工程。"},
+  mainvalve:{intro:"双钥匙的执行点——ESP32 允许才给电，水才流得过去。"},
+  dripline:{intro:"水从根系层渗出，地表无水痕、无蒸发。"},
+  tree:{intro:"大树根系深，靠天为主，偶尔补一点。"},
+  spot:{intro:"为以后局部养花打底，现在观赏草旱养。"},
+  soil:{intro:"浇水的唯一裁判——埋在根系层，实时回报土壤含水量。"}
+};
+
+/* ===== 硬件专题数据 ===== */
+var HWCATS = [
+  {key:"ctrl",name:"控制与智能"},
+  {key:"irr",name:"灌溉与管网"},
+  {key:"rain",name:"雨水收集"},
+  {key:"sense",name:"感知与反馈"}
+];
+
+var HWITEMS = {
+  "hw-valve":{
+    ic:"🔑",name:"鸿蒙智联智能水阀",cat:"ctrl",tag:"钥匙① · 华为生态",
+    what:"直接拧在分区水管上的电动球阀，内置减速电机和鸿蒙智联通信模组。这是“双钥匙”里的第一把钥匙：在华为智慧生活 App 里手动、定时、场景、小艺语音都能控制它开关。",
+    structure:["阀体：黄铜 / 不锈钢球阀，3/4 或 1 寸接口","驱动：蜗轮蜗杆减速电机（直流，缓慢转动球芯）","反馈：内置限位开关，上报开/关状态","通信：鸿蒙智联（HarmonyOS Connect）WiFi / 蓝牙模组","供电：220V 或电池盒（依型号）"],
+    principle:"App 指令经华为云下发到阀体 WiFi 模组 → 模组驱动减速电机带动球芯旋转 90° → 开或关。带断电状态记忆和手动机械扳手，停电也能应急开关。与 ESP32 的“钥匙②”串联，App 开了但土壤不需要时，主阀仍被切断、水不会流。",
+    buy:[
+      {ch:"淘宝",kw:"鸿蒙智联 智能水阀",pr:"210~300 元"},
+      {ch:"京东",kw:"华为智选 智能水阀",pr:"230~320 元"},
+      {ch:"闲鱼",kw:"鸿蒙 智能水阀 / 智能球阀",pr:"少见 · 150~250 元"}
+    ],
+    xianyu:"闲鱼上此类产品很少（新品本身就不贵、刚需属性强），遇到好价就收，但务必确认支持鸿蒙智联/HarmonyOS Connect、接口尺寸和 220V 供电，并到手先配网试机。",
+    tip:"认准“鸿蒙智联 / HarmonyOS Connect”认证标，别买成通用 433M 遥控阀；3 个分区各 1 个，接口和 App 里分区名对应好。",
+    dia:'<svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">电动球阀结构示意</text><rect x="150" y="60" width="220" height="70" rx="14" fill="#f6ecd4" stroke="#c08f35"/><line x1="60" y1="95" x2="150" y2="95" stroke="#7a725c" stroke-width="8"/><circle cx="185" cy="95" r="22" fill="#fff" stroke="#c08f35" stroke-width="3"/><line x1="170" y1="95" x2="200" y2="95" stroke="#c08f35" stroke-width="4"/><rect x="280" y="42" width="44" height="30" rx="6" fill="#5f8a4e"/><line x1="302" y1="42" x2="302" y2="18" stroke="#5f8a4e" stroke-width="3"/><text x="302" y="14" text-anchor="middle" font-size="10" fill="#5f8a4e">减速电机</text><line x1="370" y1="95" x2="460" y2="95" stroke="#7a725c" stroke-width="8"/><text x="185" y="140" text-anchor="middle" font-size="10" fill="#7a725c">球芯 90° 旋转 = 开/关</text><text x="330" y="128" text-anchor="middle" font-size="10" fill="#7a725c">WiFi 模组+限位开关</text></svg>'
+  },
+  "hw-solenoid":{
+    ic:"🚦",name:"主切断电磁阀 24VAC",cat:"irr",tag:"钥匙② 的执行器",
+    what:"常闭（NC）电磁阀：平时断电关闭、通电才开启，装在主管路上，是“第二把钥匙”的最终执行点。ESP32 判定“允许浇水”时才给它通电。",
+    structure:["阀体：尼龙 / 黄铜，3/4 或 1 寸接口","膜片：橡胶隔膜 + 先导小孔","线圈：24VAC 电磁线圈（外置可换）","辅助：手动开关（停电可手拧）"],
+    principle:"先导式隔膜阀：通电 → 电磁铁吸合打开先导孔 → 膜片上下压力失衡 → 主阀开启；断电 → 先导孔关闭、膜片复位 → 主阀关闭。常闭设计保证断电即停水，最安全。",
+    buy:[
+      {ch:"淘宝",kw:"24V 灌溉电磁阀",pr:"国产 90~130 元"},
+      {ch:"1688",kw:"24VAC 电磁阀 灌溉",pr:"70~120 元"},
+      {ch:"闲鱼",kw:"电磁阀 灌溉 / 雨鸟",pr:"50~90 元"}
+    ],
+    xianyu:"二手灌溉电磁阀在闲鱼不少（园林/大棚淘汰件），50~90 元可拿下，但先导膜片可能老化，到手先通电试开关、检查膜片，再决定是否换新膜片。",
+    tip:"务必选常闭（NC）；与 24VAC 变压器配套；装在阀箱内防潮；口径与主管一致。",
+    dia:'<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">先导式电磁阀剖面</text><rect x="120" y="60" width="280" height="80" rx="12" fill="#f6ecd4" stroke="#c08f35"/><rect x="235" y="30" width="50" height="34" rx="6" fill="#5f8a4e"/><line x1="260" y1="30" x2="260" y2="12" stroke="#5f8a4e" stroke-width="3"/><text x="260" y="148" text-anchor="middle" font-size="10" fill="#7a725c">电磁线圈</text><path d="M160 140 C160 120 190 118 190 100 C190 90 170 88 170 78 C170 66 200 64 200 80" fill="none" stroke="#7a5b36" stroke-width="3"/><line x1="80" y1="100" x2="120" y2="100" stroke="#7a725c" stroke-width="8"/><line x1="400" y1="100" x2="440" y2="100" stroke="#7a725c" stroke-width="8"/><text x="260" y="120" text-anchor="middle" font-size="10" fill="#7a725c">隔膜 + 先导孔</text><text x="260" y="170" text-anchor="middle" font-size="10" fill="#7a725c">断电常闭 · 通电开启</text></svg>'
+  },
+  "hw-transformer":{
+    ic:"⚡",name:"24VAC 变压器",cat:"irr",tag:"低压供电",
+    what:"把 220V 市电降到 24V 交流，给电磁阀供电。低压比 220V 安全得多，特别适合潮湿的户外阀箱环境。",
+    structure:["铁芯 + 初级/次级绕组","保险丝（过流保护）","接线端子 + 防水外壳"],
+    principle:"电磁感应降压：220V 交变电流过初级绕组，在次级感应出约 24V 交流；电磁阀启动时电流小（几瓦~十几瓦），变压器余量够即可。",
+    buy:[
+      {ch:"淘宝",kw:"24VAC 变压器 电磁阀",pr:"30~80 元"},
+      {ch:"闲鱼",kw:"24V 变压器 / 门禁电源",pr:"10~30 元"}
+    ],
+    xianyu:"二手小功率变压器非常多（门禁、对讲机淘汰件），10~30 元即可；确认是交流 24V 输出、功率≥电磁阀需求即可。",
+    tip:"功率选 10~20W 档；放阀箱内加防水盒；接线注意与 ESP32 继电器串联。",
+    dia:null
+  },
+  "hw-dripline":{
+    ic:"🟢",name:"地埋 PC 滴灌管 16mm",cat:"irr",tag:"草坪主执行器",
+    what:"内镶压力补偿（PC）滴头的 16mm 滴灌管，埋在草根层下方 10cm。草坪区约用 90 米，是整套系统里真正“给草喝水”的部分。",
+    structure:["PE 管壁（地埋用厚壁 ≥0.6mm 抗压扁）","内镶圆柱滴头：每 30cm 一个","滴头内：压力补偿硅胶片 + 迷宫流道"],
+    principle:"迷宫流道让水流形成紊流、消耗压力，保证沿程各滴头出水量基本一致；压力补偿片在系统压力波动时自动调节开度，管路有起伏也影响不大。水从地下 10cm 的滴头直接渗出到根系层，地表无痕、蒸发极小。",
+    buy:[
+      {ch:"淘宝",kw:"16mm 压力补偿滴灌管",pr:"1.5~3 元/米"},
+      {ch:"1688",kw:"内镶圆柱式滴灌管",pr:"0.4~0.8 元/米"},
+      {ch:"闲鱼",kw:"滴灌管 16mm 剩余",pr:"少见 · 按新品 5~7 折"}
+    ],
+    xianyu:"滴灌管基本是“一次性件”，闲鱼很少、且大多是别人剩的零头，不建议二手（老化影响出水均匀度），直接买新更省心。",
+    tip:"地埋必须配 120 目过滤 + 冬季泄水；铺设时迷宫纹朝上；单条长度≤80 米（超长末端水压不足）。",
+    dia:'<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">滴灌管剖面 · 迷宫流道</text><rect x="60" y="55" width="400" height="40" rx="8" fill="#c9963f" opacity=".9"/><path d="M100 55 L100 95 M140 55 L140 95 M180 55 L180 95 M220 55 L220 95 M260 55 L260 95 M300 55 L300 95 M340 55 L340 95 M380 55 L380 95 M420 55 L420 95" stroke="#fff" stroke-width="2" stroke-dasharray="3 3"/><text x="260" y="118" text-anchor="middle" font-size="10" fill="#7a725c">迷宫流道（消能 · 均匀出水）</text><line x1="40" y1="140" x2="480" y2="140" stroke="#8a6b47" stroke-width="3"/><text x="260" y="158" text-anchor="middle" font-size="10" fill="#7a725c">埋深 10cm · 地表无痕</text></svg>'
+  },
+  "hw-dripj":{
+    ic:"🌳",name:"树下滴箭 / 微滴灌管",cat:"irr",tag:"树木与点缀带",
+    what:"树下沿滴水线的滴箭/涌泉头，以及点缀带预留的微滴灌管。大树建成后基本靠天，这套只是“偶尔补一点”；点缀带现在旱养、为以后养花预留接口。",
+    structure:["滴箭：毛管 + 箭式滴头（可插土固定）","涌泉头：小流量散射头（2~4L/h）","微滴灌管：小口径 PE 管 + 旁通阀"],
+    principle:"小流量、精准浇到树根/花根周围：不浇叶面、不淋树干，水都进根系区，蒸发少、病害少。旁通带阀门，可以单独关某一棵树或某一段花境。",
+    buy:[
+      {ch:"淘宝",kw:"滴箭 滴灌",pr:"0.5~2 元/个"},
+      {ch:"淘宝",kw:"微滴灌管 16mm",pr:"0.5~1.5 元/米"},
+      {ch:"闲鱼",kw:"滴箭 / 滴灌配件",pr:"少见 · 建议买新"}
+    ],
+    xianyu:"这类小件价值低，闲鱼基本没人卖，直接买新；整套树下+点缀带也就一两百元。",
+    tip:"每树 4 点沿滴水线均布；旁通带阀门；点缀带预留的管子末端堵死、留活结，未来养花直接接新分区。",
+    dia:null
+  },
+  "hw-pe":{
+    ic:"〰️",name:"PE 主管 + 接头",cat:"irr",tag:"输水干管",
+    what:"20mm PE 管把水从阀箱送到各分区，配套直通、三通、弯头、旁通等接头。是整套地下管网的主干。",
+    structure:["PE 管：LLDPE 材质，柔韧耐腐蚀","接头：快插/锁扣式（直通/三通/弯头/旁通）","密封：O 形圈 / 卡簧"],
+    principle:"快插接头靠锁扣和密封圈压紧管壁，无需胶水；PE 管柔韧，弯曲半径大，埋地不怕冻裂（配合冬季泄水）。",
+    buy:[
+      {ch:"1688",kw:"PE管 20mm 灌溉",pr:"1~3 元/米"},
+      {ch:"淘宝",kw:"灌溉快接 三通 弯头",pr:"1~5 元/个"},
+      {ch:"闲鱼",kw:"PE管 剩余 / 灌溉接头",pr:"少见 · 建议买新"}
+    ],
+    xianyu:"管材按需买新即可；接头可留意闲鱼“灌灌溉剩余配件”打包买，能省一点。",
+    tip:"埋深 30~40cm 防机械损伤；转弯用大半径弧；接头处回填前先试压。",
+    dia:null
+  },
+  "hw-filter":{
+    ic:"🌀",name:"叠片过滤器 120 目",cat:"irr",tag:"滴头保护第一关",
+    what:"水进入滴灌管前的最后一道防线。地埋滴灌滴头孔径极小，不精滤必堵，这一件是整个系统里最不能省的。",
+    structure:["外壳：PP / 尼龙，带快拆","叠片组：带沟槽的塑料片叠成","密封圈 + 底部排污阀"],
+    principle:"叠片被压紧后，沟槽交错形成迷宫过滤通道，把大于 120 目（约 0.125mm）的泥沙、藻类挡在外面；旋开外壳即可拆洗叠片，水压表可观察是否堵塞。",
+    buy:[
+      {ch:"淘宝",kw:"叠片过滤器 灌溉",pr:"50~150 元"},
+      {ch:"1688",kw:"120目 叠片过滤器",pr:"40~120 元"},
+      {ch:"闲鱼",kw:"叠片过滤器 / 灌溉过滤器",pr:"30~80 元"}
+    ],
+    xianyu:"二手灌溉过滤器常见，30~80 元；重点检查叠片是否完好、外壳有无裂纹，密封圈老化了就换新。",
+    tip:"宁可买大不买小；雨水和自来水都过它；装在主切断电磁阀前；每季度拆洗一次叠片。",
+    dia:'<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">叠片过滤器 · 迷宫过滤</text><rect x="180" y="50" width="160" height="90" rx="12" fill="#f6ecd4" stroke="#c08f35"/><line x1="90" y1="95" x2="180" y2="95" stroke="#7a725c" stroke-width="8"/><line x1="340" y1="95" x2="430" y2="95" stroke="#7a725c" stroke-width="8"/><g stroke="#5f8a4e" stroke-width="2"><line x1="205" y1="70" x2="315" y2="70"/><line x1="205" y1="84" x2="315" y2="84"/><line x1="205" y1="98" x2="315" y2="98"/><line x1="205" y1="112" x2="315" y2="112"/><line x1="205" y1="126" x2="315" y2="126"/></g><text x="260" y="160" text-anchor="middle" font-size="10" fill="#7a725c">120 目（0.125mm）拦截泥沙</text></svg>'
+  },
+  "hw-tank":{
+    ic:"🌧️",name:"PE 储水罐 1000L",cat:"rain",tag:"优先水源",
+    what:"1000L 的一次吹塑 PE 储水罐，储存经过弃流过滤的雨水，是系统的优先水源。连雨期几乎零水费，一罐可撑 4 周无雨。",
+    structure:["罐体：一次吹塑 PE（或二手 IBC 吨桶）","顶部：开口 + 防蚊盖 + 进水口","侧面/底部：出水口","上部：溢流口（防满罐）"],
+    principle:"屋面 / 硬化面雨水经“首雨弃流 + 滤网”后重力进罐；出水经自吸泵加压进管网；溢流口把多余水排走；遮光防藻、防蚊盖防孳生。",
+    buy:[
+      {ch:"1688",kw:"1吨 PE 水塔",pr:"全新 280~600 元"},
+      {ch:"淘宝",kw:"IBC 吨桶 1000L",pr:"全新 600~900 元"},
+      {ch:"闲鱼",kw:"IBC 吨桶 / 1吨水塔",pr:"二手 150~500 元"}
+    ],
+    xianyu:"闲鱼和本地回收站二手 IBC 吨桶 150~500 元、二手 PE 水塔 120~350 元，性价比极高；但务必彻底清洗（最好原来装食品/饮用水），检查桶壁无裂纹，进水口先过弃流再进罐。",
+    tip:"罐体遮光防藻 + 防蚊盖；进水先弃流；放在屋檐雨落管附近、地势低处方便重力进水。",
+    dia:'<svg viewBox="0 0 520 190" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">雨水罐 · 进水 / 出水 / 溢流</text><rect x="170" y="45" width="180" height="110" rx="14" fill="#d9e6f0" stroke="#5f8a4e"/><line x1="90" y1="55" x2="170" y2="55" stroke="#5f8a4e" stroke-width="6"/><line x1="350" y1="150" x2="440" y2="150" stroke="#5f8a4e" stroke-width="6"/><line x1="350" y1="60" x2="430" y2="60" stroke="#c08f35" stroke-width="5"/><text x="260" y="120" text-anchor="middle" font-size="12" fill="#3f6f56">1000L</text><text x="100" y="50" text-anchor="middle" font-size="10" fill="#5f8a4e">进水(弃流后)</text><text x="400" y="160" text-anchor="middle" font-size="10" fill="#5f8a4e">出水→泵</text><text x="395" y="54" text-anchor="middle" font-size="10" fill="#9a6f1f">溢流</text><text x="260" y="178" text-anchor="middle" font-size="10" fill="#7a725c">防蚊盖 · 遮光防藻</text></svg>'
+  },
+  "hw-firstflush":{
+    ic:"🚿",name:"首雨弃流器",cat:"rain",tag:"雨水净化第一关",
+    what:"把污染最重的“初期雨水”（前 1~2mm，含屋顶粉尘、鸟粪）排掉，只把干净雨水收进罐里。",
+    structure:["截污挂篮 / 立管过滤筒","滤网（拦树叶杂物）","浮球式弃流结构（雨停自动排空）"],
+    principle:"初期雨水最脏，直接进罐会让整罐水发臭、长藻、堵滴头。弃流器先让头几毫米雨水流走，等水干净了再自动转进储罐。家用用“雨水立管过滤器 + 滤网”就够，工程级大装置是给大楼用的。",
+    buy:[
+      {ch:"淘宝",kw:"雨水立管过滤器",pr:"家用 100~300 元"},
+      {ch:"1688",kw:"雨水弃流装置",pr:"工程级 285~510 元"},
+      {ch:"闲鱼",kw:"雨水过滤 / 弃流器",pr:"50~200 元"}
+    ],
+    xianyu:"工程级弃流装置二手偶尔出现，50~200 元；家用小庭院建议直接买“立管过滤器”，便宜且够用。",
+    tip:"小庭院用“立管过滤器 + 滤网”最省事；装在雨落管靠近地面处，便于清洗。",
+    dia:null
+  },
+  "hw-pump":{
+    ic:"⚙️",name:"自吸泵",cat:"rain",tag:"把雨水送进管网",
+    what:"把雨水罐里的水加压送进滴灌管网。自吸式能自动排气，小流量家用款即可。",
+    structure:["电机（220V 或低压）","离心叶轮","自吸腔（泵体储水）","进出水口 + 压力/干转保护"],
+    principle:"叶轮高速旋转产生离心力，把泵体内的空气排出形成负压，水被吸入并加压送出（离心泵原理）。自吸式在断电/停水后还能自动重新吸水，不用每次灌引水。",
+    buy:[
+      {ch:"淘宝",kw:"家用自吸泵 220V",pr:"100~480 元"},
+      {ch:"1688",kw:"微型自吸泵",pr:"35~130 元"},
+      {ch:"闲鱼",kw:"自吸泵 / 增压泵",pr:"50~180 元"}
+    ],
+    xianyu:"闲鱼自吸泵很常见（家用换下来的九成新全铜泵 180 左右、普通款 50~120 元）；到手检查电机异响、有无漏水、叶轮磨损。",
+    tip:"选 800L/h 档即可；泵前加过滤；带干转保护；放在阀箱或泵坑里，注意防雨。",
+    dia:null
+  },
+  "hw-backup":{
+    ic:"🚰",name:"自来水补位阀 + 单向阀",cat:"rain",tag:"旱季兜底",
+    what:"罐空时自动切入自来水的电磁阀，加一只防倒流的单向阀。这套让系统“永不缺水”也“不污染自来水”。",
+    structure:["补位电磁阀：12/24V DC 常闭","单向阀：弹簧式，单向导通","接口：与水管同口径"],
+    principle:"ESP32 读罐内水位：低于下限 → 给补位电磁阀通电 → 自来水进罐/管网；水位恢复 → 断电关闭。单向阀保证罐内雨水不会倒流进自来水管道（卫生安全，也是规范要求）。",
+    buy:[
+      {ch:"淘宝",kw:"12V 电磁阀 水",pr:"20~60 元"},
+      {ch:"淘宝",kw:"净水器 单向阀",pr:"5~20 元"},
+      {ch:"闲鱼",kw:"12V 电磁阀 / 单向阀",pr:"10~40 元"}
+    ],
+    xianyu:"12V 电磁阀二手常见（净水/水族淘汰件），10~40 元；单向阀便宜，建议买新。",
+    tip:"单向阀必须装（防倒流，卫生安全）；电磁阀注意接口尺寸与 12V 驱动（ESP32 经继电器控制）。",
+    dia:null
+  },
+  "hw-esp32":{
+    ic:"🧠",name:"ESP32 开发板 + 继电器",cat:"ctrl",tag:"本地大脑（钥匙②）",
+    what:"整套系统的本地决策中心，跑“湿度 / 雨量 / 水位 → 是否允许浇水”的逻辑，用继电器硬切断主阀供电。",
+    structure:["ESP32 模组：双核 + WiFi + 蓝牙","USB / 5V 供电 + 复位 / BOOT 键","引出 GPIO：模拟输入（ADC）+ 数字 IO","继电器模块：干接点，控 24V 回路"],
+    principle:"ESP32 通过 ADC 读土壤湿度传感器的模拟值、通过 GPIO 数雨量计脉冲、读水位开关高低电平；在本地判断“土壤含水量低于阈值 且 非雨天 且 在允许时段” → 拉高继电器 → 主切断电磁阀得电 → 水才流向 App 已打开的分区。跑 Arduino / ESPHome / MicroPython 都行。",
+    buy:[
+      {ch:"淘宝",kw:"ESP32 开发板",pr:"20~30 元"},
+      {ch:"淘宝",kw:"继电器模块 5V 1路",pr:"2~8 元"},
+      {ch:"闲鱼",kw:"ESP32 / ESP32-S3",pr:"15~25 元"}
+    ],
+    xianyu:"ESP32 开发板是闲鱼大户（吃灰党极多），15~25 元全新闲置常有，性价比极高；选 ESP32-S3 或 WROOM 双核版即可。",
+    tip:"选 ESP32 而非 8266（双核、ADC 精度好、扩展富余）；户外放防水盒；逻辑默认“故障即关闭”（安全）。",
+    dia:'<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">ESP32 接线逻辑</text><rect x="60" y="50" width="150" height="80" rx="10" fill="#d9e6f0" stroke="#5f8a4e"/><text x="135" y="92" text-anchor="middle" font-size="11" fill="#3f6f56">ESP32</text><rect x="300" y="50" width="140" height="80" rx="10" fill="#f6ecd4" stroke="#c08f35"/><text x="370" y="92" text-anchor="middle" font-size="11" fill="#9a6f1f">继电器</text><line x1="210" y1="90" x2="300" y2="90" stroke="#c08f35" stroke-width="3"/><text x="255" y="82" text-anchor="middle" font-size="9" fill="#7a725c">GPIO</text><line x1="370" y1="130" x2="370" y2="160" stroke="#7a725c" stroke-width="4"/><text x="370" y="172" text-anchor="middle" font-size="10" fill="#7a725c">→ 电磁阀 24V 回路</text><text x="135" y="145" text-anchor="middle" font-size="9" fill="#7a725c">湿度/雨量/水位 → ADC/GPIO</text></svg>'
+  },
+  "hw-moisture":{
+    ic:"🌱",name:"电容式土壤湿度传感器",cat:"sense",tag:"浇水的唯一裁判",
+    what:"埋在根系层的土壤含水量传感器，共 4 路（草坪 2、树下 1、花境 1）。它决定“土壤到底缺不缺水”。",
+    structure:["PCB 探针：铜箔电极（埋土部分）","振荡电路：把电容变化转成频率/电压","输出：模拟量（ADC）","灌封：埋地款环氧防水灌封"],
+    principle:"土壤含水量越高，探针间的介电常数越大 → 电容越大 → 输出频率/电压变化，ESP32 据此换算含水量。电容式不裸露金属电极，不像电阻式那样电解腐蚀，寿命长很多。",
+    buy:[
+      {ch:"淘宝",kw:"电容式土壤湿度传感器",pr:"5~10 元/个"},
+      {ch:"DFRobot",kw:"Gravity 电容式",pr:"35 元 / IP65 款更高"},
+      {ch:"闲鱼",kw:"土壤湿度传感器",pr:"2~15 元"}
+    ],
+    xianyu:"土壤传感器散件在闲鱼非常便宜（2~15 元），但要选电容式 + 注意防水；埋地款一定要自己做灌封防水（704 硅胶 + AB 胶），否则泡水一两周就坏。",
+    tip:"必须电容式（电阻式易腐蚀）；埋深 10~15cm 根系层；传感器 PCB 侧边用 AB 胶封死防渗水。",
+    dia:'<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">电容式探针原理</text><rect x="210" y="40" width="100" height="30" rx="6" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="60" text-anchor="middle" font-size="10" fill="#3f6f56">电路</text><rect x="225" y="70" width="70" height="80" rx="4" fill="#8fb08f" opacity=".7"/><line x1="235" y1="84" x2="235" y2="140" stroke="#c08f35" stroke-width="5"/><line x1="285" y1="84" x2="285" y2="140" stroke="#c08f35" stroke-width="5"/><text x="260" y="168" text-anchor="middle" font-size="10" fill="#7a725c">土壤含水量 → 介电常数 → 电容 → 输出</text><text x="260" y="34" text-anchor="middle" font-size="9" fill="#7a725c">环氧灌封防水</text></svg>'
+  },
+  "hw-rain":{
+    ic:"🌦️",name:"雨量传感器（翻斗式）",cat:"sense",tag:"下雨自动停",
+    what:"下雨时自动“叫停”浇水的传感器。累计到一定雨量就判定在下雨，让系统跳过本次浇水计划。",
+    structure:["承雨漏斗（收集雨水）","计量翻斗（双翻斗）","干簧管 / 磁簧开关（计数）","排水口"],
+    principle:"雨水汇入漏斗流入翻斗，每接满固定量翻倒一次，磁铁扫过干簧管产生一个脉冲；ESP32 累计脉冲判断“正在下雨 / 雨量多少”，从而跳过浇水。",
+    buy:[
+      {ch:"淘宝",kw:"翻斗式雨量计",pr:"50~129 元"},
+      {ch:"淘宝",kw:"雨滴传感器模块",pr:"几元（简版）"},
+      {ch:"闲鱼",kw:"雨量计 / 气象站拆机",pr:"30~80 元"}
+    ],
+    xianyu:"翻斗雨量计二手 30~80 元（气象站淘汰件常见），检查翻斗是否顺畅、干簧管是否灵敏。",
+    tip:"放在开阔处避免树冠挡雨；也可用几元的“雨滴传感器板”做简版（够用即可）。",
+    dia:null
+  },
+  "hw-float":{
+    ic:"🛟",name:"水位开关 / 浮球",cat:"sense",tag:"雨水罐管家",
+    what:"检测雨水罐内高/低水位的开关，触发“自来水补位”和“满罐停止”。",
+    structure:["浮球 + 连杆/线缆","干簧开关或微动开关","固定支架 / 卡扣"],
+    principle:"浮球随水位升降：到达低水位位置 → 触发开关 → ESP32 打开自来水补位阀；到达高水位 → 触发另一开关 → 停止。高低两点做“区间控制”，避免频繁启停。",
+    buy:[
+      {ch:"淘宝",kw:"水位浮球开关",pr:"5~30 元"},
+      {ch:"淘宝",kw:"不锈钢水满停 浮球",pr:"29.9 元档"},
+      {ch:"闲鱼",kw:"浮球开关 / 水位控制器",pr:"2~15 元"}
+    ],
+    xianyu:"浮球开关几块钱的二手件很多，买新的也就一杯奶茶钱，直接买新更稳。",
+    tip:"装高低两个点做区间控制；线缆走罐顶防磨损。",
+    dia:null
+  },
+  "hw-valvebox":{
+    ic:"📦",name:"阀箱 / 控制箱",cat:"irr",tag:"全隐藏的关键",
+    what:"地埋密封阀箱，把过滤器、电磁阀、变压器、ESP32 全部收进去，盖上盖子和草皮齐平——地表零设备就靠它。",
+    structure:["高强度 PP 阀箱（可承压）","密封盖（防雨防尘）","侧向管道/线缆孔 + 密封胶泥"],
+    principle:"把所有水路和电气件保护在箱内：防晒、防雨、防鼠咬、防踩踏，打开盖子就能检修。是“地下埋管 + 全隐藏”的收口件。",
+    buy:[
+      {ch:"淘宝",kw:"地埋阀箱 灌溉",pr:"50~100 元/个"},
+      {ch:"闲鱼",kw:"灌溉阀箱 / 阀门井",pr:"20~60 元"}
+    ],
+    xianyu:"二手灌溉阀箱偶尔有（园林改造淘汰），20~60 元；注意箱盖能否承压、密封是否完好。",
+    tip:"箱盖要能承压（人走不塌）；进出管用密封胶泥封孔；电气件在箱内再套防水盒。",
+    dia:null
+  }
+};
+
+/* ===== 渲染：硬件专题总览 ===== */
+function renderHwGroups(){
+  var wrap = document.getElementById("hw-groups");
+  var html = "";
+  HWCATS.forEach(function(cat){
+    var items = Object.keys(HWITEMS).filter(function(k){return HWITEMS[k].cat===cat.key;});
+    if(!items.length) return;
+    html += '<div class="hw-group"><h3>'+cat.name+'</h3><div class="hw-grid">';
+    items.forEach(function(k){
+      var it = HWITEMS[k];
+      html += '<a class="hwcard" href="#hwitem?id='+k+'"><div class="ic">'+it.ic+'</div><div class="nm">'+it.name+'</div><div class="sb">'+it.tag+'</div><div class="price">新品 '+it.buy[0].pr+'</div></a>';
+    });
+    html += '</div></div>';
+  });
+  wrap.innerHTML = html;
+}
+
+/* ===== 渲染：器件详情 ===== */
+function renderHwItem(id){
+  var it = HWITEMS[id];
+  var el = document.getElementById("hwitem-body");
+  if(!it){
+    el.innerHTML = "<h2>未找到该器件</h2><p><a href='#hw' style='color:var(--accent-deep)'>返回硬件专题</a>。</p>";
+    return;
+  }
+  var html = '<div class="hw-head"><div class="bigic">'+it.ic+'</div><div><h2>'+it.name+'</h2><div class="hw-meta"><span class="chip">'+it.tag+'</span><span class="chip">'+it.catname()+'</span></div></div></div>';
+  html += '<h3>它是什么</h3><p>'+it.what+'</p>';
+  if(it.dia){ html += '<div class="diagram-fig">'+it.dia+'</div>'; }
+  html += '<h3>内部结构</h3><ul>';
+  it.structure.forEach(function(s){ html += '<li>'+s+'</li>'; });
+  html += '</ul>';
+  html += '<h3>工作原理</h3><p>'+it.principle+'</p>';
+  html += '<h3>购买渠道与新品价格</h3>';
+  it.buy.forEach(function(b){
+    html += '<div class="buy-row"><span class="ch">'+b.ch+'</span><span class="kw">搜「'+b.kw+'」</span><span class="pr">'+b.pr+'</span></div>';
+  });
+  html += '<h3>闲鱼（二手）行情</h3><div class="xy-box"><div class="t">💡 闲鱼怎么淘、什么价</div><p>'+it.xianyu+'</p></div>';
+  html += '<h3>选购 / 避坑提示</h3><div class="flow-note">'+it.tip+'</div>';
+  el.innerHTML = html;
+}
+
+/* 类别名 */
+HWCATS.forEach(function(c){ c._name = c.name; });
+function catName(key){
+  var c = HWCATS.filter(function(x){return x.key===key;})[0];
+  return c ? c.name : "";
+}
+Object.keys(HWITEMS).forEach(function(k){ HWITEMS[k].catname = function(){ return catName(this.cat); }; });
+
+/* ===== 路由 ===== */
+function parseHash(){
+  var h = location.hash.slice(1) || "";
+  if(h === "hw") return {view:"hw"};
+  if(h === "build") return {view:"build"};
+  if(h === "water") return {view:"water"};
+  if(h.indexOf("hwitem") === 0){
+    var m = h.match(/hwitem\?id=([A-Za-z0-9-]+)/);
+    return {view:"hwitem", id: m ? m[1] : null};
+  }
+  return {view:"home"};
+}
+
+function render(){
+  var r = parseHash();
+  var views = document.querySelectorAll("[data-view]");
+  for(var i=0;i<views.length;i++) views[i].hidden = true;
+  var el = document.querySelector('[data-view="'+r.view+'"]');
+  if(el) el.hidden = false;
+  if(r.view === "hw") renderHwGroups();
+  if(r.view === "hwitem" && r.id) renderHwItem(r.id);
+  window.scrollTo(0,0);
+}
+
+window.addEventListener("hashchange", render);
+render();
+
+/* ===== 悬停简介 tooltip ===== */
+var tip = document.getElementById("tip");
+document.addEventListener("mouseover", function(e){
+  var a = e.target.closest ? e.target.closest(".comp") : null;
+  if(a && COMPONENTS[a.getAttribute("data-id")]){
+    tip.textContent = COMPONENTS[a.getAttribute("data-id")].intro;
+    tip.classList.add("on");
+    var r = a.getBoundingClientRect();
+    var tw = tip.offsetWidth;
+    var x = r.left + r.width/2 - tw/2;
+    x = Math.max(12, Math.min(x, window.innerWidth - tw - 12));
+    var y = r.top - tip.offsetHeight - 10;
+    if(y < 8) y = r.bottom + 10;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  } else {
+    tip.classList.remove("on");
+  }
+}, true);
+document.addEventListener("mouseout", function(e){
+  if(e.target.closest && e.target.closest(".comp")) tip.classList.remove("on");
+}, true);
+</script>
+</body>
+</html>

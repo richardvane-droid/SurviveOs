@@ -1,0 +1,1193 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#faf6ec">
+<title>地堡 · 灯箱卫生间 — 无窗空间里的"人造太阳"</title>
+<style>
+  :root{
+    --bg-top:#faf6ec;
+    --bg-bottom:#efe5cf;
+    --card:#fffdf7;
+    --ink:#2c2a20;
+    --muted:#7a725c;
+    --accent:#c08f35;
+    --accent-deep:#9a6f1f;
+    --accent-soft:#f6ecd4;
+    --line:#e6dbc0;
+    --good:#5f8a4e;
+    --good-soft:#eef4e7;
+    --warn:#b3541e;
+    --warn-soft:#f9ece0;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(60,50,20,.06),0 10px 28px rgba(60,50,20,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
+    color:var(--ink);line-height:1.75;font-size:15px;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px;padding-left:max(20px, env(safe-area-inset-left));padding-right:max(20px, env(safe-area-inset-right));}
+
+  header.hero{padding:64px 0 40px;text-align:left;}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.14em;color:var(--accent-deep);border:1px solid rgba(192,143,53,.5);background:rgba(255,255,255,.5);padding:5px 14px;border-radius:999px;}
+  .kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  h1.title{font-size:40px;line-height:1.25;font-weight:800;letter-spacing:.01em;margin-top:20px;}
+  .hero .sub{margin-top:16px;color:var(--muted);font-size:15.5px;max-width:800px;}
+  .metrics{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;}
+  .metric{flex:1 1 150px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 16px;box-shadow:var(--shadow);}
+  .metric .k{font-size:12.5px;color:var(--muted);}
+  .metric .v{font-size:24px;font-weight:800;color:var(--ink);margin-top:1px;}
+
+  section.block{margin:26px 0 8px;}
+  .sec-label{font-size:12px;font-weight:700;letter-spacing:.28em;color:var(--accent-deep);}
+  .sec-title{font-size:24px;font-weight:800;margin:6px 0 4px;}
+  .sec-lead{color:var(--muted);font-size:14.5px;max-width:800px;}
+  .sec-hint{color:var(--accent-deep);font-size:13px;margin-top:6px;}
+
+  /* 柱状图（湿度/温度） */
+  .rainchart{display:flex;align-items:flex-end;gap:6px;height:168px;margin-top:16px;padding:8px 4px 0;border-bottom:1px solid var(--line);}
+  .rainchart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;}
+  .rainchart .bar{width:100%;max-width:34px;background:linear-gradient(180deg,var(--accent),#e7d9b0);border-radius:6px 6px 0 0;min-height:4px;position:relative;}
+  .rainchart .bar.hot{background:linear-gradient(180deg,#5f8a4e,#a9c08a);}
+  .rainchart .bar .val{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted);}
+  .rainchart .m{font-size:10.5px;color:var(--muted);}
+  .rainchart .peak{color:var(--accent-deep);font-weight:700;}
+  .chart-note{margin-top:6px;font-size:12px;color:var(--muted);}
+
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-top:18px;}
+  .layer{display:flex;flex-direction:column;gap:8px;margin:6px 0;}
+  .layer-label{font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.05em;display:flex;align-items:center;gap:8px;}
+  .layer-label::after{content:"";flex:1;height:1px;background:var(--line);}
+  .row{display:flex;flex-wrap:wrap;gap:10px;}
+  .comp{
+    position:relative;display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1 1 170px;
+    background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px;cursor:pointer;
+    transition:border-color .18s,transform .18s,box-shadow .18s;text-decoration:none;color:inherit;
+  }
+  .comp:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 20px rgba(120,90,30,.12);}
+  .comp:active,.ecard:active,.zcard:active{transform:scale(.98);}
+  .comp .ic{font-size:22px;line-height:1;}
+  .comp .nm{font-weight:700;font-size:14px;margin-top:6px;}
+  .comp .sb{font-size:12px;color:var(--muted);}
+  .comp .tag2{display:inline-block;font-size:11px;color:var(--accent-deep);background:var(--accent-soft);border-radius:999px;padding:1px 8px;margin-top:6px;align-self:flex-start;}
+  .arrow{text-align:center;color:var(--accent-deep);font-size:15px;line-height:1;padding:2px 0;opacity:.8;}
+  .flow-note{margin-top:12px;font-size:13px;color:var(--muted);background:var(--accent-soft);border:1px solid var(--line);border-radius:10px;padding:9px 13px;}
+  .flow-note b{color:var(--accent-deep);}
+  .flow-warn{margin-top:12px;font-size:13px;color:#6b4a1d;background:var(--warn-soft);border:1px solid rgba(179,84,30,.35);border-radius:10px;padding:9px 13px;}
+  .flow-warn b{color:var(--warn);}
+
+  #tip{position:fixed;z-index:60;max-width:280px;background:#2c2a20;color:#f6f0e0;font-size:12.5px;line-height:1.55;border-radius:10px;padding:9px 12px;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 10px 24px rgba(0,0,0,.22);}
+  #tip.on{opacity:1;}
+
+  .zgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px;}
+  .zcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;}
+  .zcard .art{height:152px;overflow:hidden;}
+  .zcard .art img{width:100%;height:100%;object-fit:cover;display:block;}
+  .zcard .zlabel{font-size:12px;font-weight:700;color:var(--accent-deep);letter-spacing:.06em;padding:14px 16px 0;}
+  .zcard h3{font-size:18px;font-weight:800;padding:2px 16px 0;}
+  .zcard p{font-size:13.5px;color:var(--muted);padding:6px 16px 0;}
+  .zcard .key{margin:10px 16px 14px;font-size:12px;color:var(--good);background:var(--good-soft);border-radius:8px;padding:5px 9px;}
+
+  .wlist{display:flex;flex-direction:column;gap:14px;margin-top:18px;}
+  .wcard{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+  .wcard .ic{font-size:30px;flex:none;width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);border-radius:13px;}
+  .wcard h3{font-size:16.5px;font-weight:800;}
+  .wcard p{font-size:13.5px;color:var(--muted);margin-top:4px;}
+
+  .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px;}
+  .dcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+  .dcard .art{height:150px;overflow:hidden;}
+  .dcard .art img{width:100%;height:100%;object-fit:cover;display:block;}
+  .dcard .bd{padding:14px 16px;}
+  .dcard h3{font-size:16px;font-weight:800;}
+  .dcard p{font-size:13px;color:var(--muted);margin-top:4px;}
+
+  .egrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px;}
+  .ecard{display:flex;flex-direction:column;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);text-decoration:none;color:inherit;transition:transform .18s,border-color .18s;}
+  .ecard:hover{transform:translateY(-2px);border-color:var(--accent);}
+  .ecard .ic{font-size:24px;}
+  .ecard h3{font-size:16px;font-weight:800;}
+  .ecard p{font-size:13px;color:var(--muted);flex:1;}
+  .ecard .go{color:var(--accent-deep);font-weight:700;font-size:13px;}
+  .poster{margin:18px 0 6px;}
+  .poster img{display:block;width:100%;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow);}
+  .poster .cap{font-size:12.5px;color:var(--muted);margin-top:6px;}
+
+  /* 材料/器件专题 */
+  .hw-groups{margin-top:18px;display:flex;flex-direction:column;gap:18px;}
+  .hw-group h3{font-size:15px;font-weight:800;color:var(--accent-deep);display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .hw-group h3::after{content:"";flex:1;height:1px;background:var(--line);}
+  .hw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .hwcard{display:flex;flex-direction:column;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px 15px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:transform .16s,border-color .16s;}
+  .hwcard:hover{transform:translateY(-2px);border-color:var(--accent);}
+  .hwcard .ic{font-size:24px;}
+  .hwcard .nm{font-weight:700;font-size:14px;margin-top:4px;}
+  .hwcard .sb{font-size:11.5px;color:var(--muted);}
+  .hwcard .price{font-size:12px;color:var(--good);margin-top:6px;font-weight:700;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px;}
+  th{background:var(--accent-soft);color:var(--accent-deep);text-align:left;font-weight:700;padding:8px 11px;border-bottom:2px solid var(--accent);white-space:nowrap;}
+  td{padding:7px 11px;border-bottom:1px solid var(--line);vertical-align:top;}
+  td.num,th.num{text-align:right;white-space:nowrap;}
+  tr.sub td{background:var(--accent-soft);font-weight:700;}
+  tr.total td{background:var(--accent-soft);font-weight:800;color:var(--accent-deep);font-size:14px;}
+  .tbl-wrap{overflow-x:auto;}
+
+  .steps{counter-reset:st;margin-top:10px;}
+  .step{display:flex;gap:14px;margin:12px 0;}
+  .step .no{counter-increment:st;flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .step .no::before{content:counter(st);}
+  .step .bd{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:#fdfbf4;}
+  .step .bd b{color:var(--ink);}
+  .step .bd p,.step .bd li{font-size:13.5px;color:var(--muted);margin:3px 0;}
+  .step .bd ul{padding-left:18px;}
+
+  footer{text-align:center;padding:36px 20px 48px;color:var(--muted);font-size:13px;}
+  footer .t{font-size:14px;font-weight:700;color:var(--ink);}
+
+  /* 顶部导航 */
+  nav.topnav{position:sticky;top:0;z-index:50;background:rgba(250,246,236,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .topnav-inner{max-width:1000px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+  .topnav-inner::-webkit-scrollbar{display:none;}
+  .tnav-item{flex:none;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;text-decoration:none;box-shadow:var(--shadow);white-space:nowrap;}
+  .tnav-item:hover{border-color:var(--accent);}
+  .tnav-item.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .toc{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 2px;}
+  .toc a{font-size:12px;color:var(--accent-deep);background:var(--accent-soft);border:1px solid var(--line);border-radius:999px;padding:4px 11px;text-decoration:none;}
+  .toc a:hover{background:#efdcb2;}
+  .toc-cap{font-size:12px;color:var(--muted);margin-top:10px;letter-spacing:.1em;}
+
+  @media (max-width:820px){
+    h1.title{font-size:29px;}
+    .sec-title{font-size:20px;}
+    .hero{padding:46px 0 30px;}
+    .zgrid,.egrid{grid-template-columns:1fr 1fr;}
+    .dgrid{grid-template-columns:1fr;}
+    .hw-grid{grid-template-columns:1fr 1fr;}
+    .metrics{flex-direction:column;}
+    .metric{flex:1 1 auto;}
+    .comp{min-width:100%;}
+    .wcard{flex-direction:column;}
+    .wcard .ic{width:100%;}
+    .zcard .art{height:132px;}
+  }
+  @media (max-width:560px){
+    h1.title{font-size:24px;}
+    .sec-title{font-size:18px;}
+    .zgrid,.egrid{grid-template-columns:1fr;}
+    .sec-lead{font-size:13.5px;}
+    .metric .v{font-size:20px;}
+    .step .bd{padding:8px 12px;}
+    .step{gap:10px;}
+    .zcard .art{height:150px;}
+    .poster .cap{font-size:11.5px;}
+    .rainchart{height:150px;}
+    .rainchart .bar .val{font-size:9px;top:-16px;}
+  }
+  @media (max-width:480px){
+    .hw-grid{grid-template-columns:1fr;}
+    .wrap{padding-left:max(14px, env(safe-area-inset-left));padding-right:max(14px, env(safe-area-inset-right));}
+  }
+
+  /* ===== 硬件专题库 ===== */
+  .hwtopo{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .ht{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow);}
+  .ht .ht-img{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;}
+  .ht .ht-img img{width:100%;display:block;}
+  .ht .ht-tag{position:absolute;top:8px;left:8px;background:rgba(60,60,60,.72);color:#fff;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.04em;}
+  .ht h3{margin:10px 0 4px;color:var(--ink);font-size:15.5px;}
+  .ht .ht-price{font-size:12px;color:var(--accent-deep);font-weight:700;margin:2px 0 6px;}
+  .ht .ht-p{font-size:13px;color:var(--muted);line-height:1.65;}
+  .ht .ht-p b{color:var(--ink);}
+  .ht .lnk{font-size:12.5px;font-weight:600;margin-top:8px;display:flex;gap:12px;flex-wrap:wrap;}
+  .ht .lnk a{color:var(--accent-deep);text-decoration:none;border-bottom:1px dashed var(--accent);}
+  .ht .lnk a:hover{background:var(--accent-soft);}
+  .ht-mini{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);}
+  .ht-mini h3{margin:0 0 4px;color:var(--ink);font-size:14.5px;}
+  .ht-mini .p{font-size:12.5px;color:var(--muted);line-height:1.6;}
+  .ht-mini .lnk{font-size:12px;font-weight:600;margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;}
+  .ht-mini .lnk a{color:var(--accent-deep);text-decoration:none;border-bottom:1px dashed var(--accent);}
+  @media (max-width:820px){.hwtopo{grid-template-columns:1fr;}}
+
+  /* ===== 程序逻辑专题 ===== */
+  .lflow{display:flex;flex-direction:column;align-items:center;margin:14px 0;}
+  .lnode{width:min(94%,560px);border:1px solid var(--line);border-radius:12px;padding:9px 14px;background:#fdfbf4;font-size:13px;color:var(--muted);}
+  .lnode .t{color:var(--accent-deep);font-weight:800;font-size:12px;letter-spacing:.06em;display:block;margin-bottom:2px;}
+  .lnode b{color:var(--ink);}
+  .lcond{width:min(94%,560px);border:1px dashed var(--accent);border-radius:12px;padding:7px 14px;background:var(--accent-soft);font-size:12.5px;color:var(--ink);text-align:center;}
+  .larr{color:var(--accent);font-size:18px;margin:3px 0;text-align:center;line-height:1;}
+  pre.code{background:#20242f;color:#d6deeb;border-radius:12px;padding:14px 16px;overflow-x:auto;font-size:12.5px;line-height:1.6;box-shadow:var(--shadow);}
+  pre.code .cm{color:#7f8ea3;}
+  pre.code .kw{color:#c792ea;}
+  pre.code .st{color:#c3e88d;}
+  pre.code .nm{color:#82aaff;}
+  .rule-tbl td:first-child{font-weight:700;color:var(--ink);white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<nav class="topnav"><div class="topnav-inner">
+  <a class="tnav-item" href="#top">🏠 项目</a>
+  <a class="tnav-item" href="#climate">🌧️ 背景</a>
+  <a class="tnav-item" href="#arch">🏗️ 架构</a>
+  <a class="tnav-item" href="#optics">💡 光学</a>
+  <a class="tnav-item" href="#materials">🧱 材料</a>
+  <a class="tnav-item" href="#water">🚿 水系统</a>
+  <a class="tnav-item" href="#experience">🧖 晨浴</a>
+  <a class="tnav-item" href="#physiology">🧬 生理</a>
+  <a class="tnav-item" href="#mode">🎛️ 精调</a>
+  <a class="tnav-item" href="#hw">🧰 硬件</a>
+  <a class="tnav-item" href="#logic">🤖 逻辑</a>
+  <a class="tnav-item" href="#budget">💰 预算</a>
+  <a class="tnav-item" href="#heat">🔥 供能</a>
+  <a class="tnav-item" href="#safety">⚠️ 安全</a>
+  <a class="tnav-item" href="#cost">💰 成本</a>
+</div></nav>
+
+<!-- ===== 首页 ===== -->
+<div id="top"></div>
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">杭州 · 无窗地堡改造项目</span>
+    <h1 class="title">一座没有窗的地堡，<br>把 2㎡ 卫生间做成"太阳"</h1>
+    <p class="sub">一套把"密闭无窗空间"改造成自足光热水系统的方案：2㎡ 卫生间铺满六面镜面不锈钢马赛克 + 壁挂 1000W 灯暖浴霸 + 超白钢化玻璃门，构成一盏"巨型灯箱"（光 ≈19,000 lm、热 900W）。再配空气注入雨淋花洒 + 离子交换软水机（镜面不结垢）+ 华为智联电热水器（App 预热）+ 镜面蹲便盖板（盖上全镜地面）。既是全屋主照明（250~330 lux）、供暖源与"烘干太阳"，也是杭州阴冷冬晨里一场"在自己的太阳下洗的热水澡"。</p>
+    <div class="metrics">
+      <div class="metric"><div class="k">地堡面积</div><div class="v">30㎡</div></div>
+      <div class="metric"><div class="k">灯箱卫生间</div><div class="v">2㎡</div></div>
+      <div class="metric"><div class="k">光源光通</div><div class="v">≈19,000 lm</div></div>
+      <div class="metric"><div class="k">门洞输出</div><div class="v">≈7,500-9,900 lm</div></div>
+      <div class="metric"><div class="k">地堡平均照度</div><div class="v">250-330 lux</div></div>
+      <div class="metric"><div class="k">供热功率</div><div class="v">1000W</div></div>
+      <div class="metric"><div class="k">镜面</div><div class="v">6 面 · 16.7㎡</div></div>
+      <div class="metric"><div class="k">造价（完整中值）</div><div class="v">≈2.8万</div></div>
+    </div>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/6cfIAdmGXM" alt="地堡灯箱卫生间效果图" loading="lazy"><div class="cap">地堡 · 灯箱卫生间 · 概念效果图（AI 生成示意，供整体氛围参考）：昏暗的无窗空间里，玻璃门倾泻出金色光芒，像一轮人造太阳。</div></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="toc-cap">本页目录 · 点击直达</div>
+  <div class="toc">
+    <a href="#climate">背景气候</a>
+    <a href="#why">设计理念</a>
+    <a href="#arch">系统架构</a>
+    <a href="#optics">光学推导</a>
+    <a href="#layout">空间布局</a>
+    <a href="#materials">材料系统</a>
+    <a href="#water">水系统</a>
+    <a href="#experience">晨浴体验</a>
+    <a href="#physiology">晨浴生理</a>
+    <a href="#mode">晨浴精调</a>
+    <a href="#hw">硬件专题</a>
+    <a href="#logic">程序逻辑</a>
+    <a href="#budget">预算专题</a>
+    <a href="#heat">全屋供能</a>
+    <a href="#safety">工程安全</a>
+    <a href="#cost">成本评估</a>
+  </div>
+
+  <!-- 背景气候 -->
+  <section class="block" id="climate">
+    <div class="sec-label">HANGZHOU · CLIMATE</div>
+    <h2 class="sec-title">背景气候 · 杭州的阴冷潮湿，是这套设计的总导演</h2>
+    <p class="sec-lead">杭州冬季 0~8°C、相对湿度常年 80%+、阴雨连绵、日照稀缺；再叠加上"地堡无窗"，等于一个既晒不到太阳、又通不了风的空间。整个方案只围绕一件事：在密闭地堡里人造一颗"太阳"——要光，要热，还要能烘干。</p>
+    <div class="rainchart" aria-label="杭州多年平均月相对湿度柱状图">
+      <div class="col"><div class="bar hot" style="height:80%" data-v="78"><span class="val">78%</span></div><span class="m">1月</span></div>
+      <div class="col"><div class="bar hot" style="height:83%" data-v="80"><span class="val">80%</span></div><span class="m">2月</span></div>
+      <div class="col"><div class="bar hot" style="height:82%" data-v="80"><span class="val">80%</span></div><span class="m">3月</span></div>
+      <div class="col"><div class="bar hot" style="height:84%" data-v="81"><span class="val">81%</span></div><span class="m">4月</span></div>
+      <div class="col"><div class="bar hot" style="height:88%" data-v="82"><span class="val">82%</span></div><span class="m">5月</span></div>
+      <div class="col"><div class="bar hot" style="height:92%" data-v="84"><span class="val">84%</span></div><span class="m peak">6月</span></div>
+      <div class="col"><div class="bar hot" style="height:96%" data-v="83"><span class="val">83%</span></div><span class="m peak">7月</span></div>
+      <div class="col"><div class="bar hot" style="height:90%" data-v="82"><span class="val">82%</span></div><span class="m">8月</span></div>
+      <div class="col"><div class="bar hot" style="height:94%" data-v="82"><span class="val">82%</span></div><span class="m">9月</span></div>
+      <div class="col"><div class="bar hot" style="height:82%" data-v="80"><span class="val">80%</span></div><span class="m">10月</span></div>
+      <div class="col"><div class="bar hot" style="height:76%" data-v="79"><span class="val">79%</span></div><span class="m">11月</span></div>
+      <div class="col"><div class="bar hot" style="height:78%" data-v="78"><span class="val">78%</span></div><span class="m">12月</span></div>
+    </div>
+    <div class="chart-note">杭州多年平均月相对湿度（示意值）：常年高位，夏季梅雨/台风期近饱和，冬季阴冷潮湿但湿度仍达 78~80%。"阴冷"的体感，一半来自湿。</div>
+    <div class="flow-note">💡 <b>对设计的四点改变</b>：① 照明不能靠天 → 卫生间做成"灯箱"当主光源；② 阴冷体感 → 1000W 浴霸兼做全屋供暖；③ 潮湿难干 → 红外直热 + 升温降湿 + 强制排湿，形成"烘干太阳"；④ 密闭空间过热风险 → 全部加装排风、定时、联锁等安全闸门。</div>
+  </section>
+
+  <!-- 设计理念 -->
+  <section class="block" id="why">
+    <div class="sec-label">DESIGN PHILOSOPHY</div>
+    <h2 class="sec-title">为什么这样设计</h2>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">💡</div><div><h3>无窗，就要自己造光</h3><p>30㎡ 密闭地堡没有任何采光，传统做法是装一排灯。本方案反其道而行：把 2㎡ 卫生间整体做成"灯箱"，让整个空间从"被照亮"变成"被喂光"——门一开，光自己灌进来。</p></div></div>
+      <div class="wcard"><div class="ic">🔑</div><div><h3>六面镜，光出不去也逃不掉</h3><p>四面墙 + 顶 + 地共 16.7㎡ 全铺镜面不锈钢马赛克，反射率 0.6~0.85。光在盒内被反复"困住"叠加，形成无限镜效应；即便反射 5~8 轮仍有上千流明幸存，足以穿门而出。</p></div></div>
+      <div class="wcard"><div class="ic">♨️</div><div><h3>浴霸 = 光 + 热一体</h3><p>1000W 卤素灯暖浴霸 ≈19,000 lm 可见光（光）+ 900W 红外热（热）。一盏灯同时是主照明和主供暖，一石二鸟，绝不浪费一瓦。</p></div></div>
+      <div class="wcard"><div class="ic">🪟</div><div><h3>玻璃门 = 光窗 + 红外热窗</h3><p>超白高透玻璃对可见光透射 ≈90%，对卤素主波长的近红外也有 70~85% 透射。所以门关着也在向地堡辐射供暖，门开着则全量输出——一扇门两种窗口。</p></div></div>
+      <div class="wcard"><div class="ic">🚪</div><div><h3>对门直射，让屋子更亮</h3><p>浴霸挂在与玻璃门正对的墙面，让约三成光直接穿门而出、其余靠镜面补射。相比"全反射出光"，地堡平均照度从 110~220 lux 提升到 250~330 lux，门口形成一道"阳光柱"。</p></div></div>
+      <div class="wcard"><div class="ic">🌞</div><div><h3>烘干 = 对抗杭州的阴冷潮湿</h3><p>红外辐射直接加热物体 → 空气升温使相对湿度骤降 → 强制排湿带走水汽。一台浴霸就是一台"晒太阳烘干机"，衣物、墙面、家具都能烘干，还顺带防霉防潮。</p></div></div>
+    </div>
+  </section>
+
+  <!-- 系统架构 -->
+  <section class="block" id="arch">
+    <div class="sec-label">SYSTEM ARCHITECTURE</div>
+    <h2 class="sec-title">系统架构总览 · 一灯四层</h2>
+    <p class="sec-lead">从"电"到"光"再到"地堡"的能量链路：光源层 → 反射层 → 输出层 → 应用层。每一层都只做一件事，层与层之间用物理规律衔接。</p>
+    <div class="diagram">
+      <div class="layer">
+        <div class="layer-label">光源层 · 输入 1000W</div>
+        <div class="row">
+          <div class="comp" data-intro="4×275W 石英卤素灯。光效约 18~20 lm/W，总光通约 19,000 lm；其中约 85~90% 的功率变成红外热（900W）。壁挂安装在玻璃门对面的墙上，灯口朝门略下压。"><div class="ic">💡</div><div class="nm">壁挂 1000W 灯暖浴霸</div><div class="sb">4×275W 卤素 · ≈19,000 lm · 900W 热</div><span class="tag2">光源</span></div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="layer">
+        <div class="layer-label">反射层 · 光被困在盒内</div>
+        <div class="row">
+          <div class="comp" data-intro="四面墙 + 顶 + 地共 16.7㎡ 镜面不锈钢马赛克。8K 镜面反射率 0.9~0.95，普通抛光 0.6~0.7；含勾缝折减后设计取 0.6~0.85。光在盒内多轮反射叠加，无限镜效应。"><div class="ic">🪞</div><div class="nm">六面镜面马赛克</div><div class="sb">16.7㎡ · R=0.6~0.85</div><span class="tag2">反射</span></div>
+          <div class="comp" data-intro="不锈钢蹲便器是卫生间里少有的"非镜面件"，但本身是抛光金属，反射不吸光，把最后一块"暗吸收体"消除。"><div class="ic">🚽</div><div class="nm">不锈钢蹲便</div><div class="sb">304 镜面 · 不吸光</div><span class="tag2">消除黑洞</span></div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="layer">
+        <div class="layer-label">输出层 · 唯一的泄光口</div>
+        <div class="row">
+          <div class="comp" data-intro="12mm 超白钢化玻璃门（0.8×2.1m），可见光透射≈90%，近红外透射≈70~85%。既是灯箱的出光口，也是红外热窗。"><div class="ic">🪟</div><div class="nm">超白钢化玻璃门</div><div class="sb">透光≈90% · 近红外≈75%</div><span class="tag2">输出</span></div>
+          <div class="comp" data-intro="门洞占腔体内表面积约 9%，是灯箱唯一的泄光通道。按腔体逃逸模型，约 20~40% 的光最终从门洞逃出。"><div class="ic">🔦</div><div class="nm">门洞逃逸率</div><div class="sb">η≈20~40%</div><span class="tag2">腔体模型</span></div>
+        </div>
+      </div>
+      <div class="arrow">▼</div>
+      <div class="layer">
+        <div class="layer-label">应用层 · 地堡受益</div>
+        <div class="row">
+          <div class="comp" data-intro="30㎡ 无窗地堡。灯箱提供主照明（平均 250~330 lux，门口局部 1500~4000 lux）+ 供暖（900W 热）+ 烘干（红外 + 升温降湿 + 排湿）。"><div class="ic">🏚️</div><div class="nm">30㎡ 地堡</div><div class="sb">照明 + 供暖 + 烘干</div><span class="tag2">应用</span></div>
+        </div>
+      </div>
+      <div class="flow-note">💡 <b>为什么要"直射 + 反射"双路</b>：纯反射出光柔但暗（110~220 lux）；浴霸对门直射后总光通提升到 ≈7,500~9,900 lm，平均照度 250~330 lux——更亮，且门口的光柱给无窗空间带来难得的"阳光感"。代价是眩光，需用挂高、下压、格栅来化解。</div>
+    </div>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/jsdB286PRU" alt="灯箱卫生间光学剖面示意" loading="lazy"><div class="cap">灯箱卫生间 · 光学剖面示意（AI 生成技术示意图）：浴霸（光源）在玻璃门对墙，光线直射 + 经六面镜多轮反射后从玻璃门输出。</div></div>
+  </section>
+
+  <!-- 光学推导 -->
+  <section class="block" id="optics">
+    <div class="sec-label">OPTICS · DERIVATION</div>
+    <h2 class="sec-title">光学推导 · 为什么真能当灯箱</h2>
+    <p class="sec-lead">整个概念的成立不靠感觉，靠三组可复算的数字：光源多亮、每反射一轮损耗多少、光最终从门逃出多少。</p>
+
+    <h3>① 光源：1000W 卤素浴霸 ≈ 19,000 lm</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>参数</th><th>数值</th><th>说明</th></tr></thead>
+      <tbody>
+        <tr><td>额定功率</td><td class="num">1000W</td><td>4×275W 石英卤素灯</td></tr>
+        <tr><td>光通量</td><td class="num">≈19,000 lm</td><td>卤素光效 18~20 lm/W</td></tr>
+        <tr><td>2㎡ 内平均照度</td><td class="num">≈9,500 lux</td><td>中心可达数万 lux，"耀眼"名副其实</td></tr>
+        <tr><td>红外热输出</td><td class="num">≈900W</td><td>85~90% 功率转为热，兼作供暖</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>② 多轮反射衰减：这是"几轮反射还能射出"的数学依据</h3>
+    <p class="sec-lead">每反射一次乘一次反射率 R。下表以 19,000 lm 为基数，给出保守档（R=0.6，普通抛光马赛克）与高配档（R=0.85，8K 镜面马赛克）。</p>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>反射轮次</th><th>保守档 R=0.6（lm）</th><th>高配档 R=0.85（lm）</th><th>人眼感知</th></tr></thead>
+      <tbody>
+        <tr><td>0（直射）</td><td class="num">19,000</td><td class="num">19,000</td><td>耀眼</td></tr>
+        <tr><td>1</td><td class="num">11,400</td><td class="num">16,200</td><td>很亮</td></tr>
+        <tr><td>2</td><td class="num">6,840</td><td class="num">13,700</td><td>亮</td></tr>
+        <tr><td>3</td><td class="num">4,100</td><td class="num">11,700</td><td>明显</td></tr>
+        <tr><td>5</td><td class="num">≈1,480</td><td class="num">≈8,430</td><td>清晰可见</td></tr>
+        <tr><td>8</td><td class="num">≈320</td><td class="num">≈5,200</td><td>可见 / 仍亮</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="flow-note">💡 <b>结论</b>：光源基数太大、镜面损耗可控——即使保守档，反射 5 轮后仍有约 1,480 lm（相当于一盏亮灯泡）；高配档反射 8 轮还有 5,200 lm。"经过几轮反射都能从玻璃门射出来"不是修辞，是可复算的物理事实。</div>
+
+    <h3>③ 腔体逃逸 + 直射补光：地堡到底多亮</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>指标</th><th>保守档 R=0.6</th><th>高配档 R=0.85</th></tr></thead>
+      <tbody>
+        <tr><td>直射门洞（≈30% × 19,000 × 玻璃90%）</td><td class="num">≈5,130 lm</td><td class="num">≈5,130 lm</td></tr>
+        <tr><td>其余 70% 进镜腔 · 门洞逃逸率 η</td><td class="num">≈20% → 2,394 lm</td><td class="num">≈40% → 4,788 lm</td></tr>
+        <tr class="sub"><td>门洞总输出</td><td class="num">≈7,524 lm</td><td class="num">≈9,918 lm</td></tr>
+        <tr class="total"><td>30㎡ 地堡平均照度</td><td class="num">≈251 lux</td><td class="num">≈331 lux</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="sec-hint">门口附近局部照度可达 1,500~4,000 lux，形成"阳光柱"；深处 100~200 lux。整体相当于一块 4,000~6,000 lm 的大型 LED 面板，足以独立作为地堡主光源。</p>
+  </section>
+
+  <!-- 空间布局 -->
+  <section class="block" id="layout">
+    <div class="sec-label">SPATIAL LAYOUT</div>
+    <h2 class="sec-title">空间布局 · 2㎡ 的"光核"</h2>
+    <div class="zgrid">
+      <div class="zcard">
+        <div class="art"><img src="https://aka.doubaocdn.com/s/ipwkdmGPkV" alt="六面镜卫生间内部" loading="lazy"></div>
+        <div class="zlabel">卫生间本体 · 2.0 × 1.0 × 2.4m</div>
+        <h3>六面全镜的盒子</h3>
+        <p>四面墙 + 顶 + 地全铺镜面不锈钢马赛克，净镜面 16.7㎡；门洞 0.8×2.1m。无限镜闭合——低头也能看到灯在脚下的倒影。</p>
+        <div class="key">✓ 地面同样镜面，配防滑拖鞋</div>
+      </div>
+      <div class="zcard">
+        <div class="art"><img src="https://aka.doubaocdn.com/s/RC9gO6eAv9" alt="灯箱出光效果" loading="lazy"></div>
+        <div class="zlabel">出光轴 · 门 + 浴霸对置</div>
+        <h3>一道贯穿地堡的光柱</h3>
+        <p>门开在短墙、朝向地堡主活动区；壁挂浴霸挂在正对门的内墙，灯口朝门略下压。光沿 2m 光程直射 + 反射穿门而出，形成贯穿空间的"光轴"。</p>
+        <div class="key">✓ 直射占比由光程决定，越短越亮</div>
+      </div>
+      <div class="zcard">
+        <div class="art"><img src="https://aka.doubaocdn.com/s/6cfIAdmGXM" alt="地堡被灯箱照亮" loading="lazy"></div>
+        <div class="zlabel">湿区细节</div>
+        <h3>蹲便 + 排风 + 双档</h3>
+        <p>不锈钢蹲便靠侧墙（不吸光）；排风扇置顶（开灯必排湿）；浴霸双档（550W/1100W）可调，长明用低档、要耀眼时全开。</p>
+        <div class="key">✓ 门磁联锁：人在内自动降光</div>
+      </div>
+    </div>
+    <div class="flow-note">💡 <b>动线提示</b>：卫生间既是"能源核"也是功能空间。建议在门边设干/湿两双防滑拖鞋位；调光玻璃门（可选）可在透明"灯箱模式"与雾化"私密模式"间一键切换。</div>
+  </section>
+
+  <!-- 材料系统 -->
+  <section class="block" id="materials">
+    <div class="sec-label">MATERIAL SYSTEM</div>
+    <h2 class="sec-title">材料系统 · 五件套</h2>
+    <p class="sec-lead">每件材料都服务于"多反射、少吸光、耐湿、安全"四个目标。</p>
+    <div class="dgrid">
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/RC9gO6eAv9" alt="镜面不锈钢马赛克" loading="lazy"></div><div class="bd"><h3>镜面不锈钢马赛克</h3><p>6 面共 16.7㎡（含地面）。选 8K/超精镜面级（R 0.9+），细浅色勾缝把有效反射率推到 0.75~0.85；地面可选拉丝防滑镜面款。约 200~350 元/㎡。</p></div></div>
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/6cfIAdmGXM" alt="超白钢化玻璃门" loading="lazy"></div><div class="bd"><h3>超白钢化玻璃门</h3><p>12mm 高透，可见光透射≈90%、近红外≈75%。既是灯箱出光口又是红外热窗。约 2,000~3,500 元/樘（含五金安装）。</p></div></div>
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/ipwkdmGPkV" alt="不锈钢蹲便器" loading="lazy"></div><div class="bd"><h3>不锈钢蹲便器</h3><p>304 镜面抛光，反射不吸光，消除卫生间最后一块"暗吸收体"。选带防臭水封/冲水款。约 150~600 元/套。</p></div></div>
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/jsdB286PRU" alt="壁挂灯暖浴霸" loading="lazy"></div><div class="bd"><h3>壁挂 1000W 灯暖浴霸</h3><p>4×275W 卤素，带漏保，壁挂于玻璃门对墙。≈19,000 lm 光 + 900W 热。约 300~500 元/台。</p></div></div>
+    </div>
+    <p class="sec-hint">配套：排风扇（300~750 元）、防水基层（1,000~2,500 元）、独立电气回路 + 漏保（500~1,000 元）、双档/定时/联锁控制（200~800 元）。</p>
+  </section>
+
+  <!-- 水系统 -->
+  <section class="block" id="water">
+    <div class="sec-label">WATER SYSTEM</div>
+    <h2 class="sec-title">水系统 · 空气雨淋 + 软水 + 华为智联热水</h2>
+    <p class="sec-lead">新增四件套：让淋浴成为"热带雨林"的空气花洒、让镜面永不结垢的软水系统、能用华为智慧生活 App 预热的电热水器，以及把蹲便"隐身"的镜面盖板。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/9cYikzL2PV" alt="蒸汽雨淋体验" loading="lazy"><div class="cap">冬季清晨 · 六面镜里的"私人热带雨林"（AI 生成示意）：空气花洒洒下温水幕，蒸汽蒸腾，暖金光弥漫。</div></div>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🌧️</div><div><h3>空气花洒 · 热带雨林淋雨</h3><p>25~30cm 大顶喷 + 空气注入技术：水滴中掺入空气，颗粒更大更软、落体更密，覆盖全身，还原"热带阵雨"的包裹感。软水 + 空气注入双管齐下，水流温润不刺痛。</p></div></div>
+      <div class="wcard"><div class="ic">💧</div><div><h3>软水系统 · 镜面永不结垢</h3><p>离子交换软水机去除 Ca²⁺/Mg²⁺：不锈钢马赛克与玻璃门不再留水垢白斑，镜面长期锃亮，皮肤发丝也更顺滑。软水机体积较大，建议装在卫生间外的地堡内，只把软水管引入卫生间。</p></div></div>
+      <div class="wcard"><div class="ic">🔥</div><div><h3>华为智联电热水器 · 醒来即太阳</h3><p>60L 储水式电热水器（支持鸿蒙智联 / 智慧生活 App）：晨起前自动预热，进入卫生间即有 40°C 热水；可与浴霸做成"晨浴场景"一键联动。</p></div></div>
+      <div class="wcard"><div class="ic">🪞</div><div><h3>镜面盖板 · 盖上就是全镜地面</h3><p>不锈钢蹲便上方加一块 304 镜面承重盖板（≥150kg）：盖平时与地面齐平，卫生间最后一块"暗区"消失，整个地面是一面完整大镜子，灯箱的无限镜彻底闭合；使用时翻起，防臭水封照常。</p></div></div>
+    </div>
+    <div class="flow-note">💡 <b>水系统闭环</b>：软水 → 无垢 → 镜面长期锃亮 → 灯箱出光效率不掉；华为 App"晨浴场景"= 自动预热热水 + 打开浴霸光暖 + 排风联动，进门即"醒来见太阳"。</div>
+  </section>
+
+  <!-- 全屋供能 -->
+  <section class="block" id="heat">
+    <div class="sec-label">ENERGY · HEAT & DRY</div>
+    <h2 class="sec-title">全屋供能 · 光 + 热 + 烘干</h2>
+    <p class="sec-lead">当门打开，浴霸同时向整个地堡供光、供热、供烘干能力——这是方案在杭州冬季最值钱的部分。</p>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🔥</div><div><h3>1000W = 900W 热，门开全量供给</h3><p>900W 热 + 100W 光在门开时全部进入地堡。对 30㎡、绝热良好的密闭空间，冬季（杭州 0~8°C）约可维持室内较室外高 8~15°C，覆盖约 1/3~1/2 采暖负荷——一个卫生间就是半个暖气。</p></div></div>
+      <div class="wcard"><div class="ic">🪟</div><div><h3>关着门，也在供热</h3><p>高透玻璃对近红外（0.8~2.5μm）透射 70~85%，卤素灯 900W 热中约 500W 能穿透玻璃辐射进地堡。所以即使门关，卫生间也在持续"烤暖"整座地堡。</p></div></div>
+      <div class="wcard"><div class="ic">🌡️</div><div><h3>烘干三步 · 对抗阴冷潮湿</h3><p>① 红外辐射直接加热衣物/物体表面加速蒸发；② 空气升温使相对湿度骤降（例：10°C/85%RH 加热到 20°C，RH 降到约 45%）；③ 热空气对流带走水汽。一台浴霸 = 一台"晒太阳烘干机"。</p></div></div>
+      <div class="wcard"><div class="ic">💨</div><div><h3>排湿闭环 · 否则会变桑拿</h3><p>密闭空间蒸发的水汽会重新推高绝对湿度、让烘干"卡住"。必须配：排气扇联动（开灯必排湿）+ 除湿机（杭州冬季 12L/天款约 800~1,500 元）。这样才是完整闭环，顺带解决无窗地堡的返潮、结露与防霉。</p></div></div>
+    </div>
+    <div class="flow-warn">⚠️ <b>务必注意</b>：900W 热若在"门关 + 无排风"的密闭 2㎡ 空间里运行，理论升温可达约 9°C/分钟，几分钟即成烤箱。因此安全上必须：开灯必开排风（联锁）、定时断电（30~60 分钟）、门开时才作全屋供能。</div>
+  </section>
+
+  <!-- 冬季晨浴体验 -->
+  <section class="block" id="experience">
+    <div class="sec-label">WINTER MORNING · EXPERIENCE</div>
+    <h2 class="sec-title">综合体验评估 · 杭州阴冷冬晨，浴霸灯下的热水澡</h2>
+    <p class="sec-lead">把"功能"还原成"感受"：外面 2~5°C、阴雨、黑暗，你走进地堡，玻璃门透出暖金光，踏入六面镜包裹的盒子，空气花洒的温水幕从头顶落下，浴霸的红外热从侧面烘着皮肤。</p>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🌡️</div><div><h3>温度体感 · 湿冷变湿热</h3><p>40°C 水 + 900W 红外直接照肤 + 升温降湿：杭州湿冷冬天体感等效温度常比实际再低几度，而浴室里是"光热双供热"，湿身也不冷——红外补热恰好抵消了蒸发带走的热量，这是冬天洗澡不发抖的关键。</p></div></div>
+      <div class="wcard"><div class="ic">💡</div><div><h3>光线氛围 · 你自己的太阳</h3><p>19,000 lm 暖金光（2700~3000K）+ 六面无限镜：不是"开灯洗澡"，而是"走进一颗太阳"。明亮温暖的光在无窗地下空间里是强唤醒信号，冬晨的困倦被光冲走，还顺带缓解季节性情绪低落。</p></div></div>
+      <div class="wcard"><div class="ic">🫧</div><div><h3>触感 · 软水 + 空气雨淋</h3><p>软水让沐浴露起泡更丰富、冲得干净，皮肤不紧绷、镜面无水垢白斑；空气注入的雨淋水珠大而软，落在身上像被温热的大雨包裹，而非细针扎。</p></div></div>
+      <div class="wcard"><div class="ic">🧘</div><div><h3>心理 · 私有的避风港</h3><p>外部越阴冷黑暗，"这里的光与热"就越奢侈。晨浴成为仪式：进门即太阳、热水、蒸汽、镜中无限暖光——这是地堡在杭州冬季最被需要的一刻。</p></div></div>
+    </div>
+    <h3>分维度评分（10 分制）</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>维度</th><th>表现</th><th>评分</th></tr></thead>
+      <tbody>
+        <tr><td>温度体感</td><td>40°C 水 + 900W 红外 + 升温降湿，湿身不冷</td><td class="num">9/10</td></tr>
+        <tr><td>光线氛围</td><td>暖金光 + 无限镜，像有自己的太阳</td><td class="num">9/10</td></tr>
+        <tr><td>触感</td><td>软水丝滑 + 空气雨淋温润包裹</td><td class="num">8/10</td></tr>
+        <tr><td>心理 / 仪式感</td><td>阴冷冬晨的私有避风港</td><td class="num">9/10</td></tr>
+        <tr><td>需适应项</td><td>眩光、蒸汽雾气、镜面滑（拖鞋/低档/排风）</td><td class="num">−1~2</td></tr>
+        <tr class="total"><td>综合</td><td>建议水温 38~40°C、时长 10~15 分钟</td><td class="num">≈8.5/10</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="flow-note">💡 <b>一句话</b>：这不是一次"洗澡"，是一场"在阴冷冬天走进自己太阳"的仪式——光、热、软水、雨淋四重感官叠满，体验上限很高；只要控好眩光、蒸汽与防滑，它就是整座地堡最治愈的 15 分钟。</div>
+  </section>
+
+  <!-- 晨浴生理 -->
+  <section class="block" id="physiology">
+    <div class="sec-label">PHOTOBIOLOGY · 15 MIN</div>
+    <h2 class="sec-title">晨浴生理学 · 15 分钟 360° 照射的激素变化</h2>
+    <p class="sec-lead">这套方案的真实价值不只是"洗得舒服"，而是一台把身体从睡眠切换到"最佳状态"的生理唤醒机：强光 + 红外热 + 热水，三条通路同时作用于神经-内分泌系统。以下是 15 分钟全视野照射下的可预期激素变化与对应的设计细节。</p>
+
+    <h3>① 光照强度先达标：这已是"光疗级"</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>参数</th><th>数值</th><th>意义</th></tr></thead>
+      <tbody>
+        <tr><td>眼平照度（对门直射 + 360°全镜反射）</td><td class="num">≈9,500 lux</td><td>已达 SAD 光疗标准 10,000 lux 量级</td></tr>
+        <tr><td>视黑素等效照度（2700-3000K 暖光）</td><td class="num">≈4,000-4,500 melanopic lux</td><td>远超抑制褪黑素的有效阈值（200-500）</td></tr>
+        <tr><td>全视野覆盖</td><td class="num">360°</td><td>全视网膜受光，比单方向光疗盒更充分</td></tr>
+        <tr><td>关键波长</td><td class="num">视黑素峰值 ≈480nm</td><td>暖光偏红，但高照度已补足光子总量</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>② 15 分钟激素变化时间轴</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>时间</th><th>褪黑素（睡意）</th><th>皮质醇（清醒）</th><th>血清素（情绪）</th><th>多巴胺/NE（动力）</th><th>体温（开机）</th></tr></thead>
+      <tbody>
+        <tr><td>0-2min 进入</td><td>开始被抑制</td><td>随晨醒峰爬升</td><td>合成启动</td><td>NE↑ 警觉</td><td>开始回升</td></tr>
+        <tr><td>2-5min</td><td>↓↓ 快速下降</td><td>↑↑ 强化晨醒峰</td><td>↑ 加速合成</td><td>多巴胺↑</td><td>↑约0.2°C</td></tr>
+        <tr><td>5-10min</td><td>降至白天水平</td><td>接近早间峰值</td><td>↑↑ 显著提升</td><td>↑↑ 动机/专注</td><td>↑0.3-0.5°C</td></tr>
+        <tr><td>10-15min</td><td>白天抑制持续</td><td>峰值平稳</td><td>高位维持</td><td>"清醒而放松"态</td><td>峰值</td></tr>
+        <tr><td>出浴后</td><td>白天不反弹</td><td>缓慢回落</td><td>情绪红利持续数小时</td><td>稳定</td><td>平稳回落不冷</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>③ 三条生理通路（为什么这样有效）</h3>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">👁️</div><div><h3>光通路 · 视网膜 → 生物钟</h3><p>强光激活视网膜视黑素细胞（ipRGC，峰值≈480nm）→ 下丘脑视交叉上核 SCN → ①抑制松果体褪黑素（睡意消退）；②启动 12-14 小时"白天计时器"（当晚更好睡）；③经唤醒中枢（蓝斑/丘脑）直接提升警觉。晨间强光还能前移皮质醇、体温、褪黑素的昼夜节律——正是冬季忧郁（SAD）患者体内缺失的那一步。</p></div></div>
+      <div class="wcard"><div class="ic">🧠</div><div><h3>神经递质通路 · 情绪与动力</h3><p>光照促进中缝核合成血清素——冬季光照不足导致血清素不足，是季节性情绪低落的核心机制之一；视黑素通路还驱动纹状体多巴胺释放（动机、专注）。"快乐递质"上来了，人自然醒来、有劲、不emo。</p></div></div>
+      <div class="wcard"><div class="ic">🌡️</div><div><h3>温度通路 · 体温是"开机键"</h3><p>38-40°C 热水 + 900W 红外使核心体温上升 0.2-0.5°C，模拟身体自然晨间体温爬升（睡眠→清醒的生物信号）；红外直接照肤抵消湿身蒸发散热——"湿着也不冷"正是这套方案的生理优势。注意：水温勿超 41°C、时长勿超 15-20 分钟，否则会转向副交感镇静（反而犯困）。</p></div></div>
+    </div>
+
+    <h3>④ 以"最佳状态"为目标的设计细节（晨浴模式规格）</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>设计项</th><th>规格</th><th>生理依据</th></tr></thead>
+      <tbody>
+        <tr><td>光谱</td><td>晨间 2700-3000K 暖光（金红=自然晨光）+ 可选一路 5000K 蓝增强"唤醒档"</td><td>暖光贴合日出光谱；蓝增强进一步压褪黑素、升多巴胺</td></tr>
+        <tr><td>照度</td><td>眼平 ≥8,000-10,000 lux（对门直射 + 全镜反射）</td><td>达光疗强度，15 分钟 ≈ 传统 10,000lux/30min</td></tr>
+        <tr><td>时间窗口</td><td>晨起后 0-60 分钟内，固定时刻（如 6:30）</td><td>相位前移、锁定生物钟，改善当晚睡眠</td></tr>
+        <tr><td>水温 / 时长</td><td>38-40°C，15 分钟（上限 20min）</td><td>过高过久转向副交感镇静、血压波动</td></tr>
+        <tr><td>红外</td><td>900W 对墙侧射，不直射头顶</td><td>抵消蒸发散热、维持体温上升，避免眩光</td></tr>
+        <tr><td>序列</td><td>日出(0-2min 光爬升)→日照高峰(2-12min 全功率雨淋)→收尾(12-15min 可 30s 冷水冲激活交感)</td><td>模拟自然日出进程；冷水收尾上"战斗模式"</td></tr>
+        <tr><td>联动</td><td>华为 App"晨光唤醒"场景：6:20 预热 → 6:30 光暖+排风 → 入内全开</td><td>固定节律自动化，减少意志力消耗</td></tr>
+        <tr><td>边界</td><td>青光眼/白内障/光敏药物慎用；不直视灯源；每晚 20:00 后回纯暖光</td><td>强光（尤其蓝光）需与个体健康适配</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="flow-note">💡 <b>一句话</b>：15 分钟不是洗澡，是"光+热+水"三联同步的一次生理重启——褪黑素被压下、皮质醇助你清醒、血清素与多巴胺托起情绪与动力、体温完成开机，四件事在同一时间窗口完成，这是杭州阴冷冬天里把身体调到最佳状态最省力的方式。</div>
+  </section>
+
+  <!-- 晨浴模式最终精调 -->
+  <section class="block" id="mode">
+    <div class="sec-label">FINAL TUNING · MORNING MODE</div>
+    <h2 class="sec-title">晨浴模式 · 最终精调（冷水收尾 / 5000K 唤醒档 / 排风扇 / 隐私）</h2>
+    <p class="sec-lead">把"光-激素-体温"落实到可执行的分秒：三段式冷热序列、一路 5000K 蓝光唤醒、一整套排风扇功率计算，以及"门外拉帘"的隐私方案（替代电控玻璃——全透光 + 低成本 + 可变柔光）。</p>
+
+    <h3>① 完整晨浴序列（含 30s 冷水收尾）</h3>
+    <div class="steps">
+      <div class="step"><div class="no"></div><div class="bd"><b>日出 · 0-2min</b><p>浴霸 2700-3000K 暖光爬升，眼平照度到 ≈9,500 lux；水温 38-40°C 预热，排风扇高档待命。</p></div></div>
+      <div class="step"><div class="no"></div><div class="bd"><b>日照高峰 · 2-12min</b><p>全功率空气雨淋 + 900W 红外侧射；5000K 唤醒档逐步点亮（模拟日出→正午）；排风扇高档排雾，镜面不起雾。</p></div></div>
+      <div class="step"><div class="no"></div><div class="bd"><b>冷水收尾 · 12-13min</b><p>恒温混水阀 30s 内把水温 40°C → ≈20°C；先冲四肢→后背→躯干，最后才到胸口，不冲头；激活交感神经，提神收尾。</p></div></div>
+      <div class="step"><div class="no"></div><div class="bd"><b>出浴 · 13min+</b><p>排风扇转低档 3-5min 清余雾；浴霸保持 2-3min，在暖光中擦干、缓慢降温，避免"冷出浴"。</p></div></div>
+    </div>
+    <div class="flow-note">💡 <b>冷水收尾设计要点</b>：冬季自来水可低至 5-10°C，直接冲太刺激——恒温阀混到 ≈20°C（"凉爽"而非"刺骨"）；只冲四肢与后背、最后才到胸口，避免冷休克/血压骤变；心脑血管疾病、低血压、体弱者慎用或跳过；每周渐进适应（首周 20°C/15s → 逐步到 15°C/30s）。生理红利：去甲肾上腺素 + 多巴胺释放 → 警觉、情绪、抗炎、基础代谢提升。</div>
+
+    <h3>② 5000K 蓝光唤醒档 · 设计</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>项目</th><th>方案 A（推荐）</th><th>方案 B（性价比）</th></tr></thead>
+      <tbody>
+        <tr><td>灯具</td><td>可调色温 LED 面板 2700-6500K</td><td>固定 5000K LED 平板灯</td></tr>
+        <tr><td>功率 / 光通</td><td class="num">20-30W / 2,000-3,000 lm</td><td class="num">20W / ≈2,000 lm</td></tr>
+        <tr><td>放置</td><td colspan="2">眼平高度、对门或顶部 + 扩散面板（视黑素对水平入射最敏感）</td></tr>
+        <tr><td>照度贡献</td><td class="num">+2,000-3,000 lux</td><td class="num">+1,500-2,000 lux</td></tr>
+        <tr><td>视黑素增益（5000K ≈×0.82）</td><td class="num">+1,600-2,500 melanopic lux</td><td class="num">+1,200-1,600</td></tr>
+        <tr><td>联动</td><td colspan="2">华为智联：晨间 2-12min 逐步点亮（日出→正午），晚间自动切回纯暖光</td></tr>
+        <tr><td>参考价</td><td class="num">300-900 元</td><td class="num">150-400 元</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="flow-note">💡 <b>双光谱逻辑</b>：浴霸暖光=自然晨光（金红），5000K=正午日光；两者叠加让视黑素等效照度冲到 ≈6,000+，15 分钟唤醒效率更高，且符合人眼对"晨光进程"的进化预期；夜晚保持纯暖光以保护睡眠。</div>
+
+    <h3>③ 排风扇功率计算 · 安静又够用</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>参数</th><th>计算 / 取值</th><th>结果</th></tr></thead>
+      <tbody>
+        <tr><td>卫生间体积</td><td class="num">2㎡ × 2.4m 净高</td><td class="num">4.8 m³</td></tr>
+        <tr><td>规范最小换气（GB 50736 卫生间 10 次/h）</td><td class="num">4.8 × 10</td><td class="num">≥48 m³/h</td></tr>
+        <tr><td>淋浴排湿 / 除雾推荐（15-20 次/h）</td><td class="num">4.8 × 15~20</td><td class="num">72-96 m³/h</td></tr>
+        <tr><td>管道 + 弯头阻力折损（30-50%）</td><td class="num">96 ÷ 0.6~0.7</td><td class="num">额定需 140-160 m³/h</td></tr>
+        <tr><td>选型结论</td><td>100mm 管道静音风机</td><td class="num">额定 150-200 m³/h / 静压 80-150Pa</td></tr>
+        <tr><td>三档转速</td><td>低 60 / 中 100 / 高 150 m³/h</td><td class="num">淋浴高档，平时低档</td></tr>
+        <tr><td>功率 / 噪声</td><td>低 ≈10W / 中 ≈18W / 高 ≈28W</td><td class="num">对应 ≤28 / 31 / 33 dB(A)</td></tr>
+        <tr><td>年耗电估算</td><td>每天 2×15min 高档 + 8h 低档 ≈0.11kWh</td><td class="num">≈40 kWh/年 ≈¥25/年</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="flow-note">💡 <b>关键取舍：排气 vs 保温</b>——排太猛会把浴霸 900W 的热一起抽走（冬季不划算）；排太弱镜面起雾、反射率下降（灯箱变糊）。解法：<b>变频 + 湿度联动</b>：淋浴中高档排雾，出浴 3-5min 转低档，非用时风机带<b>止回阀</b>关闭保温。静音关键：100mm 大风轮静音机型 + 管道软连接 + 风机远离头顶淋浴区。</div>
+
+    <h3>④ 隐私方案 · 门外拉帘（替代电控玻璃）</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>对比</th><th>门外拉帘（采用）</th><th>电控玻璃（弃用）</th></tr></thead>
+      <tbody>
+        <tr><td>透光率</td><td>玻璃门保持 90%+ 全透光，灯箱出光不受影响</td><td>透明态透光仅 ≈80%，光效折损</td></tr>
+        <tr><td>成本</td><td class="num">100-500 元</td><td class="num">1,500-3,500 元/㎡</td></tr>
+        <tr><td>私密</td><td>需要时拉上，遮光帘全遮</td><td>断电雾化，可调</td></tr>
+        <tr><td>维护</td><td>可换可洗、零故障</td><td>电路故障即失效</td></tr>
+        <tr><td>附带价值</td><td>选半透纱帘：关上时地堡仍有柔和漏光"发光窗帘"</td><td>—</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="flow-note">💡 <b>设计逻辑</b>：灯箱的核心是"门=出光口"，任何降低透光率的东西都是敌人。电控玻璃贵且减光，门外一道遮光帘完美解决：<b>帘子在门外、只在需要私密时拉上，洗澡时门内没人看得到</b>；换半透纱帘时，灯箱光透过帘子还给地堡留一盏"发光窗帘"，连夜里走路的灯都省了。</div>
+  </section>
+
+  <!-- 工程安全 -->
+  <section class="block" id="safety">
+    <div class="sec-label">ENGINEERING SAFETY</div>
+    <h2 class="sec-title">工程安全 · 六道闸</h2>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>风险</th><th>机理 / 量化</th><th>对策</th></tr></thead>
+      <tbody>
+        <tr><td>🔥 过热（最致命）</td><td>900W 热 + 密闭：门关运行理论 ≈9°C/分钟</td><td>排风联锁 + 定时断电 + 过热保护 + 门开使用</td></tr>
+        <tr><td>👁️ 眩光 / 视网膜</td><td>19,000 lm 直视伤眼</td><td>浴霸挂高、灯口下压；防眩格栅；双档可调；门玻璃可加渐变膜</td></tr>
+        <tr><td>🦶 滑倒</td><td>镜面地面 + 水，摩擦系数极低</td><td>防滑拖鞋（干/湿两双）；地面可选拉丝防滑镜面马赛克；蹲便选防滑纹款</td></tr>
+        <tr><td>⚡ 电气</td><td>湿区 1000W 大功率</td><td>独立回路 2.5mm² + 16A 漏保 + 防水开关；浴霸选带漏保型号</td></tr>
+        <tr><td>🚪 隐私</td><td>全透玻璃门 + 人在内</td><td>调光玻璃 / 内百叶 / 磨砂贴膜（透明=灯箱模式，雾化=私密模式）</td></tr>
+        <tr><td>🧯 消防 / 心理</td><td>卤素管高温；全镜强光易眩晕</td><td>不锈钢不可燃是优势；远离可燃物；烟感/CO 检测；长明用低档</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="sec-hint">若地堡位于地下 / 低于排水位：蹲便排水必须加<b>污水提升泵</b>（约 1,500~5,000 元），这是地下室卫生间的硬性成本，务必列入预算。</p>
+  </section>
+
+  <!-- 成本评估 -->
+  <section class="block" id="cost">
+    <div class="sec-label">COST</div>
+    <h2 class="sec-title">成本综合评估 · 一次部署 + 分档选择</h2>
+    <p class="sec-lead">按"灯箱卫生间本体"拆解部署成本，再给出三档完整预算。</p>
+    <div class="metrics">
+      <div class="metric"><div class="k">灯箱本体（原）</div><div class="v">1.2万-2.3万</div></div>
+      <div class="metric"><div class="k">水系统 + 晨浴精调</div><div class="v">+0.7万-1.8万</div></div>
+      <div class="metric"><div class="k">卫生间完整系统（中值）</div><div class="v">≈2.8万</div></div>
+      <div class="metric"><div class="k">全新建+泵+除湿</div><div class="v">3.7万-5.8万</div></div>
+    </div>
+
+    <h3>模块一 · 灯箱卫生间部署成本（一次性）</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>项目</th><th>规格 / 说明</th><th>参考价</th></tr></thead>
+      <tbody>
+        <tr><td>镜面不锈钢马赛克（6面）</td><td>净 16.7㎡，采购含损耗 19~20㎡，200~350 元/㎡</td><td class="num">3,800-7,000</td></tr>
+        <tr><td>铺贴人工 + 辅料</td><td>胶泥 / 勾缝 / 阴阳角，16.7㎡</td><td class="num">3,000-4,200</td></tr>
+        <tr><td>壁挂 1000W 灯暖浴霸</td><td>四灯卤素，带漏保</td><td class="num">300-500</td></tr>
+        <tr><td>电气回路</td><td>独立回路 + 空开漏保 + 双档开关</td><td class="num">500-1,000</td></tr>
+        <tr><td>超白钢化玻璃门</td><td>12mm 高透 + 五金 + 安装</td><td class="num">2,000-3,500</td></tr>
+        <tr><td>不锈钢蹲便器</td><td>304 镜面</td><td class="num">150-600</td></tr>
+        <tr><td>蹲便安装 + 给排水</td><td>—</td><td class="num">300-800</td></tr>
+        <tr><td>排风扇 + 安装</td><td>强制换气</td><td class="num">300-750</td></tr>
+        <tr><td>防水基层</td><td>墙 / 地面防水</td><td class="num">1,000-2,500</td></tr>
+        <tr><td>控制 / 定时 / 联锁</td><td>双档 + 定时 + 门磁</td><td class="num">200-800</td></tr>
+        <tr><td>杂项</td><td>密封 / 清洁 / 清运</td><td class="num">300-800</td></tr>
+        <tr class="total"><td>装修级合计（中值 ≈1.7万）</td><td>不含污水泵 / 除湿机 / 土建</td><td class="num">1.2万-2.3万</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <p class="sec-hint" style="margin-top:10px;">弹性：马赛克选 8K 镜面级会增加约 ¥1,000~2,000，但灯箱效果与多轮反射表现明显更好；地面改拉丝防滑镜面约 +¥400。</p>
+
+    <h3>模块二 · 新增水系统装备（一次性）</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>项目</th><th>规格 / 说明</th><th>参考价</th></tr></thead>
+      <tbody>
+        <tr><td>空气注入顶喷花洒</td><td>25~30cm 大顶喷 + 空气注入（国产 / 进口）</td><td class="num">300-2,000</td></tr>
+        <tr><td>软水机（离子交换）</td><td>小型全屋 · 除 Ca/Mg · 装于地堡侧</td><td class="num">2,500-5,000</td></tr>
+        <tr><td>华为智联电热水器</td><td>60L 储水式 · 鸿蒙智联 · App 预热</td><td class="num">1,200-2,500</td></tr>
+        <tr><td>镜面蹲便盖板</td><td>304 镜面承重定制 + 合页 / 框架</td><td class="num">300-800</td></tr>
+        <tr><td>增压泵（可选）</td><td>雨淋补压</td><td class="num">200-800</td></tr>
+        <tr><td>安装 / 管路 / 电气</td><td>花洒 + 软水机 + 热水器 + 独立回路</td><td class="num">1,200-3,600</td></tr>
+        <tr class="total"><td>新增水系统合计（中值 ≈1万）</td><td>不含可选增压泵</td><td class="num">0.6万-1.5万</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>模块三 · 晨浴精调新增（一次性）</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>项目</th><th>规格 / 说明</th><th>参考价</th></tr></thead>
+      <tbody>
+        <tr><td>5000K 唤醒档 LED</td><td>可调色温面板 2700-6500K / 固定 5000K 平板灯</td><td class="num">150-900</td></tr>
+        <tr><td>变频静音排风扇 100mm</td><td>150-200m³/h · 三档 · 止回阀 · ≤33dB</td><td class="num">200-600</td></tr>
+        <tr><td>恒温混水阀 + 冷冲切换</td><td>40°C→20°C 30s · 冷水收尾</td><td class="num">200-800</td></tr>
+        <tr><td>门外遮光帘</td><td>遮光卷帘 / 半透纱帘（替代电控玻璃）</td><td class="num">100-500</td></tr>
+        <tr><td>精调安装 / 电气</td><td>LED 回路 + 风机控制 + 混水阀接入</td><td class="num">300-800</td></tr>
+        <tr class="total"><td>晨浴精调合计（中值 ≈0.15万）</td><td>—</td><td class="num">0.1万-0.28万</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>模块四 · 三档完整预算对比</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>档位</th><th>包含内容</th><th>预算</th></tr></thead>
+      <tbody>
+        <tr><td><b>灯箱本体（原）</b></td><td>六面镜 + 浴霸 + 玻璃门 + 蹲便 + 排风</td><td class="num">1.2万-2.3万</td></tr>
+        <tr><td><b>装修级完整版</b></td><td>灯箱本体 + 水系统 + 晨浴精调（冷水收尾/5000K/静音风机/门外帘）</td><td class="num">1.9万-4.1万（中值≈2.8万）</td></tr>
+        <tr><td><b>从零新建</b></td><td>+ 隔墙、给排水、水电改造</td><td class="num">+0.8万-1.5万</td></tr>
+        <tr><td><b>地下完整版</b></td><td>+ 污水提升泵 + 除湿机 + 调光玻璃门 + 增压泵</td><td class="num">+0.4万-1.1万</td></tr>
+        <tr class="total"><td>完整版合计</td><td>全新建 + 水系统 + 晨浴精调 + 泵 + 除湿 + 调光门</td><td class="num">约3.7万-5.8万</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="flow-note">💡 <b>结论</b>：这盏"人造太阳"同时解决了无窗空间的主照明、冬季供暖与阴冷潮湿烘干三件事。按中值 1.7 万算，日均折旧不到 ¥5；而它带来的"进门就有阳光感"和干燥温暖，是装多少普通灯都换不来的。</div>
+  </section>
+
+  <!-- 深入了解 -->
+  <section class="block" id="explore">
+    <div class="sec-label">DEEP DIVE</div>
+    <h2 class="sec-title">深入了解每个部分</h2>
+    <div class="egrid">
+      <a class="ecard" href="#hardware"><div class="ic">🔧</div><h3>材料与硬件专题</h3><p>五件套的结构、规格、购买渠道与参考价，一器件一卡片逐一拆解。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#build"><div class="ic">🛠️</div><h3>施工指南</h3><p>从防水、六面铺贴、玻璃门安装、浴霸对位到排风电气，一步一图走完 DIY。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#ops"><div class="ic">⚙️</div><h3>安全与运维手册</h3><p>过热、眩光、滑倒、电气、隐私、消防六大闸门 + 冬季烘干使用规范。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#costdetail"><div class="ic">💰</div><h3>成本明细</h3><p>逐项预算明细与三档选择逻辑，帮你决定装到什么规格。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#logic"><div class="ic">🧩</div><h3>光路与使用逻辑</h3><p>直射 + 反射双路光路、灯箱/私密/烘干三种模式的切换逻辑。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#extend"><div class="ic">📈</div><h3>扩展方向</h3><p>调光玻璃、除湿机、智能联动、污水提升泵等进阶配置。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#water"><div class="ic">🚿</div><h3>水系统专题</h3><p>空气花洒、软水机、华为智联热水器、镜面盖板的选型与原理。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#experience"><div class="ic">🧖</div><h3>晨浴体验评估</h3><p>杭州阴冷冬晨，浴霸灯下热水澡的感官与心理综合体验。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#physiology"><div class="ic">🧬</div><h3>晨浴生理学</h3><p>15 分钟 360° 照射的激素变化：褪黑素、皮质醇、血清素、多巴胺、体温。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#mode"><div class="ic">🎛️</div><h3>晨浴模式精调</h3><p>30s 冷水收尾序列、5000K 蓝光唤醒档、排风扇功率计算、门外拉帘隐私方案。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#hw"><div class="ic">🧰</div><h3>硬件专题库</h3><p>每个硬件的拆解原理图、作用原理与淘宝/闲鱼购买链接。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#logic"><div class="ic">🤖</div><h3>程序逻辑专题</h3><p>晨浴模式状态机逻辑图、华为场景规则与核心代码框架。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#budget"><div class="ic">💰</div><h3>预算专题</h3><p>全量采购清单、三档配置与淘宝/闲鱼采购建议。</p><span class="go">开始探索 →</span></a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="t">地堡 · 灯箱卫生间 — 无窗空间里的"人造太阳"</div>
+    <p style="margin-top:6px;">方案推导：光通 19,000 lm · 镜面 R 0.6~0.85 · 门洞输出 7,500~9,900 lm · 地堡照度 250~330 lux · 供暖 900W · 水系统：空气雨淋 + 软水 + 华为智联热水 + 镜面盖板 · 晨浴精调：冷水收尾 + 5000K 唤醒档 + 静音排风 + 门外帘 · 专题：硬件拆解库 / 程序逻辑 / 预算</p>
+  </footer>
+
+  <!-- ===== 材料与硬件专题 ===== -->
+  <div id="hardware" style="padding-top:20px;">
+    <div class="sec-label">HARDWARE · 专题</div>
+    <h2 class="sec-title" style="font-size:24px;font-weight:800;">材料与硬件专题 · 五件套逐一拆解</h2>
+    <p class="sec-lead">每一件都服务于"多反射、少吸光、耐湿、安全"，此处给结构、原理、价格与选购提示。</p>
+    <div class="hw-groups">
+      <div class="hw-group">
+        <h3>🌡️ 光源与热源</h3>
+        <div class="hw-grid">
+          <div class="hwcard"><div class="ic">💡</div><div class="nm">壁挂 1000W 灯暖浴霸</div><div class="sb">4×275W 卤素 · 光≈19,000 lm · 热 900W · 带漏保</div><div class="price">300-500 元</div></div>
+          <div class="hwcard"><div class="ic">🎛️</div><div class="nm">双档开关 + 定时 + 门磁</div><div class="sb">550W/1100W 可调 · 30-60min 定时 · 门开联锁</div><div class="price">200-800 元</div></div>
+        </div>
+      </div>
+      <div class="hw-group">
+        <h3>🪞 反射层</h3>
+        <div class="hw-grid">
+          <div class="hwcard"><div class="ic">🧱</div><div class="nm">镜面不锈钢马赛克</div><div class="sb">304 · 8K 镜面 · R 0.6~0.85 · 25mm 小块 · 6面16.7㎡</div><div class="price">200-350 元/㎡</div></div>
+          <div class="hwcard"><div class="ic">🪄</div><div class="nm">细浅色勾缝剂</div><div class="sb">缝宽 ≤2mm · 浅色减少吸光 · 提升有效反射率</div><div class="price">≈500 元</div></div>
+          <div class="hwcard"><div class="ic">🦶</div><div class="nm">拉丝防滑镜面马赛克（可选）</div><div class="sb">地面专用 · 50~60% 反射 · 防滑安全</div><div class="price">+400 元</div></div>
+        </div>
+      </div>
+      <div class="hw-group">
+        <h3>🪟 输出层与湿区</h3>
+        <div class="hw-grid">
+          <div class="hwcard"><div class="ic">🚪</div><div class="nm">超白钢化玻璃门</div><div class="sb">12mm · 透光≈90% · 近红外≈75% · 0.8×2.1m</div><div class="price">2,000-3,500 元/樘</div></div>
+          <div class="hwcard"><div class="ic">🚽</div><div class="nm">不锈钢蹲便器</div><div class="sb">304 镜面 · 不吸光 · 带防臭水封/冲水</div><div class="price">150-600 元</div></div>
+          <div class="hwcard"><div class="ic">🌬️</div><div class="nm">排风扇</div><div class="sb">顶装 · 开灯必排湿 · 兼排热</div><div class="price">300-750 元</div></div>
+          <div class="hwcard"><div class="ic">💧</div><div class="nm">污水提升泵（地下必需）</div><div class="sb">低于排水位时配 · 家用款</div><div class="price">1,500-5,000 元</div></div>
+        </div>
+      </div>
+      <div class="hw-group">
+        <h3>🚿 水系统装备</h3>
+        <div class="hw-grid">
+          <div class="hwcard"><div class="ic">🌧️</div><div class="nm">空气注入顶喷花洒</div><div class="sb">25~30cm 大顶喷 · 空气注入 · 热带雨淋</div><div class="price">300-2,000 元</div></div>
+          <div class="hwcard"><div class="ic">💧</div><div class="nm">软水机（离子交换）</div><div class="sb">小型全屋 · 除 Ca/Mg · 需加盐</div><div class="price">2,500-5,000 元</div></div>
+          <div class="hwcard"><div class="ic">🔥</div><div class="nm">华为智联电热水器</div><div class="sb">60L 储水式 · 鸿蒙智联 · App 预热</div><div class="price">1,200-2,500 元</div></div>
+          <div class="hwcard"><div class="ic">🪞</div><div class="nm">镜面蹲便盖板（定制）</div><div class="sb">304 镜面承重 ≥150kg · 盖上全镜地面</div><div class="price">300-800 元</div></div>
+          <div class="hwcard"><div class="ic">🔋</div><div class="nm">增压泵（可选）</div><div class="sb">电热水器压力不足时补压 · 雨淋更给力</div><div class="price">200-800 元</div></div>
+        </div>
+      </div>
+      <div class="hw-group">
+        <h3>🎛️ 晨浴精调装备</h3>
+        <div class="hw-grid">
+          <div class="hwcard"><div class="ic">🔵</div><div class="nm">5000K 唤醒档 LED</div><div class="sb">可调色温面板或固定 5000K · 视黑素增益</div><div class="price">150-900 元</div></div>
+          <div class="hwcard"><div class="ic">🌀</div><div class="nm">变频静音排风扇 100mm</div><div class="sb">150-200m³/h · 三档 · 带止回阀 · ≤33dB</div><div class="price">200-600 元</div></div>
+          <div class="hwcard"><div class="ic">❄️</div><div class="nm">恒温混水阀 + 冷冲档</div><div class="sb">40°C→20°C 30s 切换 · 冷水收尾</div><div class="price">200-800 元</div></div>
+          <div class="hwcard"><div class="ic">🪟</div><div class="nm">门外遮光帘（替代电控玻璃）</div><div class="sb">遮光/半透纱帘 · 可洗可换 · 全透光</div><div class="price">100-500 元</div></div>
+          <div class="hwcard"><div class="ic">⚡</div><div class="nm">晨浴精调安装 / 电气</div><div class="sb">LED 回路 + 风机控制 + 混水阀接入</div><div class="price">300-800 元</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 施工指南 ===== -->
+  <div id="build" style="padding-top:20px;">
+    <div class="sec-label">BUILD GUIDE</div>
+    <h2 class="sec-title" style="font-size:24px;font-weight:800;">施工指南 · 自己动手</h2>
+    <div class="steps">
+      <div class="step"><div class="no"></div><div class="bd"><b>防水与基层</b><p>墙面、地面做防水层（湿区重点），找平放线，确认门洞尺寸与排水坡度。若地下空间，同步预埋污水提升泵。</p></div></div>
+      <div class="step"><div class="no"></div><div class="bd"><b>六面马赛克铺贴</b><p>先墙后顶再地；镜面马赛克用专用胶泥，缝宽 ≤2mm、浅色细勾缝；阴阳角做圆滑收口，避免尖锐反光伤人。</p></div></div>
+      <div class="step"><div class="no"></div><div class="bd"><b>玻璃门安装</b><p>12mm 超白钢化玻璃门 + 不锈钢框体，确认朝地堡主区开向；如需隐私，同步装调光膜/内百叶。</p></div></div>
+      <div class="step"><div class="no"></div><div class="bd"><b>浴霸对位</b><p>壁挂于玻璃门正对墙面、挂高、灯口朝门略下压；接独立回路 + 漏保 + 双档开关 + 门磁联锁。</p></div></div>
+      <div class="step"><div class="no"></div><div class="bd"><b>排风与联锁</b><p>顶装排风扇并联动浴霸（开灯必排）；设 30~60 分钟定时；装防水开关面板。</p></div></div>
+      <div class="step"><div class="no"></div><div class="bd"><b>验收点亮</b><p>低档试运行 → 检查温升、眩光、排风；再全开验证"光柱穿门"效果与地堡照度；贴上"勿直视灯源"提示。</p></div></div>
+    </div>
+  </div>
+
+  <!-- ===== 安全与运维 ===== -->
+  <div id="ops" style="padding-top:20px;">
+    <div class="sec-label">OPS MANUAL</div>
+    <h2 class="sec-title" style="font-size:24px;font-weight:800;">安全与运维手册 · 六道闸 + 冬季烘干规范</h2>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🔥</div><div><h3>过热闸 · 绝不关门长开</h3><p>开灯必开排风（硬件联锁）；定时 30~60 分钟；作全屋供能时保持门开。严禁"门关 + 无排风"长时间运行。</p></div></div>
+      <div class="wcard"><div class="ic">👁️</div><div><h3>眩光闸 · 别直视灯源</h3><p>浴霸挂高、灯口下压、加防眩格栅；长明用低档 550W；门口贴"勿直视"提示。</p></div></div>
+      <div class="wcard"><div class="ic">🦶</div><div><h3>滑倒闸 · 拖鞋 + 防滑</h3><p>门边固定干/湿两双防滑拖鞋；地面可升级拉丝防滑镜面；蹲便选防滑纹款。</p></div></div>
+      <div class="wcard"><div class="ic">💧</div><div><h3>冬季烘干 · 三步走</h3><p>挂湿衣物进地堡 → 开灯暖 + 排风 → 配除湿机抽湿。红外直热 + 升温降湿 + 强制排湿三管齐下，衣物半天可干，且顺带防霉防潮。</p></div></div>
+      <div class="wcard"><div class="ic">🧹</div><div><h3>日常维护</h3><p>镜面水渍指纹用玻璃清洁剂 + 麂皮布；马赛克缝隙每年补缝；检查排风滤网、漏保按钮、灯管老化。</p></div></div>
+    </div>
+  </div>
+
+  <!-- ===== 成本明细 ===== -->
+  <div id="costdetail" style="padding-top:20px;">
+    <div class="sec-label">COST DETAIL</div>
+    <h2 class="sec-title" style="font-size:24px;font-weight:800;">成本明细 · 逐项可查</h2>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>项目</th><th>数量</th><th>单价（元）</th><th>小计（元）</th></tr></thead>
+      <tbody>
+        <tr><td>镜面不锈钢马赛克（含地面）</td><td class="num">19-20㎡</td><td class="num">200-350</td><td class="num">3,800-7,000</td></tr>
+        <tr><td>铺贴人工 + 辅料</td><td class="num">16.7㎡</td><td class="num">180-250</td><td class="num">3,000-4,200</td></tr>
+        <tr><td>壁挂 1000W 灯暖浴霸</td><td class="num">1 台</td><td class="num">300-500</td><td class="num">300-500</td></tr>
+        <tr><td>电气回路 + 漏保 + 双档</td><td class="num">1 项</td><td class="num">500-1,000</td><td class="num">500-1,000</td></tr>
+        <tr><td>超白钢化玻璃门</td><td class="num">1 樘</td><td class="num">2,000-3,500</td><td class="num">2,000-3,500</td></tr>
+        <tr><td>不锈钢蹲便器</td><td class="num">1 套</td><td class="num">150-600</td><td class="num">150-600</td></tr>
+        <tr><td>蹲便安装 + 给排水</td><td class="num">1 项</td><td class="num">300-800</td><td class="num">300-800</td></tr>
+        <tr><td>排风扇 + 安装</td><td class="num">1 套</td><td class="num">300-750</td><td class="num">300-750</td></tr>
+        <tr><td>防水基层</td><td class="num">1 项</td><td class="num">1,000-2,500</td><td class="num">1,000-2,500</td></tr>
+        <tr><td>控制 / 定时 / 联锁</td><td class="num">1 套</td><td class="num">200-800</td><td class="num">200-800</td></tr>
+        <tr><td>杂项</td><td class="num">1 项</td><td class="num">300-800</td><td class="num">300-800</td></tr>
+        <tr class="total"><td>装修级合计</td><td colspan="2">中值 ≈1.7万</td><td class="num">1.2万-2.3万</td></tr>
+        <tr class="sub"><td colspan="4">新增水系统四件套</td></tr>
+        <tr><td>空气注入顶喷花洒</td><td class="num">1 套</td><td class="num">300-2,000</td><td class="num">300-2,000</td></tr>
+        <tr><td>软水机（离子交换）</td><td class="num">1 台</td><td class="num">2,500-5,000</td><td class="num">2,500-5,000</td></tr>
+        <tr><td>华为智联电热水器 60L</td><td class="num">1 台</td><td class="num">1,200-2,500</td><td class="num">1,200-2,500</td></tr>
+        <tr><td>镜面蹲便盖板（定制）</td><td class="num">1 块</td><td class="num">300-800</td><td class="num">300-800</td></tr>
+        <tr><td>水系统安装 / 管路 / 电气</td><td class="num">1 项</td><td class="num">1,200-3,600</td><td class="num">1,200-3,600</td></tr>
+        <tr class="sub"><td>新增水系统小计（中值 ≈1万）</td><td colspan="2">—</td><td class="num">+0.6万-1.5万</td></tr>
+        <tr class="sub"><td colspan="4">晨浴精调四件套</td></tr>
+        <tr><td>5000K 唤醒档 LED</td><td class="num">1 套</td><td class="num">150-900</td><td class="num">150-900</td></tr>
+        <tr><td>变频静音排风扇 100mm</td><td class="num">1 台</td><td class="num">200-600</td><td class="num">200-600</td></tr>
+        <tr><td>恒温混水阀 + 冷冲档</td><td class="num">1 套</td><td class="num">200-800</td><td class="num">200-800</td></tr>
+        <tr><td>门外遮光帘（替代电控玻璃）</td><td class="num">1 幅</td><td class="num">100-500</td><td class="num">100-500</td></tr>
+        <tr><td>晨浴精调安装 / 电气</td><td class="num">1 项</td><td class="num">300-800</td><td class="num">300-800</td></tr>
+        <tr class="sub"><td>晨浴精调小计（中值 ≈0.15万）</td><td colspan="2">—</td><td class="num">+0.1万-0.28万</td></tr>
+        <tr class="total"><td>卫生间完整系统合计</td><td colspan="2">中值 ≈2.8万</td><td class="num">1.9万-4.1万</td></tr>
+        <tr><td>可选：污水提升泵（地下）</td><td class="num">1 台</td><td class="num">1,500-5,000</td><td class="num">+1,500-5,000</td></tr>
+        <tr><td>可选：除湿机（杭州冬）</td><td class="num">1 台</td><td class="num">800-1,500</td><td class="num">+800-1,500</td></tr>
+        <tr><td>可选：调光玻璃 / 内百叶门</td><td class="num">1 项</td><td class="num">2,000-5,000</td><td class="num">+2,000-5,000</td></tr>
+        <tr><td>可选：从零新建（隔墙+水电）</td><td class="num">1 项</td><td class="num">—</td><td class="num">+8,000-15,000</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- ===== 光路与使用逻辑 ===== -->
+  <div id="logic" style="padding-top:20px;">
+    <div class="sec-label">LIGHT PATH & MODES</div>
+    <h2 class="sec-title" style="font-size:24px;font-weight:800;">光路与使用逻辑 · 三种模式</h2>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">💡</div><div><h3>模式一 · 灯箱模式（门开）</h3><p>浴霸全开 → 直射 + 六面镜反射双路出光 → 门洞输出 ≈7,500~9,900 lm → 地堡平均 250~330 lux + 门口"阳光柱" + 900W 供暖。这是地堡的"白天"。</p></div></div>
+      <div class="wcard"><div class="ic">🌫️</div><div><h3>模式二 · 私密模式（门关）</h3><p>调光玻璃雾化 + 浴霸低档/关闭 → 卫生间正常使用；近红外仍透过玻璃持续为地堡辐射供暖（约 500W）。这是地堡的"黄昏"。</p></div></div>
+      <div class="wcard"><div class="ic">🌞</div><div><h3>模式三 · 烘干模式（杭州冬）</h3><p>门开 + 排风 + 除湿机 → 红外直热衣物、升温降湿、强制排湿三管齐下。这是地堡的"晾晒日"。</p></div></div>
+    </div>
+    <div class="flow-note">💡 <b>联动建议</b>：接入智能开关后，"开门 = 全开灯 + 关闭排风"，"人进卫生间 = 自动降光 + 玻璃雾化"，"定时 45 分钟自动断电"——把这些做成一个场景，安全与体验兼得。</div>
+  </div>
+
+  <!-- ===== 扩展方向 ===== -->
+  <div id="extend" style="padding-top:20px;">
+    <div class="sec-label">EXTENSIONS</div>
+    <h2 class="sec-title" style="font-size:24px;font-weight:800;">扩展方向 · 进阶配置</h2>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🔮</div><div><h3>调光玻璃门</h3><p>通电透明 / 断电雾化，灯箱模式与私密模式一键切换，+2,000~5,000 元。</p></div></div>
+      <div class="wcard"><div class="ic">💨</div><div><h3>除湿机</h3><p>杭州冬季 RH 80%+，12L/天款约 800~1,500 元，配合浴霸烘干闭环。</p></div></div>
+      <div class="wcard"><div class="ic">🔌</div><div><h3>智能联动</h3><p>人体存在传感器 + 温湿度 + 门磁，接入智能开关做成"安全场景"，全自动防呆。</p></div></div>
+      <div class="wcard"><div class="ic">🏗️</div><div><h3>地堡整体配套</h3><p>新风系统（密闭空间刚需，3,000~8,000 元）、配电增容（2,000~5,000 元）、烟感/CO 检测。</p></div></div>
+    </div>
+  </div>
+
+  <!-- 硬件专题库 -->
+  <section class="block" id="hw">
+    <div class="sec-label">HARDWARE LAB</div>
+    <h2 class="sec-title">硬件专题库 · 拆解原理 + 作用原理 + 购买链接</h2>
+    <p class="sec-lead">每个要采购的硬件一张专题卡：拆解原理图、工作机理、参考价，以及淘宝 / 闲鱼直达搜索。选购铁律：同型号多店比价；镜面不锈钢与玻璃按平米计价，先索样、量尺寸再下单。</p><div class="flow-note">📚 <b>全部硬件独立专题页</b>：每个硬件都有单独一页（拆解原理图 + 作用原理 + 关键参数 + 淘宝/闲鱼购买链接），<a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/2Mj2GkhywW" style="color:var(--accent-deep);font-weight:800;">点此进入硬件专题库目录（14 页）→</a></div>
+
+    <h3>① 灯箱光学系统</h3>
+    <div class="hwtopo">
+      <div class="ht">
+        <div class="ht-img"><span class="ht-tag">拆解原理</span><img src="https://aka.doubaocdn.com/s/6sVwk1vUdw" alt="镜面马赛克剖面" loading="lazy"></div>
+        <h3>抛光不锈钢镜面马赛克</h3>
+        <div class="ht-price">参考价 19-20㎡ × 200-350 元/㎡ ≈ 3,800-7,000 元</div>
+        <div class="ht-p">作用原理：表层 304 不锈钢镜面 ≈ 镜面反射率 0.9-0.95——光打上去不是被吸收而是被"弹回"空间，五面合围把一盏灯变成"满屋子灯"。选 <b>0.8-1.0mm 厚、光面（非拉丝）</b>；勾缝用 1mm 细缝，缝越细反射折损越小。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=镜面不锈钢马赛克">淘宝搜索 →</a><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=镜面不锈钢马赛克0.8厚">淘宝·0.8mm →</a><span>闲鱼 App 搜"镜面不锈钢马赛克"比价</span><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/1pU4dXbnJw">📄 独立专题页 →</a></div>
+      </div>
+      <div class="ht">
+        <div class="ht-img"><span class="ht-tag">拆解原理</span><img src="https://aka.doubaocdn.com/s/NRR4fUGbaN" alt="浴霸拆解" loading="lazy"></div>
+        <h3>1000W 浴霸（石英红外）</h3>
+        <div class="ht-price">参考价 300-500 元</div>
+        <div class="ht-p">作用原理：石英红外灯管 ≈ 2,800K 色温、光效 18-20 lm/W → 1000W ≈ 19,000 lm；同时辐射近红外（IR）直接照皮肤产热。布局：<b>两灯朝玻璃门（直射出光）+ 两灯朝空间（反射出光）</b>。选购认准"红外辐射"，最好带灯/热独立开关。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=浴霸四灯红外">淘宝搜索 →</a><span>闲鱼 App 搜"浴霸 拆机"可淘低价</span><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/yWxcZar4Zz">📄 独立专题页 →</a></div>
+      </div>
+      <div class="ht">
+        <div class="ht-img"><span class="ht-tag">结构件</span><img src="https://aka.doubaocdn.com/s/RC9gO6eAv9" alt="玻璃门效果" loading="lazy"></div>
+        <h3>超白钢化玻璃门</h3>
+        <div class="ht-price">参考价 2,000-3,500 元（含五金）</div>
+        <div class="ht-p">作用原理：门 = 灯箱唯一的"出光口"。要求 <b>超白玻璃</b>（含铁量低，透光 91-92%，普通玻璃仅 83-86%），10mm 钢化；对近红外透射 70-85%，门关着也有约 500W 辐射热进地堡。框架尽量细窄，出光缝更大。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=超白钢化玻璃移门">淘宝搜索 →</a><span>闲鱼 App 搜"超白钢化玻璃门"</span><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/dk9ehMTjlL">📄 独立专题页 →</a></div>
+      </div>
+      <div class="ht">
+        <div class="ht-img"><span class="ht-tag">成品件</span><img src="https://aka.doubaocdn.com/s/ipwkdmGPkV" alt="蹲便+镜面盖" loading="lazy"></div>
+        <h3>不锈钢蹲便 + 镜面盖板（定制）</h3>
+        <div class="ht-price">蹲便 150-600 元 + 镜面盖 300-800 元</div>
+        <div class="ht-p">作用原理：蹲便用<b>不锈钢（非陶瓷）</b>消除"暗吸收体"、不打断地面反射；镜面盖板（304 镜面 + 钢框，承重 ≥150kg）盖上与地面齐平，<b>整个地面变成一面完整镜子</b>，无限镜在脚底闭合。防臭水封照常，掀盖即用。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=不锈钢蹲便器">淘宝·蹲便 →</a><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=不锈钢镜面板定制">淘宝·镜面板 →</a><span>盖板为定制件，走不锈钢加工店</span><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/KKDCtV9Edj">📄 独立专题页 →</a></div>
+      </div>
+    </div>
+
+    <h3>② 水系统装备</h3>
+    <div class="hwtopo">
+      <div class="ht">
+        <div class="ht-img"><span class="ht-tag">拆解原理</span><img src="https://aka.doubaocdn.com/s/dMYpBZHEwY" alt="空气注入花洒拆解" loading="lazy"></div>
+        <h3>空气注入顶喷花洒（热带雨淋）</h3>
+        <div class="ht-price">参考价 国产 300-1,200 / 进口 2,000-3,500 元</div>
+        <div class="ht-p">作用原理：<b>文丘里效应</b>——水流高速通过收缩腔形成负压、自动吸入空气（图中"文丘里水气混腔"），水气搅成"含气泡的大水珠"：更大更软、落体更密，体感像热带阵雨；含气水流还更省水（约省 30%）。选购认准"空气注入"，顶喷 ≥25cm。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=空气注入顶喷花洒">淘宝搜索 →</a><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=汉斯格雅飞雨">淘宝·进口 →</a><span>闲鱼 App 搜"空气注入花洒"常有新品低价</span><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/DayJ2A8HHz">📄 独立专题页 →</a></div>
+      </div>
+      <div class="ht">
+        <div class="ht-img"><span class="ht-tag">拆解原理</span><img src="https://aka.doubaocdn.com/s/EtXCgDUsZU" alt="软水机拆解" loading="lazy"></div>
+        <h3>离子交换软水机</h3>
+        <div class="ht-price">参考价 家用 2,500-5,000 / 进口 1 万+ 元</div>
+        <div class="ht-p">作用原理：水流经树脂罐时，<b>钠型树脂用 Na⁺ 换掉水里的 Ca²⁺/Mg²⁺</b>——水垢的原料被拿走，镜面马赛克与玻璃门从此"无水垢白斑"；树脂饱和后用盐箱盐水再生（需定期加盐）。装于地堡侧、只把软水管引入卫生间；无盐阻垢器不是真软水，别买。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=小型软水机离子交换">淘宝搜索 →</a><span>闲鱼 App 搜"软水机"可淘进口二手</span><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/P1m4rkvSss">📄 独立专题页 →</a></div>
+      </div>
+      <div class="ht">
+        <div class="ht-img"><span class="ht-tag">拆解原理</span><img src="https://aka.doubaocdn.com/s/nKfWdGialR" alt="电热水器拆解" loading="lazy"></div>
+        <h3>华为智联电热水器（60L）</h3>
+        <div class="ht-price">参考价 1,200-2,500 元</div>
+        <div class="ht-p">作用原理：搪瓷内胆 + 加热管把 60L 水预热到设定温度（保温层锁热）；<b>镁棒牺牲阳极防内胆腐蚀</b>（需定期更换）。鸿蒙智联款可被华为智慧生活 App 控制——晨起前远程预热、与浴霸组成"晨浴场景"。选购认准"鸿蒙智联"标识。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=鸿蒙智联电热水器">淘宝搜索 →</a><span>闲鱼 App 搜"华为智联热水器"</span><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/4kuwgrTG07">📄 独立专题页 →</a></div>
+      </div>
+      <div class="ht">
+        <div class="ht-img"><span class="ht-tag">拆解原理</span><img src="https://aka.doubaocdn.com/s/bsuvZwipEj" alt="恒温混水阀拆解" loading="lazy"></div>
+        <h3>恒温混水阀 + 冷冲档</h3>
+        <div class="ht-price">参考价 200-800 元</div>
+        <div class="ht-p">作用原理：内部<b>感温蜡包</b>随混合水温热胀冷缩、自动微调冷热进水比例，出水恒定；冷冲档 = 把设定温度从 40°C 打到 ≈20°C，实现"30s 冷水收尾"。选购：带 40°C 防烫锁定 + 可外控款，方便接智能场景。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=恒温混水阀">淘宝搜索 →</a><span>闲鱼 App 搜"恒温混水阀"</span><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/5X6vn5vpry">📄 独立专题页 →</a></div>
+      </div>
+    </div>
+
+    <h3>③ 晨浴精调装备</h3>
+    <div class="hwtopo">
+      <div class="ht">
+        <div class="ht-img"><span class="ht-tag">拆解原理</span><img src="https://aka.doubaocdn.com/s/fcgUtfSAeP" alt="排风扇拆解" loading="lazy"></div>
+        <h3>变频静音排风扇（100mm）</h3>
+        <div class="ht-price">参考价 200-600 元</div>
+        <div class="ht-p">作用原理：<b>离心叶轮 + 直流无刷电机</b>——150-200 m³/h 风量、80-150Pa 静压；三档变频（60/100/150）让"排气够用又安静"（高档 ≤33dB）。<b>止回阀叶片</b>防室外风倒灌并保温。静音关键在电机级数与叶片设计，别买便宜的轴流扇。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=变频静音管道排风扇100mm">淘宝搜索 →</a><span>闲鱼 App 搜"管道风机 静音"</span><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/uYecgVJKnn">📄 独立专题页 →</a></div>
+      </div>
+      <div class="ht">
+        <div class="ht-img"><span class="ht-tag">拆解原理</span><img src="https://aka.doubaocdn.com/s/3WuVPddxSV" alt="5000K LED面板拆解" loading="lazy"></div>
+        <h3>可调色温 LED 面板（5000K 唤醒档）</h3>
+        <div class="ht-price">参考价 可调 300-900 / 固定 5000K 150-400 元</div>
+        <div class="ht-p">作用原理：<b>双色温灯珠（2700K + 5000K）+ 导光板 + 扩散板</b>——驱动按比例点亮两排灯珠混出色温；5000K"视黑素比"≈0.82（暖光仅 0.45），同照度下生物钟刺激近乎翻倍。晨间从暖光渐变到 5000K = 模拟"日出→正午"。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=可调色温LED平板灯">淘宝·可调 →</a><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=5000K平板灯">淘宝·固定5000K →</a><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/H8HeQHs5qg">📄 独立专题页 →</a></div>
+      </div>
+      <div class="ht-mini">
+        <h3>门外遮光帘（替代电控玻璃）</h3>
+        <div class="p">成品件，无拆解必要。遮光卷帘 / 半透纱帘 100-500 元；帘在门外、需要私密时才拉，玻璃门保持 90%+ 全透光，灯箱亮度一分不损。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=卫生间遮光卷帘">淘宝搜索 →</a><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=半透纱帘">淘宝·纱帘 →</a><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/svq17avUdA">📄 独立专题页 →</a></div>
+      </div>
+      <div class="ht-mini">
+        <h3>增压泵（可选）</h3>
+        <div class="p">成品件。电热水器水压不足时给雨淋补压，200-800 元；注意噪声与震动，装于地堡侧并做软连接。</div>
+        <div class="lnk"><a target="_blank" rel="noopener" href="https://s.taobao.com/search?q=家用增压泵">淘宝搜索 →</a><a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/fdwPJfSjUB">📄 独立专题页 →</a></div>
+      </div>
+    </div>
+    <div class="flow-note">💡 <b>可选进阶件</b>：<a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/IQtzJk3nHZ" style="color:var(--accent-deep);font-weight:700;">污水提升泵（专题页）→</a>（地下排水必需，1,500-5,000 元）、<a target="_blank" rel="noopener" href="https://aka.doubaocdn.com/s/FZoZkUnLIk" style="color:var(--accent-deep);font-weight:700;">除湿机（专题页）→</a>（杭州冬季 RH 80%+，800-1,500 元）——淘宝/闲鱼搜同名即可，取舍建议见预算专题。</div>
+  </section>
+
+  <!-- 程序逻辑专题 -->
+  <section class="block" id="logic">
+    <div class="sec-label">AUTOMATION · LOGIC</div>
+    <h2 class="sec-title">程序逻辑专题 · 状态机 + 场景规则 + 核心代码框架</h2>
+    <p class="sec-lead">这套系统的大脑是华为智慧生活（鸿蒙智联）里的自动化场景。下面用"状态机逻辑图 + 华为场景规则表 + 可落地的核心代码框架"三视图讲清楚"它怎么自己跑"。</p>
+
+    <h3>① 状态机逻辑图</h3>
+    <div class="lflow">
+      <div class="lnode"><span class="t">S0 待机</span><b>条件</b>：无人在卫生间 · 灯光关闭 · 风机低档或止回阀闭合 · 水温保持设定值</div>
+      <div class="larr">▼ 触发：06:20 定时（或语音"晨浴"）</div>
+      <div class="lnode"><span class="t">S1 预热</span>热水器远程加热 · 浴霸微亮（10% 暖光"日出预告"） · 风机中档待命</div>
+      <div class="larr">▼ 触发：人进入（人体存在传感器）</div>
+      <div class="lnode"><span class="t">S2 日出 0-2min</span>浴霸全开暖光爬升至 ≈9,500 lux · 水温 38-40°C · 风机高档排雾</div>
+      <div class="larr">▼ 触发：定时 2min 到达</div>
+      <div class="lnode"><span class="t">S3 日照高峰 2-12min</span>5000K 唤醒档 0%→100% 渐变（日出→正午） · 雨淋全功率 · 风机高档</div>
+      <div class="larr">▼ 触发：定时 12min 到达</div>
+      <div class="lnode"><span class="t">S4 冷水收尾 12-13min</span>恒温混水阀 30s 内 40°C→≈20°C · 光保持 · 风机高档</div>
+      <div class="larr">▼ 触发：定时 13min 或人离开</div>
+      <div class="lnode"><span class="t">S5 出浴 13-18min</span>风机转低档 5min 清余雾 · 浴霸保持 2-3min 暖光 · 水温回 40°C</div>
+      <div class="larr">▼ 触发：湿度 &lt;55% 或定时 5min</div>
+      <div class="lnode"><span class="t">S6 白天模式</span>全屋 4000-5000K 亮光 · 卫生间待机（保留深夜访客低亮度夜灯）</div>
+      <div class="larr">▼ 触发：19:00 定时</div>
+      <div class="lnode"><span class="t">S7 夜间模式</span>全屋 2700K 暖暗光 · 5000K 强制关闭 · 浴霸仅留微光</div>
+      <div class="larr">▼ 触发：22:00 定时</div>
+      <div class="lnode"><span class="t">S8 睡眠</span>全屋全黑 · 仅留门缝微光条（夜灯） → 回到 S0</div>
+    </div>
+
+    <h3>② 华为场景规则表（晨浴核心场景）</h3>
+    <div class="tbl-wrap">
+    <table class="rule-tbl">
+      <thead><tr><th>场景</th><th>触发</th><th>条件</th><th>动作</th></tr></thead>
+      <tbody>
+        <tr><td>晨光唤醒</td><td class="num">每天 06:20</td><td>工作日 或 自定义</td><td>热水器加热 · 浴霸 10% 暖光 · 风机中档</td></tr>
+        <tr><td>进入晨浴</td><td class="num">人体存在传感器</td><td>时间 06:00-08:00</td><td>浴霸全开 · 雨淋待命 · 风机高档 · 5000K 渐变启动</td></tr>
+        <tr><td>冷水收尾</td><td class="num">定时 12min</td><td>人仍在卫生间</td><td>混水阀切 ≈20°C · 播报提示音</td></tr>
+        <tr><td>湿度联动排风</td><td class="num">湿度 &gt;70%</td><td>人在 或 浴霸开启</td><td>风机高档；湿度 &lt;55% 且无人 → 风机低档</td></tr>
+        <tr><td>夜间防蓝光</td><td class="num">每天 19:00</td><td>—</td><td>全屋切 2700K · 5000K 强制断电</td></tr>
+        <tr><td>防遗忘</td><td class="num">浴霸开启 &gt;30min</td><td>—</td><td>推送提醒 + 蜂鸣</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>③ 核心代码框架（伪代码 / 状态机）</h3>
+    <pre class="code"><span class="cm">// 晨浴模式 · 状态机核心框架（可映射到华为自动化或 Home Assistant）</span>
+<span class="kw">enum</span> <span class="nm">State</span> { IDLE, PREHEAT, SUNRISE, PEAK, COLD_FINISH, DRYING, DAY, NIGHT, SLEEP }
+
+<span class="kw">class</span> <span class="nm">MorningMode</span> {
+  <span class="nm">state</span> = State.IDLE;
+  <span class="nm">timer</span> = <span class="kw">null</span>;
+
+  <span class="nm">onEnter</span>(<span class="nm">personPresent</span>, <span class="nm">humidity</span>, <span class="nm">time</span>) {
+    <span class="kw">if</span> (time === <span class="st">"06:20"</span> &amp;&amp; !personPresent) <span class="kw">this</span>.start(State.PREHEAT);
+    <span class="kw">else if</span> (personPresent &amp;&amp; hour <span class="kw">in</span> [6, 7]) <span class="kw">this</span>.start(State.SUNRISE);
+    <span class="kw">else if</span> (humidity &gt; 70) <span class="nm">fan</span>.set(3);      <span class="cm">// 湿度联动排风</span>
+  }
+
+  <span class="nm">start</span>(<span class="nm">s</span>) {
+    <span class="kw">this</span>.state = s; <span class="kw">this</span>.run(s);
+    <span class="kw">this</span>.timer = setTimeout(<span class="kw">()</span> =&gt; <span class="kw">this</span>.next(s), <span class="nm">DURATION</span>[s]);
+  }
+
+  <span class="nm">run</span>(<span class="nm">s</span>) {
+    <span class="kw">switch</span>(s) {
+      <span class="kw">case</span> State.SUNRISE:   <span class="nm">yuba</span>.power(100); <span class="nm">light</span>.cct(2700); <span class="kw">break</span>;
+      <span class="kw">case</span> State.PEAK:       <span class="nm">light</span>.rampCCT(2700, 5000, 600000); <span class="nm">shower</span>.on(40); <span class="kw">break</span>;
+      <span class="kw">case</span> State.COLD_FINISH: <span class="nm">valve</span>.setTemp(20); <span class="nm">voice</span>.say(<span class="st">"30秒冷水收尾"</span>); <span class="kw">break</span>;
+      <span class="kw">case</span> State.DRYING:     <span class="nm">fan</span>.set(1); <span class="nm">yuba</span>.keep(180000); <span class="kw">break</span>;
+    }
+  }
+
+  <span class="nm">next</span>(<span class="nm">s</span>) { <span class="cm">// 状态迁移：时间驱动 + 条件守卫</span>
+    <span class="kw">const</span> guards = {
+      SUNRISE:     <span class="kw">()</span> =&gt; State.PEAK,
+      PEAK:        <span class="kw">()</span> =&gt; <span class="nm">person</span>.present ? State.COLD_FINISH : State.DRYING,
+      COLD_FINISH: <span class="kw">()</span> =&gt; State.DRYING,
+      DRYING:      <span class="kw">()</span> =&gt; humidity &lt; 55 ? State.DAY : State.DRYING,
+    };
+    <span class="kw">this</span>.start(guards[s]());
+  }
+}
+<span class="cm">// 夜间保护：19:00 后 5000K 断电，防蓝光扰眠</span></pre>
+    <div class="flow-note">💡 <b>落地说明</b>：华为智慧生活不支持写代码，但它的"自动化"正是这个状态机的图形化实现——每个 S 状态 = 一个场景，用"定时/传感器触发 + 条件 + 动作"即可拼出上面的流程图；若想要更强的条件分支，可把设备桥接到 Home Assistant 跑完整版状态机。</div>
+  </section>
+
+  <!-- 预算专题 -->
+  <section class="block" id="budget">
+    <div class="sec-label">BUDGET</div>
+    <h2 class="sec-title">预算专题 · 全量采购清单 + 三档配置 + 采购建议</h2>
+    <p class="sec-lead">这是"采购视角"的总账：每个要买的硬件、规格、数量、参考价区间、可否压缩，最后给出三档可执行配置。价格均为市场参考，实际以淘宝/闲鱼实时为准。</p>
+
+    <h3>① 全量采购清单</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>硬件</th><th>规格</th><th>数量</th><th>参考价区间</th><th>压缩建议</th></tr></thead>
+      <tbody>
+        <tr><td>镜面不锈钢马赛克</td><td>0.8mm 光面 304</td><td class="num">19-20㎡</td><td class="num">3,800-7,000</td><td>核心，不可省</td></tr>
+        <tr><td>浴霸 1000W</td><td>石英红外四灯</td><td class="num">1</td><td class="num">300-500</td><td>不可省</td></tr>
+        <tr><td>超白钢化玻璃门</td><td>10mm 超白 + 五金</td><td class="num">1</td><td class="num">2,000-3,500</td><td>普通玻璃可省 800</td></tr>
+        <tr><td>不锈钢蹲便</td><td>不锈钢（非陶瓷）</td><td class="num">1</td><td class="num">150-600</td><td>不可省</td></tr>
+        <tr><td>镜面盖板（定制）</td><td>304 镜面承重</td><td class="num">1</td><td class="num">300-800</td><td>可选（有则全镜地面）</td></tr>
+        <tr><td>变频静音排风扇</td><td>100mm 三档</td><td class="num">1</td><td class="num">200-600</td><td>不可省</td></tr>
+        <tr><td>空气注入顶喷</td><td>25-30cm 空气注入</td><td class="num">1</td><td class="num">300-1,200</td><td>国产即可省千元</td></tr>
+        <tr><td>离子交换软水机</td><td>小型全屋</td><td class="num">1</td><td class="num">2,500-5,000</td><td>最贵项，国产即可</td></tr>
+        <tr><td>华为智联电热水器</td><td>60L 鸿蒙智联</td><td class="num">1</td><td class="num">1,200-2,500</td><td>不可省（智联核心）</td></tr>
+        <tr><td>恒温混水阀+冷冲</td><td>40°C→20°C</td><td class="num">1</td><td class="num">200-800</td><td>可先手动</td></tr>
+        <tr><td>可调色温 LED 面板</td><td>2700-5000K</td><td class="num">1</td><td class="num">300-900</td><td>固定 5000K 省 500</td></tr>
+        <tr><td>门外遮光帘</td><td>遮光 / 纱帘</td><td class="num">1</td><td class="num">100-500</td><td>—</td></tr>
+        <tr><td>铺贴 + 给排水 + 电气</td><td>人工 / 辅料</td><td class="num">1项</td><td class="num">5,300-9,200</td><td>多家比价</td></tr>
+        <tr class="sub"><td>小计（装修级，含水系统 + 晨浴精调）</td><td>—</td><td class="num">—</td><td class="num">1.9万-4.1万</td><td>中值 ≈2.8万</td></tr>
+        <tr><td>污水提升泵</td><td>地下排水必需</td><td class="num">1</td><td class="num">1,500-5,000</td><td>地下空间必需</td></tr>
+        <tr><td>除湿机</td><td>12L/天</td><td class="num">1</td><td class="num">800-1,500</td><td>杭州冬季必需</td></tr>
+        <tr class="total"><td>完整版合计（含泵 + 除湿）</td><td>—</td><td class="num">—</td><td class="num">约3.7万-5.8万</td><td>—</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>② 三档可执行配置</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>档位</th><th>取舍</th><th>预算</th><th>适合谁</th></tr></thead>
+      <tbody>
+        <tr><td><b>基础版</b></td><td>普通玻璃门 · 固定 5000K · 手动冷冲 · 国产花洒/软水</td><td class="num">≈1.9-2.3万</td><td>先验证效果再升级</td></tr>
+        <tr><td><b>舒适版（推荐）</b></td><td>超白门 + 可调色温 + 智联混水阀 + 国产软水</td><td class="num">≈2.6-3.0万</td><td>一步到位的主流选择</td></tr>
+        <tr><td><b>豪华版</b></td><td>进口花洒/软水 + 增压泵 + 除湿机 + 污水泵</td><td class="num">≈4.5-5.8万</td><td>地下空间全配齐</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>③ 采购建议（淘宝 / 闲鱼）</h3>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🔍</div><div><h3>比价铁律</h3><p>同型号在淘宝、闲鱼、拼多多三家比价；镜面马赛克、玻璃门、盖板等"按平米计价"的，务必先索样、量好尺寸再下单——单价差 30% 以上多为厚度/材质缩水。</p></div></div>
+      <div class="wcard"><div class="ic">🛒</div><div><h3>渠道取舍</h3><p>带电 + 带安装售后的（热水器/软水机/浴霸/风机）优先京东/天猫官方店；纯五金件（混水阀/花洒/蹲便/帘）闲鱼常能淘到全新低价；定制件走不锈钢加工店。</p></div></div>
+      <div class="wcard"><div class="ic">🧾</div><div><h3>验收清单</h3><p>收货后核对：镜面马赛克光泽/厚度、玻璃"超白"标识、风机噪声 ≤33dB、软水机树脂吨数、热水器能否被智慧生活 App 发现——能连上 App 才是真鸿蒙智联。</p></div></div>
+    </div>
+  </section>
+
+</main>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+/* 架构图部件悬停提示 */
+(function(){
+  var tip=document.getElementById('tip');
+  var comps=document.querySelectorAll('.comp');
+  function move(e){tip.style.left=(e.clientX+14)+'px';tip.style.top=(e.clientY+14)+'px';}
+  comps.forEach(function(c){
+    c.addEventListener('mouseenter',function(){tip.textContent=c.getAttribute('data-intro')||'';tip.classList.add('on');});
+    c.addEventListener('mouseleave',function(){tip.classList.remove('on');});
+    c.addEventListener('mousemove',move);
+    c.addEventListener('touchstart',function(){tip.textContent=c.getAttribute('data-intro')||'';tip.classList.add('on');setTimeout(function(){tip.classList.remove('on');},1800);});
+  });
+})();
+/* 顶部导航高亮 */
+(function(){
+  var items=document.querySelectorAll('.tnav-item');
+  var map={};
+  items.forEach(function(a){var id=a.getAttribute('href').slice(1);if(id&&document.getElementById(id))map[id]=a;});
+  function onscroll(){
+    var y=window.scrollY+120,cur=null;
+    for(var id in map){var el=document.getElementById(id);if(el&&el.offsetTop<=y)cur=id;}
+    items.forEach(function(a){a.classList.remove('on');});
+    if(cur&&map[cur])map[cur].classList.add('on');
+  }
+  window.addEventListener('scroll',onscroll,{passive:true});onscroll();
+})();
+</script>
+</body>
+</html>

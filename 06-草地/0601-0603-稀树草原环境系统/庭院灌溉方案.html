@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>稀树草原庭院 · 全隐藏智能灌溉方案</title>
+<style>
+  :root{
+    --bg:#f5f6f0;
+    --surface:#ffffff;
+    --ink:#223021;
+    --muted:#5d6b57;
+    --primary:#2f7d5f;
+    --primary-deep:#1e5c46;
+    --primary-soft:#e9f2ea;
+    --accent:#d9a05b;
+    --accent-soft:#faf0dd;
+    --line:#e2e7db;
+    --warn:#b3543c;
+    --shadow:0 1px 2px rgba(34,48,33,.06),0 8px 24px rgba(34,48,33,.06);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.75;font-size:15px;
+  }
+  .wrap{max-width:1060px;margin:0 auto;padding:0 20px;}
+
+  /* ===== 顶部导航 ===== */
+  nav{
+    position:sticky;top:0;z-index:50;background:rgba(245,246,240,.92);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+  }
+  nav .inner{max-width:1060px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+  nav .brand{font-weight:700;color:var(--primary-deep);font-size:15px;white-space:nowrap;}
+  nav .links{display:flex;flex-wrap:wrap;gap:4px;}
+  nav a{color:var(--muted);text-decoration:none;font-size:13px;padding:5px 9px;border-radius:8px;}
+  nav a:hover{color:var(--primary);background:var(--primary-soft);}
+
+  /* ===== Hero ===== */
+  header.hero{background:linear-gradient(135deg,#223021 0%,#2f7d5f 78%,#3a8f6c 100%);color:#fff;padding:54px 0 46px;}
+  header.hero .kicker{display:inline-block;font-size:12.5px;letter-spacing:.12em;color:#cfe6d8;border:1px solid rgba(255,255,255,.35);padding:4px 12px;border-radius:999px;margin-bottom:18px;}
+  header.hero h1{font-size:30px;line-height:1.3;font-weight:800;letter-spacing:.01em;}
+  header.hero .sub{margin-top:12px;color:#dceadf;font-size:15px;max-width:720px;}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:28px;}
+  .metric{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:14px 16px;}
+  .metric .v{font-size:24px;font-weight:800;color:#fff;}
+  .metric .k{font-size:12.5px;color:#cfe6d8;margin-top:2px;}
+
+  /* ===== 章节 ===== */
+  section{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);margin:22px 0;padding:30px 34px;}
+  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px;}
+  .sec-num{flex:none;font-size:12px;font-weight:800;color:#fff;background:var(--primary);border-radius:8px;padding:3px 9px;letter-spacing:.05em;}
+  .sec-head h2{font-size:21px;font-weight:800;color:var(--ink);}
+  .sec-head .en{color:var(--muted);font-size:12px;letter-spacing:.08em;}
+  .lead{color:var(--muted);font-size:14px;margin:8px 0 18px;border-left:3px solid var(--accent);padding-left:12px;}
+  h3{font-size:16px;font-weight:700;margin:22px 0 8px;color:var(--primary-deep);}
+  p{margin:8px 0;}
+  .tag{display:inline-block;font-size:12px;padding:2px 9px;border-radius:999px;background:var(--primary-soft);color:var(--primary-deep);margin:2px 4px 2px 0;}
+
+  /* ===== 表格 ===== */
+  .tbl-scroll{overflow-x:auto;margin:10px 0 4px;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:620px;}
+  th{background:var(--primary-soft);color:var(--primary-deep);text-align:left;font-weight:700;padding:9px 12px;border-bottom:2px solid var(--primary);white-space:nowrap;}
+  td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+  tbody tr:nth-child(even){background:#fafbf7;}
+  td.num,th.num{text-align:right;white-space:nowrap;}
+  tr.sub td{background:var(--accent-soft);font-weight:700;}
+  tr.total td{background:var(--primary-soft);font-weight:800;color:var(--primary-deep);font-size:14px;}
+  .note{font-size:12.5px;color:var(--muted);margin-top:8px;}
+
+  /* ===== 卡片 ===== */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:12px 0;}
+  .card{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#fcfdfa;}
+  .card h4{font-size:14.5px;color:var(--primary-deep);margin-bottom:6px;}
+  .card p,.card li{font-size:13.5px;color:var(--muted);}
+  .card ul{padding-left:18px;}
+  .callout{border:1px solid var(--accent);background:var(--accent-soft);border-radius:12px;padding:12px 16px;font-size:13.5px;color:#6b4a1d;margin:12px 0;}
+  .callout b{color:#8a5a12;}
+
+  /* ===== SVG 图 ===== */
+  figure{margin:16px 0;}
+  figure svg{width:100%;height:auto;display:block;border:1px solid var(--line);border-radius:12px;background:#fcfdfa;}
+  figcaption{font-size:12.5px;color:var(--muted);text-align:center;margin-top:6px;}
+
+  /* ===== 流程/步骤 ===== */
+  .steps{counter-reset:step;margin:12px 0;}
+  .step{display:flex;gap:14px;margin:10px 0;}
+  .step .no{counter-increment:step;flex:none;width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .step .no::before{content:counter(step);}
+  .step .bd{border:1px solid var(--line);border-radius:12px;padding:10px 14px;flex:1;background:#fcfdfa;}
+  .step .bd b{color:var(--primary-deep);}
+  .step .bd p,.step .bd li{font-size:13.5px;color:var(--muted);margin:3px 0;}
+  .step .bd ul{padding-left:18px;}
+
+  .foot{text-align:center;color:var(--muted);font-size:12.5px;padding:26px 20px 40px;}
+  .foot .src{font-size:12px;line-height:1.9;max-width:820px;margin:10px auto 0;}
+
+  @media (max-width:820px){
+    .metrics{grid-template-columns:repeat(2,1fr);}
+    .grid2,.grid3{grid-template-columns:1fr;}
+    header.hero h1{font-size:24px;}
+    section{padding:22px 18px;}
+    nav .links{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <div class="brand">稀树草原 · 全隐藏灌溉方案</div>
+    <div class="links">
+      <a href="#s1">目标</a>
+      <a href="#s2">理念</a>
+      <a href="#s3">架构</a>
+      <a href="#s4">分区</a>
+      <a href="#s5">地埋滴灌</a>
+      <a href="#s6">华为联动</a>
+      <a href="#s7">雨水收集</a>
+      <a href="#s8">成本</a>
+      <a href="#s9">施工</a>
+      <a href="#s10">风险</a>
+      <a href="#s11">决策点</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">设计方案 · 讨论稿 V1</span>
+    <h1>50㎡ 稀树草原庭院<br>地下埋管 · 传感器全自动灌溉系统</h1>
+    <p class="sub">全地埋滴灌（完工后地表零设备、完全隐形）+ 华为智慧生活 App 遥控定时 + 本地 DIY 湿度闭环 + 雨水收集优先供水，整体设备成本控制在 5000 元以内，全程自己动手。</p>
+    <div class="metrics">
+      <div class="metric"><div class="v">50㎡</div><div class="k">庭院面积（树已栽）</div></div>
+      <div class="metric"><div class="v">0</div><div class="k">地表可见设备（全隐藏）</div></div>
+      <div class="metric"><div class="v">2~3</div><div class="k">自动分区（草坪/树木）</div></div>
+      <div class="metric"><div class="v">≤5000</div><div class="k">设备总预算（元）</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+<!-- ============ 01 ============ -->
+<section id="s1">
+  <div class="sec-head"><span class="sec-num">01</span><h2>项目背景与目标</h2><span class="en">GOAL</span></div>
+  <p class="lead">结论先行：这是一套「只在地里说话」的灌溉系统——滴灌管埋在地下 10cm、阀与控制器装进密封阀箱，地表只剩草和树；用水逻辑完全交给传感器，人只需要在华为智慧生活 App 里看着、偶尔远程点一下。</p>
+  <div class="grid3">
+    <div class="card"><h4>核心目标</h4><ul>
+      <li>稀树草原美学不被任何水管/喷头破坏</li>
+      <li>建成后零人工浇灌，全部自动</li>
+      <li>设备总成本 ≤ 5000 元，全部 DIY</li>
+    </ul></div>
+    <div class="card"><h4>硬性约束</h4><ul>
+      <li>控制器必须对接华为智慧生活 App</li>
+      <li>灌溉方式：地埋滴灌（全隐藏）</li>
+      <li>加入雨水收集，预算可适当放宽</li>
+    </ul></div>
+    <div class="card"><h4>已有条件</h4><ul>
+      <li>疏林树木已栽好（成本不计入）</li>
+      <li>自己动手施工、自己折腾调试</li>
+      <li>北京气候（冬季需防冻泄水）</li>
+    </ul></div>
+  </div>
+  <div class="callout"><b>一条贯穿始终的原则：</b>稀树草原 = 低耗水、深根系、旱养。系统不是"天天浇水"，而是"只在土壤真的缺水时精确补水，一次浇透促根深扎"。传感器不是噱头，它正是省水省钱的核心。</div>
+</section>
+
+<!-- ============ 02 ============ -->
+<section id="s2">
+  <div class="sec-head"><span class="sec-num">02</span><h2>设计理念：全隐藏 + 按需补水</h2><span class="en">PHILOSOPHY</span></div>
+  <p class="lead">把"看不见"做到极致：管网、滴头、阀、控制器、传感器全部埋入地下或收进阀箱；把"自动化"做到极致：人只负责设定和偶尔查看，浇不浇、浇多少由土壤和天气决定。</p>
+  <div class="grid2">
+    <div class="card"><h4>为什么选地埋滴灌（SDI）而不是喷灌</h4>
+      <p>喷灌要把喷头露出地面或弹出，既破坏草原视觉，蒸发损失也大（约 30%）。地埋滴灌把 16mm 滴灌管埋在草根层下方 10cm，水直接从根系层渗出：</p>
+      <ul>
+        <li><b>隐形</b>：地表零设备，完工后只看见草和树</li>
+        <li><b>省水</b>：灌溉效率约 90%+，比喷灌节水 30%+</li>
+        <li><b>防病</b>：不浇叶面，草坪病害少</li>
+        <li><b>树草分离</b>：树下单独滴灌，树干不积水</li>
+      </ul>
+    </div>
+    <div class="card"><h4>为什么传感器必须参与决策</h4>
+      <p>稀树草原草皮"旱养"的特性，决定了它不需要固定周期灌溉，需要的是"土壤含水量低于阈值才补"。</p>
+      <ul>
+        <li>土壤湿度传感器（电容式）埋入根系层，是浇水的"唯一裁判"</li>
+        <li>雨量传感器 + 天气，雨天自动停</li>
+        <li>水位传感器管雨水/自来水切换</li>
+        <li>三路传感器 → 本地 ESP32 逻辑 → 硬切断电磁阀</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 ============ -->
+<section id="s3">
+  <div class="sec-head"><span class="sec-num">03</span><h2>系统总体架构</h2><span class="en">ARCHITECTURE</span></div>
+  <p class="lead">三层结构：水源层（雨水优先/自来水补位）→ 控制层（华为 App 遥控 + ESP32 湿度许可，双钥匙串联）→ 管网层（地下滴灌网络）。</p>
+  <figure>
+    <svg viewBox="0 0 960 330" xmlns="http://www.w3.org/2000/svg" font-family="PingFang SC,Microsoft YaHei,sans-serif">
+      <!-- 水源层 -->
+      <text x="20" y="26" font-size="14" font-weight="700" fill="#1e5c46">水源层</text>
+      <rect x="20" y="40" width="180" height="64" rx="10" fill="#e9f2ea" stroke="#2f7d5f"/>
+      <text x="110" y="68" text-anchor="middle" font-size="13" fill="#1e5c46">雨水罐 800~1000L</text>
+      <text x="110" y="88" text-anchor="middle" font-size="11" fill="#5d6b57">屋顶雨落管 + 首雨弃流</text>
+
+      <rect x="20" y="128" width="180" height="64" rx="10" fill="#faf0dd" stroke="#d9a05b"/>
+      <text x="110" y="156" text-anchor="middle" font-size="13" fill="#6b4a1d">自来水（补位）</text>
+      <text x="110" y="176" text-anchor="middle" font-size="11" fill="#8a5a12">罐内水位低时自动切入</text>
+
+      <rect x="240" y="40" width="180" height="64" rx="10" fill="#e9f2ea" stroke="#2f7d5f"/>
+      <text x="330" y="66" text-anchor="middle" font-size="13" fill="#1e5c46">水泵（自吸）</text>
+      <text x="330" y="86" text-anchor="middle" font-size="11" fill="#5d6b57">压力送到主管</text>
+
+      <line x1="200" y1="72" x2="240" y2="72" stroke="#2f7d5f" stroke-width="2"/>
+      <line x1="110" y1="128" x2="110" y2="72" stroke="#d9a05b" stroke-width="2" stroke-dasharray="4 3"/>
+
+      <!-- 控制层 -->
+      <text x="470" y="26" font-size="14" font-weight="700" fill="#1e5c46">控制层（双钥匙串联）</text>
+      <rect x="470" y="40" width="200" height="64" rx="10" fill="#fff" stroke="#2f7d5f"/>
+      <text x="570" y="64" text-anchor="middle" font-size="12.5" fill="#1e5c46">钥匙① 鸿蒙智联智能水阀</text>
+      <text x="570" y="84" text-anchor="middle" font-size="11" fill="#5d6b57">华为智慧生活 App / 小艺语音</text>
+
+      <rect x="470" y="128" width="200" height="64" rx="10" fill="#fff" stroke="#d9a05b"/>
+      <text x="570" y="152" text-anchor="middle" font-size="12.5" fill="#6b4a1d">钥匙② ESP32 湿度许可</text>
+      <text x="570" y="172" text-anchor="middle" font-size="11" fill="#8a5a12">湿度/雨量/水位 → 硬切断</text>
+
+      <rect x="710" y="40" width="230" height="64" rx="10" fill="#e9f2ea" stroke="#2f7d5f"/>
+      <text x="825" y="66" text-anchor="middle" font-size="13" fill="#1e5c46">叠片过滤器 120 目</text>
+      <text x="825" y="86" text-anchor="middle" font-size="11" fill="#5d6b57">地埋滴灌必须精滤</text>
+
+      <rect x="710" y="128" width="230" height="64" rx="10" fill="#e9f2ea" stroke="#2f7d5f"/>
+      <text x="825" y="152" text-anchor="middle" font-size="13" fill="#1e5c46">主切断电磁阀（常闭）</text>
+      <text x="825" y="172" text-anchor="middle" font-size="11" fill="#5d6b57">钥匙②闭合才供水</text>
+
+      <line x1="420" y1="72" x2="470" y2="72" stroke="#2f7d5f" stroke-width="2"/>
+      <line x1="670" y1="72" x2="710" y2="72" stroke="#2f7d5f" stroke-width="2"/>
+      <line x1="570" y1="104" x2="570" y2="128" stroke="#d9a05b" stroke-width="2" stroke-dasharray="4 3"/>
+      <line x1="710" y1="128" x2="825" y2="128" stroke="#d9a05b" stroke-width="2" stroke-dasharray="4 3"/>
+
+      <!-- 管网层 -->
+      <text x="20" y="252" font-size="14" font-weight="700" fill="#1e5c46">管网层（全地埋）</text>
+      <rect x="20" y="268" width="290" height="54" rx="10" fill="#f5f6f0" stroke="#2f7d5f"/>
+      <text x="165" y="291" text-anchor="middle" font-size="13" fill="#1e5c46">分区A · 草坪区 ~35㎡</text>
+      <text x="165" y="310" text-anchor="middle" font-size="11" fill="#5d6b57">16mm 地埋滴灌管 × ~90m</text>
+
+      <rect x="340" y="268" width="290" height="54" rx="10" fill="#f5f6f0" stroke="#2f7d5f"/>
+      <text x="485" y="291" text-anchor="middle" font-size="13" fill="#1e5c46">分区B · 树木区（已栽 2~3 棵）</text>
+      <text x="485" y="310" text-anchor="middle" font-size="11" fill="#5d6b57">树下 滴箭 / 涌泉头 环形补水</text>
+
+      <rect x="660" y="268" width="280" height="54" rx="10" fill="#f5f6f0" stroke="#2f7d5f"/>
+      <text x="800" y="291" text-anchor="middle" font-size="13" fill="#1e5c46">分区C · 观赏草点缀带</text>
+      <text x="800" y="310" text-anchor="middle" font-size="11" fill="#5d6b57">微滴灌 / 极旱养（可选）</text>
+
+      <line x1="825" y1="192" x2="825" y2="268" stroke="#2f7d5f" stroke-width="2"/>
+      <line x1="165" y1="192" x2="165" y2="268" stroke="#2f7d5f" stroke-width="2"/>
+      <line x1="485" y1="192" x2="485" y2="268" stroke="#2f7d5f" stroke-width="2"/>
+
+      <!-- 传感器 -->
+      <text x="470" y="252" font-size="14" font-weight="700" fill="#6b4a1d">感知网络 → ESP32</text>
+      <rect x="470" y="268" width="160" height="54" rx="10" fill="#faf0dd" stroke="#d9a05b"/>
+      <text x="550" y="291" text-anchor="middle" font-size="11.5" fill="#6b4a1d">土壤湿度 ×4</text>
+      <text x="550" y="310" text-anchor="middle" font-size="11" fill="#8a5a12">雨量 / 水位</text>
+    </svg>
+    <figcaption>图 1 · 系统架构：雨水优先 → 双钥匙控制 → 全地埋滴灌</figcaption>
+  </figure>
+  <p><b>双钥匙的含义：</b>钥匙①（华为 App 控制的鸿蒙水阀/智能开关）决定"要不要浇这个区"；钥匙②（ESP32 + 湿度/雨量判断）决定"现在土壤需不需要水"。两把钥匙串联，任何一把断开都不出水——App 设了浇水计划，但湿度够高或在下雨，系统自动停手。</p>
+</section>
+
+<!-- ============ 04 ============ -->
+<section id="s4">
+  <div class="sec-head"><span class="sec-num">04</span><h2>分区与植物（树已栽，只补草与点缀）</h2><span class="en">ZONES</span></div>
+  <p class="lead">稀树草原 = 疏林（已有的树）＋ 大片耐旱草 ＋ 少量观赏草/花点缀。浇水按"植物需水"分三档，绝不一刀切。</p>
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>分区</th><th>面积/数量</th><th>植物配置</th><th>灌溉方式</th><th>建成后需水</th></tr></thead>
+    <tbody>
+      <tr><td><b>A 草坪区</b></td><td>约 35㎡</td><td>野牛草（极耐旱、夏眠金黄、原生草原感）或 结缕草/高羊茅耐旱混播</td><td>地埋滴灌管 16mm，间距 40cm，埋深 10cm</td><td>旱季约 4~6mm/周（一次浇透）</td></tr>
+      <tr><td><b>B 树木区</b></td><td>2~3 棵（已栽）</td><td>白皮松/蒙古栎/皂角等疏林树</td><td>每树 4 个滴箭/涌泉头，沿树冠滴水线</td><td>建成后基本靠天，仅持续干旱时补</td></tr>
+      <tr><td><b>C 点缀带</b></td><td>约 8㎡</td><td>狼尾草、细叶芒等观赏草 + 松果菊/鼠尾草</td><td>微滴灌（可选），观赏草本身极耐旱</td><td>极低，可旱养</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout"><b>设计巧思：</b>滴灌管全部埋在地下 10cm 的草根层下方，地表零设备；喷头、阀箱、控制器统一收进地埋阀箱，完工后这个院子"看起来"就是纯粹的草原，没有任何灌溉痕迹。</div>
+</section>
+
+<!-- ============ 05 ============ -->
+<section id="s5">
+  <div class="sec-head"><span class="sec-num">05</span><h2>地埋滴灌设计（SDI）</h2><span class="en">SUBSURFACE DRIP</span></div>
+  <p class="lead">草坪地埋滴灌的关键参数：压力补偿（PC）滴灌管、120 目精滤、滴头间距 30cm、管距 40cm、埋深 10cm——保证湿润锋相互搭接、草皮均匀受水。</p>
+  <figure>
+    <svg viewBox="0 0 960 250" xmlns="http://www.w3.org/2000/svg" font-family="PingFang SC,Microsoft YaHei,sans-serif">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#dcefe0"/><stop offset="1" stop-color="#eef5ec"/>
+        </linearGradient>
+        <linearGradient id="soil" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#8a6b47"/><stop offset="1" stop-color="#6d5436"/>
+        </linearGradient>
+      </defs>
+      <!-- 天空 -->
+      <rect x="0" y="0" width="960" height="60" fill="url(#sky)"/>
+      <text x="480" y="38" text-anchor="middle" font-size="15" fill="#2f7d5f">草皮冠层（剪短 ~5cm）</text>
+      <!-- 草 -->
+      <g stroke="#2f7d5f" stroke-width="2">
+        <line x1="60" y1="60" x2="57" y2="40"/><line x1="66" y1="60" x2="68" y2="38"/><line x1="72" y1="60" x2="70" y2="41"/>
+        <line x1="220" y1="60" x2="217" y2="40"/><line x1="226" y1="60" x2="228" y2="38"/><line x1="232" y1="60" x2="230" y2="41"/>
+        <line x1="380" y1="60" x2="377" y2="40"/><line x1="386" y1="60" x2="388" y2="38"/><line x1="392" y1="60" x2="390" y2="41"/>
+        <line x1="540" y1="60" x2="537" y2="40"/><line x1="546" y1="60" x2="548" y2="38"/><line x1="552" y1="60" x2="550" y2="41"/>
+        <line x1="700" y1="60" x2="697" y2="40"/><line x1="706" y1="60" x2="708" y2="38"/><line x1="712" y1="60" x2="710" y2="41"/>
+        <line x1="860" y1="60" x2="857" y2="40"/><line x1="866" y1="60" x2="868" y2="38"/><line x1="872" y1="60" x2="870" y2="41"/>
+      </g>
+      <!-- 地面 -->
+      <line x1="0" y1="60" x2="960" y2="60" stroke="#6d5436" stroke-width="3"/>
+      <!-- 土壤 -->
+      <rect x="0" y="60" width="960" height="190" fill="url(#soil)"/>
+      <!-- 根 -->
+      <g stroke="#5d7a46" stroke-width="1.4" fill="none">
+        <path d="M66 60 C66 88 64 100 62 112"/><path d="M66 60 C70 90 74 100 78 112"/>
+        <path d="M386 60 C386 88 384 100 382 112"/><path d="M386 60 C390 90 394 100 398 112"/>
+        <path d="M706 60 C706 88 704 100 702 112"/><path d="M706 60 C710 90 714 100 718 112"/>
+      </g>
+      <!-- 滴灌管 -->
+      <line x1="30" y1="120" x2="930" y2="120" stroke="#d9a05b" stroke-width="6" stroke-linecap="round"/>
+      <!-- 湿润锋 -->
+      <g fill="none" stroke="#7fa08a" stroke-width="2">
+        <ellipse cx="90" cy="150" rx="34" ry="26" stroke-dasharray="4 3"/>
+        <ellipse cx="200" cy="150" rx="34" ry="26" stroke-dasharray="4 3"/>
+        <ellipse cx="310" cy="150" rx="34" ry="26" stroke-dasharray="4 3"/>
+        <ellipse cx="420" cy="150" rx="34" ry="26" stroke-dasharray="4 3"/>
+        <ellipse cx="530" cy="150" rx="34" ry="26" stroke-dasharray="4 3"/>
+        <ellipse cx="640" cy="150" rx="34" ry="26" stroke-dasharray="4 3"/>
+        <ellipse cx="750" cy="150" rx="34" ry="26" stroke-dasharray="4 3"/>
+        <ellipse cx="860" cy="150" rx="34" ry="26" stroke-dasharray="4 3"/>
+      </g>
+      <!-- 标注 -->
+      <line x1="66" y1="120" x2="66" y2="60" stroke="#fff" stroke-width="1" stroke-dasharray="3 3"/>
+      <text x="66" y="238" text-anchor="middle" font-size="12" fill="#f2e6d2">滴灌管埋深 10cm</text>
+      <text x="470" y="228" text-anchor="middle" font-size="13" fill="#f2e6d2">湿润锋相互搭接 → 草皮均匀受水（管距 40cm / 滴头间距 30cm）</text>
+      <text x="66" y="108" text-anchor="middle" font-size="11" fill="#f2e6d2">根系层</text>
+    </svg>
+    <figcaption>图 2 · 地埋滴灌剖面：水从根系层直接渗出，地表无水痕、无蒸发</figcaption>
+  </figure>
+  <h3>选型规格（对标成熟产品参数）</h3>
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>项目</th><th>规格</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>滴灌管</td><td>16mm 内镶压力补偿（PC）滴灌管</td><td>滴头 2.3L/h、间距 30cm，压力补偿保证整条管出水均匀</td></tr>
+      <tr><td>主管</td><td>PE 20mm</td><td>从阀箱到各分区的输水干管，埋深 30~40cm</td></tr>
+      <tr><td>过滤</td><td>120 目叠片/网式过滤器</td><td>地埋滴灌的硬性要求，防止滴头堵塞（必须加）</td></tr>
+      <tr><td>排水</td><td>支管末端排水阀 + 管路坡度</td><td>冬季泄水防冻裂（北京必做）</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">参数参考：雨鸟 XFS 地埋滴灌系列（16mm / 滴头 2.3、3.5 L/h / 间距 30、45.7、61cm / 过滤 120 目），草坪 SDI 埋深 10~15cm 为行业通行做法。</p>
+</section>
+
+<!-- ============ 06 ============ -->
+<section id="s6">
+  <div class="sec-head"><span class="sec-num">06</span><h2>华为智慧生活对接 + 自动化逻辑</h2><span class="en">HUAWEI &amp; AUTOMATION</span></div>
+  <p class="lead">把"人机界面"和"智能决策"分层：华为智慧生活 App 负责遥控、定时、场景；本地 ESP32 负责土壤湿度/雨量/水位的硬判断。两层各管各的，任一失效都安全。</p>
+
+  <h3>① 华为智慧生活 App 层（钥匙①）</h3>
+  <div class="grid2">
+    <div class="card"><h4>硬件选型（二选一）</h4>
+      <ul>
+        <li><b>方案甲 · 鸿蒙智联智能水阀</b>（电动球阀，直接装在分区水管上，App 原生控制，约 210~300 元/个）——更直接、可看阀门状态</li>
+        <li><b>方案乙 · 鸿蒙智联智能插座</b>（控制 24VAC 变压器给电磁阀供电，约 60~90 元/个）——更便宜、生态产品多</li>
+      </ul>
+    </div>
+    <div class="card"><h4>App 里能做什么</h4>
+      <ul>
+        <li>手动远程开/关分区</li>
+        <li>定时计划（自动场景：每天凌晨 4:00 开、5:00 关）</li>
+        <li>小艺语音："小艺小艺，给草坪浇 20 分钟"</li>
+        <li>全屋场景联动（可并入家中其他智能设备）</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>② 本地 DIY 感知层（钥匙②，ESP32）</h3>
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>传感器</th><th>数量</th><th>布点</th><th>作用</th></tr></thead>
+    <tbody>
+      <tr><td>电容式土壤湿度传感器</td><td>4</td><td>草坪 2 个 + 树下 1 个 + 花境 1 个（埋 10~15cm）</td><td>含水量 &lt;25% 才放水，≥40% 停（"少次多量"促深根）</td></tr>
+      <tr><td>雨量传感器（翻斗式）</td><td>1</td><td>阀箱附近</td><td>下雨强制跳过本次浇水</td></tr>
+      <tr><td>水位开关/浮球</td><td>1~2</td><td>雨水罐内</td><td>低水位 → 自动切入自来水补位</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><b>串联逻辑（硬切断，安全优先）：</b>ESP32 读全部传感器 → 判断"本次是否允许浇水" → 通过继电器串接在供水主电磁阀回路。湿度够/在下雨 → 继电器断开 → 即使 App 开了分区也没水；湿度低且非雨 → 继电器闭合 → App 定时窗口一到就浇。</p>
+
+  <figure>
+    <svg viewBox="0 0 960 230" xmlns="http://www.w3.org/2000/svg" font-family="PingFang SC,Microsoft YaHei,sans-serif">
+      <text x="40" y="34" font-size="14" font-weight="700" fill="#1e5c46">供水主回路（双钥匙串联）</text>
+      <!-- 电源 -->
+      <rect x="40" y="60" width="130" height="56" rx="10" fill="#faf0dd" stroke="#d9a05b"/>
+      <text x="105" y="84" text-anchor="middle" font-size="12.5" fill="#6b4a1d">220V / 水泵</text>
+      <text x="105" y="102" text-anchor="middle" font-size="11" fill="#8a5a12">供水动力源</text>
+      <!-- 钥匙1 -->
+      <rect x="240" y="60" width="170" height="56" rx="10" fill="#e9f2ea" stroke="#2f7d5f"/>
+      <text x="325" y="84" text-anchor="middle" font-size="12.5" fill="#1e5c46">钥匙① 鸿蒙水阀</text>
+      <text x="325" y="102" text-anchor="middle" font-size="11" fill="#5d6b57">App / 定时 / 场景</text>
+      <!-- 钥匙2 -->
+      <rect x="480" y="60" width="170" height="56" rx="10" fill="#e9f2ea" stroke="#2f7d5f"/>
+      <text x="565" y="84" text-anchor="middle" font-size="12.5" fill="#1e5c46">钥匙② ESP32 继电器</text>
+      <text x="565" y="102" text-anchor="middle" font-size="11" fill="#5d6b57">湿度 / 雨量 / 水位</text>
+      <!-- 电磁阀 -->
+      <rect x="720" y="60" width="200" height="56" rx="10" fill="#f5f6f0" stroke="#2f7d5f"/>
+      <text x="820" y="84" text-anchor="middle" font-size="12.5" fill="#1e5c46">主切断电磁阀</text>
+      <text x="820" y="102" text-anchor="middle" font-size="11" fill="#5d6b57">→ 分区滴灌管网</text>
+      <line x1="170" y1="88" x2="240" y2="88" stroke="#2f7d5f" stroke-width="3"/>
+      <line x1="410" y1="88" x2="480" y2="88" stroke="#2f7d5f" stroke-width="3"/>
+      <line x1="650" y1="88" x2="720" y2="88" stroke="#2f7d5f" stroke-width="3"/>
+      <!-- 串点 -->
+      <circle cx="240" cy="88" r="5" fill="#2f7d5f"/><circle cx="480" cy="88" r="5" fill="#2f7d5f"/>
+      <!-- 判定 -->
+      <rect x="240" y="160" width="410" height="54" rx="10" fill="#faf0dd" stroke="#d9a05b"/>
+      <text x="445" y="184" text-anchor="middle" font-size="13" fill="#6b4a1d">ES32 判定：湿度&lt;25% 且 非雨天 且 在允许时段 → 才允许出水</text>
+      <text x="445" y="203" text-anchor="middle" font-size="11.5" fill="#8a5a12">否则钥匙②断开，App 开了也不出水（防呆设计）</text>
+      <line x1="565" y1="116" x2="445" y2="160" stroke="#d9a05b" stroke-width="2" stroke-dasharray="4 3"/>
+    </svg>
+    <figcaption>图 3 · 双钥匙串联：App 管"想不想浇"，ESP32 管"该不该浇"</figcaption>
+  </figure>
+
+  <div class="callout"><b>关于"生态边界"的实话：</b>华为智慧生活 App 原生生态里，土壤湿度类传感器很少（多为空气温湿度）。所以本方案让 App 管开关/定时/语音，湿度闭环走本地 ESP32——这是目前"华为 App + 湿度自动化"最可靠、最便宜的组合。若你后期想在一个 App 里看湿度曲线，可给 ESP32 加一块小屏或本地网页，数据不出局域网，不影响华为侧使用。</div>
+</section>
+
+<!-- ============ 07 ============ -->
+<section id="s7">
+  <div class="sec-head"><span class="sec-num">07</span><h2>雨水收集设计</h2><span class="en">RAINWATER</span></div>
+  <p class="lead">雨水优先、自来水补位。北京年降雨约 550~600mm，一小块屋面就能灌满罐子；关键设计是"首雨弃流 + 自动切自来水"，保证滴头不被脏水堵、旱季也不断水。</p>
+  <div class="grid2">
+    <div class="card"><h4>雨水收集流程</h4>
+      <p>屋面/硬化面雨落管 → 首雨弃流器（把污染的前 1~2mm 雨水排掉）→ 滤网 → 800~1000L PE 储水罐 → 自吸泵 → 主管。</p>
+      <p class="note">储罐容量 800~1000L（50~100㎡ 庭院通行的地上/埋地规格）。</p>
+    </div>
+    <div class="card"><h4>缺水自动补位</h4>
+      <p>罐内水位开关检测：水位低于下限 → ESP32 打开自来水补位电磁阀；水位恢复 → 关闭。全程自动，无需人工干预。</p>
+    </div>
+  </div>
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>水账项目</th><th>估算</th><th>口径</th></tr></thead>
+    <tbody>
+      <tr><td>建成后需水</td><td>约 140~250 L/周</td><td>耐旱草皮 35㎡ × 4~6mm/周；树基本靠天</td></tr>
+      <tr><td>夏季最长无雨期</td><td>1~2 周（北京）</td><td>罐 800~1000L ≈ 可撑 3~4 周，安全</td></tr>
+      <tr><td>年集雨潜力</td><td>20㎡ 屋面 ≈ 6000~11000 L/年</td><td>550~600mm 年降雨 × 屋面 × 有效系数</td></tr>
+      <tr><td>自来水角色</td><td>仅补位</td><td>连雨天几乎用不到；旱季偶尔补</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">雨水必须先过滤再进滴灌（120 目），否则滴头堵塞是地埋系统第一大杀手；储罐需配溢流口和防蚊盖。</p>
+</section>
+
+<!-- ============ 08 ============ -->
+<section id="s8">
+  <div class="sec-head"><span class="sec-num">08</span><h2>成本明细（设备，不含人工/树）</h2><span class="en">BUDGET</span></div>
+  <p class="lead">全部按淘宝/1688 2026 年零售价估算，自己动手施工。总额约 4300~4700 元，含草皮可压线在 5000 内，已为"雨水模块 + 华为生态"留出余量。</p>
+
+  <h3>① 灌溉主体（地埋滴灌，全隐藏）</h3>
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>项目</th><th>规格</th><th>数量</th><th class="num">单价</th><th class="num">小计</th></tr></thead>
+    <tbody>
+      <tr><td>鸿蒙智联智能水阀</td><td>电动球阀，智慧生活 App 控制</td><td>2</td><td class="num">260</td><td class="num">520</td></tr>
+      <tr><td>主切断电磁阀</td><td>24VAC 常闭</td><td>1</td><td class="num">110</td><td class="num">110</td></tr>
+      <tr><td>24VAC 变压器</td><td>供电电磁阀</td><td>1</td><td class="num">80</td><td class="num">80</td></tr>
+      <tr><td>地埋 PC 滴灌管</td><td>16mm，含滴头</td><td>90m</td><td class="num">2.5</td><td class="num">225</td></tr>
+      <tr><td>PE 主管 + 配件</td><td>20mm，弯头/三通等</td><td>50m</td><td class="num">5</td><td class="num">250</td></tr>
+      <tr><td>树下滴灌</td><td>滴箭/涌泉头</td><td>1 套</td><td class="num">180</td><td class="num">180</td></tr>
+      <tr><td>叠片过滤器</td><td>120 目</td><td>1</td><td class="num">90</td><td class="num">90</td></tr>
+      <tr><td>阀箱 + 控制箱</td><td>地埋密封盒</td><td>2</td><td class="num">80</td><td class="num">160</td></tr>
+      <tr><td>冬季泄水件</td><td>排水阀/坡度件</td><td>1 批</td><td class="num">120</td><td class="num">120</td></tr>
+      <tr><td>线缆杂项</td><td>控制线/卡箍/密封</td><td>1 批</td><td class="num">150</td><td class="num">150</td></tr>
+      <tr class="sub"><td colspan="4">小计 ①</td><td class="num">1,885</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>② 感知与本地决策层（DIY）</h3>
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>项目</th><th>规格</th><th>数量</th><th class="num">单价</th><th class="num">小计</th></tr></thead>
+    <tbody>
+      <tr><td>ESP32 开发板 + 继电器模块</td><td>WiFi，本地逻辑</td><td>1</td><td class="num">80</td><td class="num">80</td></tr>
+      <tr><td>电容式土壤湿度传感器</td><td>防水，埋地</td><td>4</td><td class="num">80</td><td class="num">320</td></tr>
+      <tr><td>雨量传感器</td><td>翻斗式</td><td>1</td><td class="num">90</td><td class="num">90</td></tr>
+      <tr><td>水位开关/浮球</td><td>雨水罐</td><td>1</td><td class="num">60</td><td class="num">60</td></tr>
+      <tr><td>防水接线盒/电缆</td><td>户外级</td><td>1 批</td><td class="num">120</td><td class="num">120</td></tr>
+      <tr class="sub"><td colspan="4">小计 ②</td><td class="num">670</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>③ 雨水收集模块</h3>
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>项目</th><th>规格</th><th>数量</th><th class="num">单价</th><th class="num">小计</th></tr></thead>
+    <tbody>
+      <tr><td>PE 储水罐</td><td>800~1000L（地上/埋地）</td><td>1</td><td class="num">800</td><td class="num">800</td></tr>
+      <tr><td>首雨弃流器 + 滤网</td><td>雨落管截留</td><td>1</td><td class="num">160</td><td class="num">160</td></tr>
+      <tr><td>自吸泵</td><td>约 800L/h</td><td>1</td><td class="num">350</td><td class="num">350</td></tr>
+      <tr><td>自来水补位电磁阀 + 单向阀</td><td>低水位切入</td><td>1 套</td><td class="num">200</td><td class="num">200</td></tr>
+      <tr><td>雨水管路件</td><td>弯头/浮球/溢流</td><td>1 批</td><td class="num">150</td><td class="num">150</td></tr>
+      <tr class="sub"><td colspan="4">小计 ③</td><td class="num">1,660</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="tbl-scroll">
+  <table>
+    <tbody>
+      <tr class="total"><td colspan="4">灌溉 ① + 感知 ② + 雨水 ③ 合计</td><td class="num">≈ 4,215</td></tr>
+      <tr><td colspan="4">＋ 草皮/草种（如尚未铺设，耐旱草皮 35㎡）</td><td class="num">300~500</td></tr>
+      <tr class="total"><td colspan="4">总计（设备 + 草皮）</td><td class="num">≈ 4,500 ~ 4,700</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="note">价格参考：智能灌溉设备行情（传感联动型 500~5000 元档）、国产土壤湿度传感器 50~200 元/个、智能阀门控制器 300~800 元、鸿蒙智联智能水阀约 210~300 元、雨鸟 24VAC 电磁阀官方牌价约 285~368 元（国产替代 90~130 元）、50~100㎡ 庭院雨水储罐 500~1000L 规格。预留约 10% 波动空间。</p>
+</section>
+
+<!-- ============ 09 ============ -->
+<section id="s9">
+  <div class="sec-head"><span class="sec-num">09</span><h2>施工步骤（自己动手）</h2><span class="en">BUILD</span></div>
+  <p class="lead">按"放线 → 挖沟 → 铺管 → 装阀 → 接线 → 试压 → 覆土铺草 → 调试 → 入冬泄水"顺序推进，50㎡ 约 2~3 天集中施工 + 2 周建立期调参。</p>
+  <div class="steps">
+    <div class="step"><div class="no"></div><div class="bd"><b>第 1 步 · 放线分区</b><p>在院子里标出草坪区、树木区、点缀带；画出主管和滴灌管走向（主管 30~40cm 深，滴灌管 10cm 深，带坡度向排水阀）。</p></div></div>
+    <div class="step"><div class="no"></div><div class="bd"><b>第 2 步 · 挖沟铺管</b><p>用开沟器/铁锹挖沟；先铺主管，再铺 16mm 滴灌管（迷宫纹朝上），树下布滴箭；避免锐弯、石子压管。</p></div></div>
+    <div class="step"><div class="no"></div><div class="bd"><b>第 3 步 · 装阀与滤器</b><p>阀箱内装：叠片过滤器 → 主切断电磁阀 → 分区分水管（接鸿蒙智能水阀）。所有接头用生料带/卡箍密封，试压查漏。</p></div></div>
+    <div class="step"><div class="no"></div><div class="bd"><b>第 4 步 · 接线与传感器</b><p>拉 24V 控制线 + 电源线进阀箱；ESP32 接 4 路湿度传感器（埋 10~15cm）+ 雨量 + 水位；全部防水接线，入密封箱。</p></div></div>
+    <div class="step"><div class="no"></div><div class="bd"><b>第 5 步 · 华为 App 配置</b><p>鸿蒙水阀配网进智慧生活 App → 建"定时场景"（凌晨窗口）→ 绑定小艺语音；ESP32 设湿度阈值（草坪 25%/40%）。</p></div></div>
+    <div class="step"><div class="no"></div><div class="bd"><b>第 6 步 · 覆土铺草 + 建立期</b><p>回填压实、铺耐旱草皮。前 2~3 个月是"建立期"：系统勤补水促扎根，之后切到旱养模式（湿度阈值制）。</p></div></div>
+    <div class="step"><div class="no"></div><div class="bd"><b>第 7 步 · 入冬泄水（北京必做）</b><p>11 月前：打开各支管排水阀 + 主管放水，拆下易冻件，确保管内无水；春季回装、试压、重新校准阈值。</p></div></div>
+  </div>
+</section>
+
+<!-- ============ 10 ============ -->
+<section id="s10">
+  <div class="sec-head"><span class="sec-num">10</span><h2>风险与对策</h2><span class="en">RISK</span></div>
+  <div class="tbl-scroll">
+  <table>
+    <thead><tr><th>风险</th><th>影响</th><th>对策</th></tr></thead>
+    <tbody>
+      <tr><td>滴头堵塞</td><td>局部草皮干死</td><td>必须 120 目过滤 + 首雨弃流；每季度冲洗支管末端</td></tr>
+      <tr><td>冬季冻裂</td><td>埋管报废</td><td>坡度泄水 + 排水阀 + 冬季排空（雷打不动）</td></tr>
+      <tr><td>电磁阀卡死/失控跑水</td><td>水费损失</td><td>单次最长浇灌上限（App + ESP32 双重时限）；可选流量计报警</td></tr>
+      <tr><td>雨水罐长藻/生蚊</td><td>水质变差</td><td>罐体遮光防蚊盖 + 定期清洗；雨水只用于滴灌不入生活用水</td></tr>
+      <tr><td>ESP32 断电/离线</td><td>无法自动浇</td><td>故障默认"关闭"（安全），靠 App 手动兜底；接 UPS/充电宝可选</td></tr>
+      <tr><td>草皮建立期失败</td><td>返工</td><td>建立期勤补水 + 选耐旱草种；北京 4~5 月/9 月是播种/铺植窗口</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ============ 11 ============ -->
+<section id="s11">
+  <div class="sec-head"><span class="sec-num">11</span><h2>待你拍板的决策点</h2><span class="en">DECISIONS</span></div>
+  <div class="grid2">
+    <div class="card"><h4>D1 · 智能水阀选"方案甲还是乙"？</h4>
+      <p>甲：鸿蒙智联电动球阀直控分区（约 260 元/个，看得到阀门状态）；乙：鸿蒙智能插座 + 电磁阀（约便宜 1/3，只看到开关）。预算内我建议甲，可靠性更高。</p>
+    </div>
+    <div class="card"><h4>D2 · 储水罐 800L 还是 1000L？</h4>
+      <p>1000L 约 +150~250 元，夏天无雨期可多撑 1 周多。若屋面无大集水面，800L 够；若想更省自来水，上 1000L。</p>
+    </div>
+    <div class="card"><h4>D3 · 草坪草种确认？</h4>
+      <p>要"草原金黄感"选野牛草（夏眠变黄，最省水）；要"四季常绿"选结缕草/高羊茅混播。这决定灌溉阈值和视觉风格。</p>
+    </div>
+    <div class="card"><h4>D4 · 是否保留"观赏草点缀带"浇水？</h4>
+      <p>观赏草本身极耐旱，建议并入旱养不浇（省一个分区和阀门钱）；若要养花（松果菊等）则需一个微滴灌分区。</p>
+    </div>
+  </div>
+  <div class="callout"><b>下一步：</b>你确认 D1~D4 后，我可以把方案细化成可下单的物料清单（含淘宝/1688 链接维度、精确到米的管材用量），并给出 ESP32 的接线图与湿度阈值调试参数。</div>
+</section>
+
+<div class="foot">
+  <div>稀树草原庭院 · 全隐藏智能灌溉方案（讨论稿 V1）｜自包含 HTML，可离线打开</div>
+  <div class="src">主要依据：智能灌溉设备分级与价格行情（什么值得买）、国产传感器/控制器价格（富金灌溉）、雨鸟 XFS 地埋滴灌与电磁阀官方参数、USGA 地埋滴灌施工指南、鸿蒙智联智能水阀（智慧生活 App/小艺/场景联动）、华为智慧生活 App 自动场景官方说明、50~100㎡ 庭院雨水储罐规格参考。</div>
+</div>
+
+</div>
+</body>
+</html>

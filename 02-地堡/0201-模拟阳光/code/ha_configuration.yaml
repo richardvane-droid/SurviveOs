@@ -1,0 +1,73 @@
+# ============================================================
+# HomeAssistant 辅助配置 - 输入布尔开关（场景触发器）
+# 放置路径：~/.homeassistant/configuration.yaml 中引用
+# 或直接放入 ~/.homeassistant/helpers/ 目录
+#
+# 这些input_boolean会通过Matter桥接暴露给华为智慧生活APP
+# 在华为智慧生活里创建场景，触发对应的input_boolean
+# ============================================================
+
+input_boolean:
+  # 场景1：早晨唤醒
+  scene_morning_wakeup:
+    name: "阳光场景-早晨唤醒"
+    icon: mdi:weather-sunset-up
+    initial: false
+
+  # 场景2：上午运动
+  scene_morning_exercise:
+    name: "阳光场景-上午运动"
+    icon: mdi:dumbbell
+    initial: false
+
+  # 场景3：工作写字
+  scene_work:
+    name: "阳光场景-工作写字"
+    icon: mdi:desk
+    initial: false
+
+  # 场景4：电视模拟窗
+  scene_tv_window:
+    name: "阳光场景-电视模拟窗"
+    icon: mdi:television
+    initial: false
+
+  # 全局关闭
+  sunlight_system_off:
+    name: "阳光系统-全部关闭"
+    icon: mdi:power
+    initial: false
+
+# ============================================================
+# 传感器模板 - 显示系统状态
+# ============================================================
+
+template:
+  - sensor:
+      - name: "阳光系统当前场景"
+        state: >
+          {% if is_state('input_boolean.scene_morning_wakeup', 'on') %}早晨唤醒
+          {% elif is_state('input_boolean.scene_morning_exercise', 'on') %}上午运动
+          {% elif is_state('input_boolean.scene_work', 'on') %}工作写字
+          {% elif is_state('input_boolean.scene_tv_window', 'on') %}电视模拟窗
+          {% else %}待机
+          {% endif %}
+        icon: mdi:theme-light-dark
+
+  - binary_sensor:
+      - name: "阳光系统运行中"
+        state: >
+          {{ is_state('switch.huawei_socket_fs300b', 'on') }}
+        icon: mdi:lightbulb-on
+
+# ============================================================
+# Shell命令 - 调用FS-300B蓝牙控制脚本
+# （如果蓝牙集成尚未完成，可用shell_command过渡）
+# ============================================================
+
+shell_command:
+  fs300b_on: "python3 /config/scripts/fs300b_control.py --on"
+  fs300b_off: "python3 /config/scripts/fs300b_control.py --off"
+  fs300b_brightness: "python3 /config/scripts/fs300b_control.py --brightness {{ brightness }}"
+  fs300b_colortemp: "python3 /config/scripts/fs300b_control.py --colortemp {{ colortemp }}"
+  fs300b_scene: "python3 /config/scripts/fs300b_control.py --on --brightness {{ brightness }} --colortemp {{ colortemp }}"

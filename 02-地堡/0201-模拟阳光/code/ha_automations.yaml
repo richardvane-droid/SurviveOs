@@ -1,0 +1,249 @@
+# ============================================================
+# HomeAssistant 自动化脚本 - 阳光模拟系统四个场景
+# 放置路径：~/.homeassistant/automations.yaml 或 scripts.yaml
+# 依赖实体：
+#   number.slider_target           - 滑轨目标位置(mm)
+#   number.gimbal_pitch_angle      - 云台俯仰角(°)
+#   number.gimbal_yaw_angle        - 云台旋转角(°)
+#   number.gimbal_fresnel_angle    - 菲涅尔光束角(°)
+#   light.fs300b_light             - FS-300B灯（通过蓝牙集成）
+#   switch.huawei_socket_fs300b    - 华为智选插座（FS-300B电源）
+# ============================================================
+
+# ------------------------------------------------------------
+# 场景1：早晨唤醒 - 床头位置，大光斑暖白光
+# ------------------------------------------------------------
+- id: sunlight_scene_morning_wakeup
+  alias: "阳光模拟-场景1-早晨唤醒"
+  description: "滑轨移到床头，灯头下倾30°，大光斑38°，5000K 50%亮度，模拟晨光唤醒"
+  trigger:
+    # 手动触发（HA里的场景按钮或华为智慧生活Matter开关）
+    - platform: state
+      entity_id: input_boolean.scene_morning_wakeup
+      to: "on"
+    # 定时触发（工作日早上6:30）
+    - platform: time
+      at: "06:30:00"
+      weekdays:
+        - mon
+        - tue
+        - wed
+        - thu
+        - fri
+  condition: []
+  action:
+    # 1. 打开FS-300B电源
+    - service: switch.turn_on
+      target:
+        entity_id: switch.huawei_socket_fs300b
+    # 等待灯启动
+    - delay: "00:00:03"
+    # 2. 滑轨移到床头位置(0mm)
+    - service: number.set_value
+      target:
+        entity_id: number.slider_target
+      data:
+        value: 0
+    # 3. 云台调到床头角度
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_pitch_angle
+      data:
+        value: 30
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_yaw_angle
+      data:
+        value: 0
+    # 4. 菲涅尔调到38°大光斑
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_fresnel_angle
+      data:
+        value: 38
+    # 等待机械到位
+    - delay: "00:00:08"
+    # 5. 开灯 - 渐变到50%亮度 5000K（30秒渐亮模拟日出）
+    - service: light.turn_on
+      target:
+        entity_id: light.fs300b_light
+      data:
+        brightness_pct: 50
+        color_temp_kelvin: 5000
+        transition: 30
+    # 重置触发开关
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.scene_morning_wakeup
+  mode: single
+
+# ------------------------------------------------------------
+# 场景2：上午运动 - 运动区域，中光斑
+# ------------------------------------------------------------
+- id: sunlight_scene_morning_exercise
+  alias: "阳光模拟-场景2-上午运动"
+  description: "滑轨移到运动区，灯头下倾20°，30°光斑，5000K 60%亮度"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.scene_morning_exercise
+      to: "on"
+  condition: []
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.huawei_socket_fs300b
+    - delay: "00:00:03"
+    - service: number.set_value
+      target:
+        entity_id: number.slider_target
+      data:
+        value: 1100
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_pitch_angle
+      data:
+        value: 20
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_yaw_angle
+      data:
+        value: 0
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_fresnel_angle
+      data:
+        value: 30
+    - delay: "00:00:08"
+    - service: light.turn_on
+      target:
+        entity_id: light.fs300b_light
+      data:
+        brightness_pct: 60
+        color_temp_kelvin: 5000
+        transition: 2
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.scene_morning_exercise
+  mode: single
+
+# ------------------------------------------------------------
+# 场景3：工作写字 - 书桌位置，聚焦光斑
+# ------------------------------------------------------------
+- id: sunlight_scene_work
+  alias: "阳光模拟-场景3-工作写字"
+  description: "滑轨移到书桌，灯头下倾35°，25°聚焦光斑，4500K 70%亮度"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.scene_work
+      to: "on"
+  condition: []
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.huawei_socket_fs300b
+    - delay: "00:00:03"
+    - service: number.set_value
+      target:
+        entity_id: number.slider_target
+      data:
+        value: 2300
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_pitch_angle
+      data:
+        value: 35
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_yaw_angle
+      data:
+        value: 0
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_fresnel_angle
+      data:
+        value: 25
+    - delay: "00:00:08"
+    - service: light.turn_on
+      target:
+        entity_id: light.fs300b_light
+      data:
+        brightness_pct: 70
+        color_temp_kelvin: 4500
+        transition: 2
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.scene_work
+  mode: single
+
+# ------------------------------------------------------------
+# 场景4：电视模拟自然窗 - 电视旁窄光束
+# ------------------------------------------------------------
+- id: sunlight_scene_tv_window
+  alias: "阳光模拟-场景4-电视模拟窗"
+  description: "滑轨移到电视旁，灯头下倾45°偏向侧墙，20°窄光束，3500K 40%亮度，模拟窗户阳光"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.scene_tv_window
+      to: "on"
+  condition: []
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.huawei_socket_fs300b
+    - delay: "00:00:03"
+    - service: number.set_value
+      target:
+        entity_id: number.slider_target
+      data:
+        value: 3500
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_pitch_angle
+      data:
+        value: 45
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_yaw_angle
+      data:
+        value: -30
+    - service: number.set_value
+      target:
+        entity_id: number.gimbal_fresnel_angle
+      data:
+        value: 20
+    - delay: "00:00:08"
+    - service: light.turn_on
+      target:
+        entity_id: light.fs300b_light
+      data:
+        brightness_pct: 40
+        color_temp_kelvin: 3500
+        transition: 2
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.scene_tv_window
+  mode: single
+
+# ------------------------------------------------------------
+# 全局关闭
+# ------------------------------------------------------------
+- id: sunlight_system_off
+  alias: "阳光模拟-全局关闭"
+  description: "关闭FS-300B灯和电源"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.sunlight_system_off
+      to: "on"
+  condition: []
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.fs300b_light
+    - delay: "00:00:02"
+    - service: switch.turn_off
+      target:
+        entity_id: switch.huawei_socket_fs300b
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.sunlight_system_off
+  mode: single

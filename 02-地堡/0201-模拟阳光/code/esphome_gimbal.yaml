@@ -1,0 +1,289 @@
+# ============================================================
+# 双轴电动云台 + 菲涅尔电动调焦 ESPHome 配置
+# 硬件：ESP32 + TMC2209×2 + 57步进电机×2 + MG996R舵机×1
+# 功能：
+#   - 云台俯仰轴（pitch）：57步进电机，角度-90°~+90°
+#   - 云台旋转轴（yaw）：57步进电机，角度-180°~+180°
+#   - 菲涅尔调焦：MG996R舵机，映射光束角10°~45°
+# ============================================================
+
+esphome:
+  name: sunlight-gimbal
+  friendly_name: 阳光模拟云台+调焦
+  comment: 双轴电动云台+FL-20G菲涅尔电动调焦
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.1.102
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+  ap:
+    ssid: "Sunlight-Gimbal-Hotspot"
+    password: "12345678"
+
+captive_portal:
+ota:
+  platform: esphome
+  password: !secret ota_password
+logger:
+  level: INFO
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+# ============================================================
+# 双TMC2209 UART配置
+# 俯仰轴 TMC2209 #1 (address 0x00):
+#   EN->GPIO26, DIR->GPIO27, STEP->GPIO14, TX->GPIO17, RX->GPIO16
+# 旋转轴 TMC2209 #2 (address 0x01):
+#   EN->GPIO25, DIR->GPIO33, STEP->GPIO32, TX->GPIO17(共用), RX->GPIO16(共用)
+# ============================================================
+
+uart:
+  id: uart_tmc
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 115200
+
+tmc2209:
+  - id: tmc_pitch
+    uart_id: uart_tmc
+    address: 0x00
+    run_current: 1.2A
+    hold_current: 0.6A
+    microsteps: 16
+    stealthchop_threshold: 30
+
+  - id: tmc_yaw
+    uart_id: uart_tmc
+    address: 0x01
+    run_current: 1.2A
+    hold_current: 0.6A
+    microsteps: 16
+    stealthchop_threshold: 30
+
+stepper:
+  # 俯仰轴 - 假设减速比1:90（蜗轮蜗杆或同步带减速）
+  # 57电机200步/转 × 16细分 = 3200步/转
+  # 减速比90:1 → 输出轴1转 = 288000步 → 1° = 800步
+  - platform: tmc2209
+    id: pitch_motor
+    tmc2209_id: tmc_pitch
+    step_pin: GPIO14
+    dir_pin: GPIO27
+    max_speed: 1600 steps/s   # 约2°/s
+    acceleration: 400 steps/s²
+
+  # 旋转轴 - 假设减速比1:50
+  # 输出轴1转 = 160000步 → 1° = 444.4步
+  - platform: tmc2209
+    id: yaw_motor
+    tmc2209_id: tmc_yaw
+    step_pin: GPIO32
+    dir_pin: GPIO33
+    max_speed: 2000 steps/s   # 约4.5°/s
+    acceleration: 500 steps/s²
+
+# ============================================================
+# 舵机输出 - 菲涅尔调焦
+# MG996R: 50Hz PWM, 0.5ms~2.5ms对应0°~180°
+# 接线：信号线 -> GPIO13
+# ============================================================
+
+output:
+  - platform: ledc
+    id: fresnel_servo
+    pin: GPIO13
+    frequency: 50 Hz
+    # 占空比范围：0.5ms/20ms=2.5% ~ 2.5ms/20ms=12.5%
+    min_power: 2.5%
+    max_power: 12.5%
+    zero_means_zero: true
+
+  # 电机使能
+  - platform: gpio
+    id: pitch_en
+    pin: GPIO26
+  - platform: gpio
+    id: yaw_en
+    pin: GPIO25
+
+# ============================================================
+# 角度控制 Number实体
+# ============================================================
+
+number:
+  # 俯仰角 -90°~+90°（正值=下倾，负值=上仰）
+  - platform: template
+    name: "云台俯仰角"
+    id: pitch_angle
+    unit_of_measurement: "°"
+    min_value: -90
+    max_value: 90
+    step: 0.5
+    optimistic: true
+    set_action:
+      - stepper.set_target:
+          id: pitch_motor
+          target: !lambda 'return (x + 90) * 800;'  # 归零位在-90°
+
+  # 旋转角 -180°~+180°
+  - platform: template
+    name: "云台旋转角"
+    id: yaw_angle
+    unit_of_measurement: "°"
+    min_value: -180
+    max_value: 180
+    step: 0.5
+    optimistic: true
+    set_action:
+      - stepper.set_target:
+          id: yaw_motor
+          target: !lambda 'return (x + 180) * 444.4;'
+
+  # 菲涅尔光束角 10°~45°
+  # 舵机0°→光束角10°，舵机90°→光束角45°
+  # 舵机角度 = (光束角-10) × 2
+  - platform: template
+    name: "菲涅尔光束角"
+    id: fresnel_angle
+    unit_of_measurement: "°"
+    min_value: 10
+    max_value: 45
+    step: 1
+    optimistic: true
+    set_action:
+      - output.set_level:
+          id: fresnel_servo
+          level: !lambda 'return ((x - 10) * 2) / 180.0;'
+
+# ============================================================
+# 当前角度传感器
+# ============================================================
+
+sensor:
+  - platform: template
+    name: "俯仰当前角度"
+    lambda: 'return id(pitch_motor).target_position / 800.0 - 90;'
+    unit_of_measurement: "°"
+    update_interval: 500ms
+
+  - platform: template
+    name: "旋转当前角度"
+    lambda: 'return id(yaw_motor).target_position / 444.4 - 180;'
+    unit_of_measurement: "°"
+    update_interval: 500ms
+
+# ============================================================
+# 场景预设按钮
+# ============================================================
+
+button:
+  # 场景1：早晨唤醒 - 床头
+  - platform: template
+    name: "场景1-早晨唤醒"
+    on_press:
+      - number.set:
+          id: pitch_angle
+          value: 30    # 下倾30°
+      - number.set:
+          id: yaw_angle
+          value: 0     # 正对床
+      - number.set:
+          id: fresnel_angle
+          value: 38    # 大光斑
+
+  # 场景2：上午运动
+  - platform: template
+    name: "场景2-上午运动"
+    on_press:
+      - number.set:
+          id: pitch_angle
+          value: 20
+      - number.set:
+          id: yaw_angle
+          value: 0
+      - number.set:
+          id: fresnel_angle
+          value: 30
+
+  # 场景3：工作写字
+  - platform: template
+    name: "场景3-工作写字"
+    on_press:
+      - number.set:
+          id: pitch_angle
+          value: 35
+      - number.set:
+          id: yaw_angle
+          value: 0
+      - number.set:
+          id: fresnel_angle
+          value: 25
+
+  # 场景4：电视模拟窗
+  - platform: template
+    name: "场景4-电视模拟窗"
+    on_press:
+      - number.set:
+          id: pitch_angle
+          value: 45
+      - number.set:
+          id: yaw_angle
+          value: -30   # 偏向电视侧墙
+      - number.set:
+          id: fresnel_angle
+          value: 20
+
+  # 回零
+  - platform: template
+    name: "云台回零"
+    on_press:
+      - number.set:
+          id: pitch_angle
+          value: 0
+      - number.set:
+          id: yaw_angle
+          value: 0
+
+# ============================================================
+# 电机使能开关
+# ============================================================
+
+switch:
+  - platform: template
+    name: "俯仰电机使能"
+    optimistic: true
+    turn_on_action:
+      - output.set_level:
+          id: pitch_en
+          level: 0%
+    turn_off_action:
+      - output.set_level:
+          id: pitch_en
+          level: 100%
+
+  - platform: template
+    name: "旋转电机使能"
+    optimistic: true
+    turn_on_action:
+      - output.set_level:
+          id: yaw_en
+          level: 0%
+    turn_off_action:
+      - output.set_level:
+          id: yaw_en
+          level: 100%
+
+# 状态灯
+light:
+  - platform: status_led
+    name: "云台状态灯"
+    pin: GPIO2

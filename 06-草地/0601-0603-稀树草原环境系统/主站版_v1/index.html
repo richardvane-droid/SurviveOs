@@ -1,0 +1,1467 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#faf6ec">
+<title>稀树草原庭院 · 杭州版全隐藏智能水肥</title>
+<style>
+  :root{
+    --bg-top:#faf6ec;
+    --bg-bottom:#efe5cf;
+    --card:#fffdf7;
+    --ink:#2c2a20;
+    --muted:#7a725c;
+    --accent:#c08f35;
+    --accent-deep:#9a6f1f;
+    --accent-soft:#f6ecd4;
+    --line:#e6dbc0;
+    --good:#5f8a4e;
+    --good-soft:#eef4e7;
+    --radius:16px;
+    --shadow:0 1px 2px rgba(60,50,20,.06),0 10px 28px rgba(60,50,20,.07);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:linear-gradient(180deg,var(--bg-top),var(--bg-bottom));
+    color:var(--ink);line-height:1.75;font-size:15px;
+    -webkit-tap-highlight-color:transparent;
+    -webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:0 20px;padding-left:max(20px, env(safe-area-inset-left));padding-right:max(20px, env(safe-area-inset-right));}
+
+  header.hero{padding:64px 0 40px;text-align:left;}
+  .kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;letter-spacing:.14em;color:var(--accent-deep);border:1px solid rgba(192,143,53,.5);background:rgba(255,255,255,.5);padding:5px 14px;border-radius:999px;}
+  .kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);}
+  h1.title{font-size:40px;line-height:1.25;font-weight:800;letter-spacing:.01em;margin-top:20px;}
+  .hero .sub{margin-top:16px;color:var(--muted);font-size:15.5px;max-width:800px;}
+  .metrics{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;}
+  .metric{flex:1 1 150px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 16px;box-shadow:var(--shadow);}
+  .metric .k{font-size:12.5px;color:var(--muted);}
+  .metric .v{font-size:24px;font-weight:800;color:var(--ink);margin-top:1px;}
+
+  section.block{margin:26px 0 8px;}
+  .sec-label{font-size:12px;font-weight:700;letter-spacing:.28em;color:var(--accent-deep);}
+  .sec-title{font-size:24px;font-weight:800;margin:6px 0 4px;}
+  .sec-lead{color:var(--muted);font-size:14.5px;max-width:800px;}
+  .sec-hint{color:var(--accent-deep);font-size:13px;margin-top:6px;}
+
+  /* 雨量柱状图 */
+  .rainchart{display:flex;align-items:flex-end;gap:6px;height:168px;margin-top:16px;padding:8px 4px 0;border-bottom:1px solid var(--line);}
+  .rainchart .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;}
+  .rainchart .bar{width:100%;max-width:34px;background:linear-gradient(180deg,var(--accent),#e7d9b0);border-radius:6px 6px 0 0;min-height:4px;position:relative;}
+  .rainchart .bar.hot{background:linear-gradient(180deg,#5f8a4e,#a9c08a);}
+  .rainchart .bar .val{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted);}
+  .rainchart .m{font-size:10.5px;color:var(--muted);}
+  .rainchart .peak{color:var(--accent-deep);font-weight:700;}
+  .chart-note{margin-top:6px;font-size:12px;color:var(--muted);}
+
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-top:18px;}
+  .layer{display:flex;flex-direction:column;gap:8px;margin:6px 0;}
+  .layer-label{font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.05em;display:flex;align-items:center;gap:8px;}
+  .layer-label::after{content:"";flex:1;height:1px;background:var(--line);}
+  .row{display:flex;flex-wrap:wrap;gap:10px;}
+  .comp{
+    position:relative;display:flex;flex-direction:column;gap:2px;min-width:170px;flex:1 1 170px;
+    background:var(--card);border:1px solid var(--line);border-radius:13px;padding:12px 14px;cursor:pointer;
+    transition:border-color .18s,transform .18s,box-shadow .18s;text-decoration:none;color:inherit;
+  }
+  .comp:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 20px rgba(120,90,30,.12);}
+  .comp:active,.hwcard:active,.ecard:active,.btn-back:active,.zcard:active{transform:scale(.98);}
+  .comp .ic{font-size:22px;line-height:1;}
+  .comp .nm{font-weight:700;font-size:14px;margin-top:6px;}
+  .comp .sb{font-size:12px;color:var(--muted);}
+  .comp .tag2{display:inline-block;font-size:11px;color:var(--accent-deep);background:var(--accent-soft);border-radius:999px;padding:1px 8px;margin-top:6px;align-self:flex-start;}
+  .arrow{text-align:center;color:var(--accent-deep);font-size:15px;line-height:1;padding:2px 0;opacity:.8;}
+  .flow-note{margin-top:12px;font-size:13px;color:var(--muted);background:var(--accent-soft);border:1px solid var(--line);border-radius:10px;padding:9px 13px;}
+  .flow-note b{color:var(--accent-deep);}
+
+  #tip{position:fixed;z-index:60;max-width:280px;background:#2c2a20;color:#f6f0e0;font-size:12.5px;line-height:1.55;border-radius:10px;padding:9px 12px;pointer-events:none;opacity:0;transition:opacity .15s;box-shadow:0 10px 24px rgba(0,0,0,.22);}
+  #tip.on{opacity:1;}
+
+  .zgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px;}
+  .zcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;}
+  .zcard .art{height:152px;overflow:hidden;}
+  .zcard .art img{width:100%;height:100%;object-fit:cover;display:block;}
+  .zcard .zlabel{font-size:12px;font-weight:700;color:var(--accent-deep);letter-spacing:.06em;padding:14px 16px 0;}
+  .zcard h3{font-size:18px;font-weight:800;padding:2px 16px 0;}
+  .zcard p{font-size:13.5px;color:var(--muted);padding:6px 16px 0;}
+  .zcard .key{margin:10px 16px 14px;font-size:12px;color:var(--good);background:var(--good-soft);border-radius:8px;padding:5px 9px;}
+
+  .wlist{display:flex;flex-direction:column;gap:14px;margin-top:18px;}
+  .wcard{display:flex;gap:16px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
+  .wcard .ic{font-size:30px;flex:none;width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);border-radius:13px;}
+  .wcard h3{font-size:16.5px;font-weight:800;}
+  .wcard p{font-size:13.5px;color:var(--muted);margin-top:4px;}
+
+  .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px;}
+  .dcard{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+  .dcard .art{height:150px;overflow:hidden;}
+  .dcard .art img{width:100%;height:100%;object-fit:cover;display:block;}
+  .dcard .bd{padding:14px 16px;}
+  .dcard h3{font-size:16px;font-weight:800;}
+  .dcard p{font-size:13px;color:var(--muted);margin-top:4px;}
+
+  .egrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:18px;}
+  .ecard{display:flex;flex-direction:column;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);text-decoration:none;color:inherit;transition:transform .18s,border-color .18s;}
+  .ecard:hover{transform:translateY(-2px);border-color:var(--accent);}
+  .ecard .ic{font-size:24px;}
+  .ecard h3{font-size:16px;font-weight:800;}
+  .ecard p{font-size:13px;color:var(--muted);flex:1;}
+  .ecard .go{color:var(--accent-deep);font-weight:700;font-size:13px;}
+  .poster{margin:18px 0 6px;}
+  .poster img{display:block;width:100%;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow);}
+  .poster .cap{font-size:12.5px;color:var(--muted);margin-top:6px;}
+
+  /* 硬件专题总览 */
+  .hw-groups{margin-top:18px;display:flex;flex-direction:column;gap:18px;}
+  .hw-group h3{font-size:15px;font-weight:800;color:var(--accent-deep);display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .hw-group h3::after{content:"";flex:1;height:1px;background:var(--line);}
+  .hw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+  .hwcard{display:flex;flex-direction:column;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:13px;padding:14px 15px;text-decoration:none;color:inherit;box-shadow:var(--shadow);transition:transform .16s,border-color .16s;}
+  .hwcard:hover{transform:translateY(-2px);border-color:var(--accent);}
+  .hwcard .ic{font-size:24px;}
+  .hwcard .nm{font-weight:700;font-size:14px;margin-top:4px;}
+  .hwcard .sb{font-size:11.5px;color:var(--muted);}
+  .hwcard .price{font-size:12px;color:var(--good);margin-top:6px;font-weight:700;}
+
+  /* 器件详情 */
+  [data-view]{animation:fadein .25s ease;}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+  .detail-top{display:flex;align-items:center;gap:14px;margin:26px 0 4px;flex-wrap:wrap;}
+  .btn-back{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:10px 16px;font-size:14px;font-weight:600;color:var(--ink);text-decoration:none;box-shadow:var(--shadow);min-height:44px;}
+  .btn-back:hover{border-color:var(--accent);}
+  .detail-body{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px 28px;margin-top:14px;}
+  .detail-body h2{font-size:24px;font-weight:800;}
+  .detail-body h3{font-size:15.5px;font-weight:800;color:var(--accent-deep);margin:22px 0 8px;display:flex;align-items:center;gap:8px;}
+  .detail-body h3::before{content:"";width:4px;height:15px;border-radius:2px;background:var(--accent);}
+  .detail-body p,.detail-body li{font-size:14px;color:#4a463a;margin:4px 0;}
+  .detail-body ul{padding-left:20px;}
+  .hw-head{display:flex;align-items:center;gap:16px;}
+  .hw-head .bigic{font-size:44px;width:76px;height:76px;display:flex;align-items:center;justify-content:center;background:var(--accent-soft);border-radius:16px;flex:none;}
+  .hw-meta{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{font-size:12px;color:var(--accent-deep);background:var(--accent-soft);border-radius:999px;padding:2px 10px;}
+  .buy-row{display:flex;gap:10px;align-items:baseline;border:1px solid var(--line);border-radius:10px;padding:9px 13px;margin:6px 0;background:#fdfbf4;}
+  .buy-row .ch{flex:none;font-weight:700;color:var(--good);font-size:13px;min-width:54px;}
+  .buy-row .kw{font-size:13px;color:var(--ink);flex:1;}
+  .buy-row .pr{flex:none;font-size:13px;color:var(--accent-deep);font-weight:700;white-space:nowrap;}
+  .xy-box{border:1px dashed var(--accent);background:var(--accent-soft);border-radius:10px;padding:11px 14px;margin:8px 0;}
+  .xy-box .t{font-size:13px;font-weight:800;color:var(--accent-deep);}
+  .xy-box p{font-size:13.5px;color:#6b4a1d;margin:3px 0;}
+  .diagram-fig{margin:10px 0;border:1px solid var(--line);border-radius:12px;background:#fcfdfa;padding:8px;text-align:center;}
+  .diagram-fig svg{width:100%;height:auto;max-width:560px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px;}
+  th{background:var(--accent-soft);color:var(--accent-deep);text-align:left;font-weight:700;padding:8px 11px;border-bottom:2px solid var(--accent);white-space:nowrap;}
+  td{padding:7px 11px;border-bottom:1px solid var(--line);vertical-align:top;}
+  td.num,th.num{text-align:right;white-space:nowrap;}
+  tr.sub td{background:var(--accent-soft);font-weight:700;}
+  tr.total td{background:var(--accent-soft);font-weight:800;color:var(--accent-deep);font-size:14px;}
+  .tbl-wrap{overflow-x:auto;}
+
+  .steps{counter-reset:st;margin-top:10px;}
+  .step{display:flex;gap:14px;margin:12px 0;}
+  .step .no{counter-increment:st;flex:none;width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;}
+  .step .no::before{content:counter(st);}
+  .step .bd{flex:1;border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:#fdfbf4;}
+  .step .bd b{color:var(--ink);}
+  .step .bd p,.step .bd li{font-size:13.5px;color:var(--muted);margin:3px 0;}
+  .step .bd ul{padding-left:18px;}
+
+  footer{text-align:center;padding:36px 20px 48px;color:var(--muted);font-size:13px;}
+  footer .t{font-size:14px;font-weight:700;color:var(--ink);}
+
+  /* 顶部导航 + 首页目录条 */
+  nav.topnav{position:sticky;top:0;z-index:50;background:rgba(250,246,236,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .topnav-inner{max-width:1000px;margin:0 auto;padding:10px 20px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+  .topnav-inner::-webkit-scrollbar{display:none;}
+  .tnav-item{flex:none;display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:600;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;text-decoration:none;box-shadow:var(--shadow);white-space:nowrap;}
+  .tnav-item:hover{border-color:var(--accent);}
+  .tnav-item.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .toc{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 2px;}
+  .toc a{font-size:12px;color:var(--accent-deep);background:var(--accent-soft);border:1px solid var(--line);border-radius:999px;padding:4px 11px;text-decoration:none;}
+  .toc a:hover{background:#efdcb2;}
+  .toc-cap{font-size:12px;color:var(--muted);margin-top:10px;letter-spacing:.1em;}
+
+  @media (max-width:820px){
+    h1.title{font-size:29px;}
+    .sec-title{font-size:20px;}
+    .hero{padding:46px 0 30px;}
+    .zgrid,.egrid{grid-template-columns:1fr 1fr;}
+    .dgrid{grid-template-columns:1fr;}
+    .hw-grid{grid-template-columns:1fr 1fr;}
+    .metrics{flex-direction:column;}
+    .metric{flex:1 1 auto;}
+    .comp{min-width:100%;}
+    .wcard{flex-direction:column;}
+    .wcard .ic{width:100%;}
+    .hw-head{flex-direction:column;align-items:flex-start;}
+    .detail-body{padding:20px 18px;}
+    .diagram{padding:16px;}
+    .zcard .art{height:132px;}
+  }
+  @media (max-width:560px){
+    h1.title{font-size:24px;}
+    .sec-title{font-size:18px;}
+    .zgrid,.egrid{grid-template-columns:1fr;}
+    .sec-lead{font-size:13.5px;}
+    .detail-body{padding:16px 14px;}
+    .detail-top{gap:10px;margin:18px 0 2px;}
+    .btn-back{padding:9px 13px;font-size:13px;min-height:44px;}
+    .metric .v{font-size:20px;}
+    .step .bd{padding:8px 12px;}
+    .step{gap:10px;}
+    .hwcard{min-height:44px;}
+    .diagram{padding:12px;}
+    .zcard .art{height:150px;}
+    .poster .cap{font-size:11.5px;}
+    .rainchart{height:150px;}
+    .rainchart .bar .val{font-size:9px;top:-16px;}
+  }
+  @media (max-width:480px){
+    .hw-grid{grid-template-columns:1fr;}
+    .wrap{padding-left:max(14px, env(safe-area-inset-left));padding-right:max(14px, env(safe-area-inset-right));}
+  }
+</style>
+</head>
+<body>
+
+<nav class="topnav"><div class="topnav-inner">
+  <a class="tnav-item" data-t="home" href="#">🏠 首页</a>
+  <a class="tnav-item" data-t="hw" href="#hw">🔧 硬件</a>
+  <a class="tnav-item" data-t="program" href="#program">🧩 程序</a>
+  <a class="tnav-item" data-t="build" href="#build">🛠️ 施工</a>
+  <a class="tnav-item" data-t="season" href="#season">🗓️ 四季管理</a>
+  <a class="tnav-item" data-t="manual" href="#manual">⚙️ 配置运维</a>
+  <a class="tnav-item" data-t="cost" href="#cost">💰 成本</a>
+</div></nav>
+
+<!-- ===== 首页 ===== -->
+<div data-view="home">
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">杭州 · 居家 DIY 项目</span>
+    <h1 class="title">种一片草原，<br>让它自己喝水、自己吃饭</h1>
+    <p class="sub">一套完全藏在地下的庭院智能水肥系统：16mm 地埋滴灌 + 华为智慧生活 App 统一管理 + ESP32 湿度闭环 + 1000L 雨水收集 + 文丘里水肥一体 + 彩云天气预报触发的自动开合集雨网 + 摄像头云端大模型长势分析（草皮 + 树冠日照 + 剪枝逻辑）+ 7寸数据屏一屏看全园。按杭州雨养气候设计，全年目标只有一个——让草皮四季都有不错的视觉呈现。</p>
+    <div class="metrics">
+      <div class="metric"><div class="k">一次性部署成本</div><div class="v">¥7,285</div></div>
+      <div class="metric"><div class="k">天气触发</div><div class="v">1 路</div></div>
+      <div class="metric"><div class="k">自动集雨网</div><div class="v">1 面</div></div>
+      <div class="metric"><div class="k">云端视觉</div><div class="v">1 路</div></div>
+      <div class="metric"><div class="k">日照+剪枝</div><div class="v">1 套</div></div>
+      <div class="metric"><div class="k">7寸数据屏</div><div class="v">1 台</div></div>
+      <div class="metric"><div class="k">自动分区</div><div class="v">3 个</div></div>
+      <div class="metric"><div class="k">地表设备</div><div class="v">0 件</div></div>
+    </div>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/GYcSrjMcai" alt="稀树草原风格庭院效果图" loading="lazy"><div class="cap">稀树草原风格庭院 · 效果图（示意图，供整体氛围参考）</div></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="toc-cap">本页目录 · 点击直达</div>
+  <div class="toc">
+    <a href="#" data-scroll="climate">背景气候</a>
+    <a href="#" data-scroll="why">设计理念</a>
+    <a href="#" data-scroll="arch">系统架构</a>
+    <a href="#" data-scroll="zone">三分区</a>
+    <a href="#" data-scroll="fert">水肥一体</a>
+    <a href="#" data-scroll="weather">天气触发</a>
+    <a href="#" data-scroll="collect">自动集雨</a>
+    <a href="#" data-scroll="vision">云端长势</a>
+    <a href="#" data-scroll="canopy">树冠日照</a>
+    <a href="#" data-scroll="panel">7寸数据屏</a>
+    <a href="#" data-scroll="huawei">华为管理</a>
+    <a href="#" data-scroll="allyear">全年视觉</a>
+  </div>
+
+  <section class="block" id="climate">
+    <div class="sec-label">HANGZHOU CLIMATE</div>
+    <h2 class="sec-title">杭州气候 · 雨养驱动</h2>
+    <p class="sec-lead">杭州年降雨约 1400~1500mm，是北京的 2.5 倍：6 月梅雨峰、8-9 月台风、冬季少雨但无真正旱季。整张设计图都围绕“雨多”来搭——能靠天就不浇，浇也要浇在刀刃上。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/8KSvzwtTVA" alt="杭州月降雨量分布示意图" loading="lazy"><div class="cap">杭州月降雨量分布 · 单峰偏夏季，6 月梅雨为峰值（示意海报）</div></div>
+    <div class="rainchart" aria-label="杭州多年平均月降雨量柱状图">
+      <div class="col"><div class="bar" style="height:35%" data-v="78"><span class="val">78</span></div><span class="m">1月</span></div>
+      <div class="col"><div class="bar" style="height:40%" data-v="89"><span class="val">89</span></div><span class="m">2月</span></div>
+      <div class="col"><div class="bar" style="height:58%" data-v="130"><span class="val">130</span></div><span class="m">3月</span></div>
+      <div class="col"><div class="bar" style="height:55%" data-v="124"><span class="val">124</span></div><span class="m">4月</span></div>
+      <div class="col"><div class="bar" style="height:61%" data-v="135"><span class="val">135</span></div><span class="m">5月</span></div>
+      <div class="col"><div class="bar hot" style="height:100%" data-v="220"><span class="val">220</span></div><span class="m peak">6月</span></div>
+      <div class="col"><div class="bar" style="height:80%" data-v="175"><span class="val">175</span></div><span class="m">7月</span></div>
+      <div class="col"><div class="bar" style="height:73%" data-v="160"><span class="val">160</span></div><span class="m">8月</span></div>
+      <div class="col"><div class="bar" style="height:57%" data-v="125"><span class="val">125</span></div><span class="m">9月</span></div>
+      <div class="col"><div class="bar" style="height:36%" data-v="80"><span class="val">80</span></div><span class="m">10月</span></div>
+      <div class="col"><div class="bar" style="height:32%" data-v="70"><span class="val">70</span></div><span class="m">11月</span></div>
+      <div class="col"><div class="bar" style="height:23%" data-v="50"><span class="val">50</span></div><span class="m">12月</span></div>
+    </div>
+    <div class="chart-note">多年平均月降雨量（mm，多口径示意值，年合计约 1430mm）。6 月为梅雨峰值月（实测口径约 220~320mm），8-9 月受台风影响多降雨，12 月最少（约 40~55mm）。</div>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/E5EdfsASBH" alt="杭州梅雨季庭院效果图" loading="lazy"><div class="cap">杭州梅雨后的庭院 · 湿润青翠，雨季几乎不需要人工浇灌（效果图）</div></div>
+    <div class="flow-note">💡 <b>对设计的三点改变</b>：① 浇水从“周常浇水”改为“雨养优先、晴热期补水”——雨量传感器 + 湿度传感器双保险，雨季系统自动停手；② 1000L 罐在杭州雨季会频繁满溢，溢流与排水比北京更重要；③ 冬季杭州虽比北京温和，极端低温仍可达 -1~-5°C，入冬泄水不能省。</div>
+  </section>
+
+  <section class="block" id="why">
+    <div class="sec-label">WHY THIS PROJECT</div>
+    <h2 class="sec-title">为什么这样设计</h2>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/KwrZeqCUq9" alt="多钥匙控制逻辑示意" loading="lazy"><div class="cap">四把钥匙控制 · 手机「想不想浇」＋ 单片机「该不该浇」＋ 云端视觉「长势如何」＋ 彩云天气「下不下雨」，任一条件不满足都不出水</div></div>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🌿</div><div><h3>稀树草原旱养 + 杭州雨养</h3><p>低耗水、深根系是草原本性，杭州又雨多：能靠天就不浇，只在土壤真缺水、且非雨天时精确补水一次浇透。水费、电费、人工都省到最低，草还越长越耐旱。</p></div></div>
+      <div class="wcard"><div class="ic">🔑</div><div><h3>四把钥匙，不会乱浇</h3><p>华为 App 管“想不想浇”，ESP32 管“该不该浇”（湿度/雨量/水位），云端长势管“长势如何”，彩云预报管“下不下雨”。四把钥匙串联，任一条件不满足就不出水——App 开了计划，土壤够湿、在下雨、草疯长或预报要下雨，系统都自动停手。</p></div></div>
+      <div class="wcard"><div class="ic">💧</div><div><h3>雨水优先 + 水肥一体</h3><p>1000L 罐 + 首雨弃流，杭州连雨期几乎零水费；罐空自动切自来水。文丘里施肥让“浇水=施肥”，一次完成、自动化调配，不用追肥工具。</p></div></div>
+      <div class="wcard"><div class="ic">🏠</div><div><h3>华为全屋智能统一管理</h3><p>浇水、施肥、监控、天气触发都收进华为智慧生活 App + 本地决策：一个界面、小艺语音、定时场景、手机随时看草。生态做不了的精判（草色分析、天气触发）留在本地，其余全部交给华为。</p></div></div>
+      <div class="wcard"><div class="ic">🗓️</div><div><h3>全年视觉，不止浇水</h3><p>旱了补、涝了排、冷了护、热了控：彩云预报管雨、盲沟管涝、冷季型草管冬、云端长势管状态。目标不是“省水”，而是草皮四季都好看。</p></div></div>
+    </div>
+  </section>
+
+  <section class="block" id="arch">
+    <div class="sec-label">SYSTEM OVERVIEW</div>
+    <h2 class="sec-title">系统架构总览</h2>
+    <p class="sec-lead">从雨滴到根尖，从画面到水阀：水肥一体 + 视觉反馈，整条链路每一环都在这张图里。</p>
+    <p class="sec-hint">鼠标悬停查看简介，点击进入该器件的硬件专题页。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/XFwWVoqdLY" alt="系统全链路水流示意" loading="lazy"><div class="cap">系统全链路 · 水从雨到根（示意海报）</div></div>
+    <div class="diagram">
+      <div class="layer">
+        <div class="layer-label">云端 / 应用层 · 华为全屋智能统一管理 + 天气数据源</div>
+        <div class="row">
+          <a class="comp" data-id="app" href="#manual"><div class="ic">📱</div><div class="nm">华为智慧生活 App</div><div class="sb">遥控 · 场景 · 小艺 · 监控</div><span class="tag2">统一管理面</span></a>
+          <a class="comp" data-id="cam" href="#hwitem?id=hw-cam"><div class="ic">📷</div><div class="nm">华为智能摄像头</div><div class="sb">看长势 · 回看 · 触发场景</div><span class="tag2">已有设备</span></a>
+          <a class="comp" data-id="caiyun" href="#hwitem?id=hw-caiyun"><div class="ic">🛰️</div><div class="nm">彩云天气 API</div><div class="sb">分钟级降水预报</div><span class="tag2">新增数据源</span></a>
+          <a class="comp" data-id="panel" href="#hwitem?id=hw-panel"><div class="ic">🖥️</div><div class="nm">7 寸数据屏</div><div class="sb">实时参数 · 曲线 · 季度延时</div><span class="tag2">新增</span></a>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="layer">
+        <div class="layer-label">决策层 · 四把钥匙（App 想不想浇 · ESP32 该不该浇 · 云端长势如何 · 天气下不下雨）</div>
+        <div class="row">
+          <a class="comp" data-id="valve" href="#hwitem?id=hw-valve"><div class="ic">🔑</div><div class="nm">鸿蒙智联智能水阀 ×3</div><div class="sb">钥匙① · App 直控分区</div><span class="tag2">华为生态</span></a>
+          <a class="comp" data-id="esp32" href="#hwitem?id=hw-esp32"><div class="ic">🧠</div><div class="nm">ESP32 决策板</div><div class="sb">钥匙② · 湿度 / 雨量 / 水位</div><span class="tag2">本地逻辑</span></a>
+          <a class="comp" data-id="vision" href="#hwitem?id=hw-vision"><div class="ic">👁️</div><div class="nm">云端长势分析</div><div class="sb">钥匙③ · 草 + 树冠 + 日照</div><span class="tag2">云端视觉</span></a>
+          <a class="comp" data-id="weather" href="#hwitem?id=hw-caiyun"><div class="ic">🌦️</div><div class="nm">天气触发</div><div class="sb">钥匙④ · 彩云预报</div><span class="tag2">新增</span></a>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="layer">
+        <div class="layer-label">水源 / 营养层 · 雨水优先，自来水兜底，水肥一体</div>
+        <div class="row">
+          <a class="comp" data-id="tank" href="#hwitem?id=hw-tank"><div class="ic">🌧️</div><div class="nm">雨水罐 1000L</div><div class="sb">杭州雨季频繁满 · 溢流</div></a>
+          <a class="comp" data-id="pump" href="#hwitem?id=hw-pump"><div class="ic">⚙️</div><div class="nm">自吸泵</div><div class="sb">约 800L/h</div></a>
+          <a class="comp" data-id="tap" href="#hwitem?id=hw-backup"><div class="ic">🚰</div><div class="nm">自来水补位</div><div class="sb">低水位自动切入</div></a>
+          <a class="comp" data-id="fert" href="#hwitem?id=hw-venturi"><div class="ic">🧪</div><div class="nm">文丘里施肥器</div><div class="sb">浇水即施肥 · 水肥同步</div><span class="tag2">新增</span></a>
+          <a class="comp" data-id="colnet" href="#hwitem?id=hw-colnet"><div class="ic">🕸️</div><div class="nm">自动集雨网</div><div class="sb">预报有雨张开 · 雨停折叠</div><span class="tag2">新增</span></a>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="layer">
+        <div class="layer-label">管网层 · 全地埋</div>
+        <div class="row">
+          <a class="comp" data-id="filter" href="#hwitem?id=hw-filter"><div class="ic">🌀</div><div class="nm">120 目过滤器</div><div class="sb">水肥前必须精滤</div></a>
+          <a class="comp" data-id="mainvalve" href="#hwitem?id=hw-solenoid"><div class="ic">🚦</div><div class="nm">主切断电磁阀</div><div class="sb">ESP32 硬切断</div></a>
+          <a class="comp" data-id="fertvalve" href="#hwitem?id=hw-fertvalve"><div class="ic">🔬</div><div class="nm">施肥电磁阀</div><div class="sb">控文丘里吸肥通断</div><span class="tag2">新增</span></a>
+          <a class="comp" data-id="drain" href="#hwitem?id=hw-drain"><div class="ic">🌊</div><div class="nm">智能排水系统</div><div class="sb">雨季泄土中水分</div><span class="tag2">新增</span></a>
+        </div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="layer">
+        <div class="layer-label">执行层 · 水与养分从根系层渗出（地表零设备）</div>
+        <div class="row">
+          <a class="comp" data-id="dripline" href="#hwitem?id=hw-dripline"><div class="ic">🟢</div><div class="nm">地埋滴灌管 16mm</div><div class="sb">草坪 35㎡ · 埋深 10cm</div></a>
+          <a class="comp" data-id="tree" href="#hwitem?id=hw-dripj"><div class="ic">🌳</div><div class="nm">树下滴箭</div><div class="sb">沿滴水线 · 靠天为主</div></a>
+          <a class="comp" data-id="spot" href="#hwitem?id=hw-dripj"><div class="ic">🌸</div><div class="nm">点缀带微滴灌</div><div class="sb">为以后局部养花打底</div></a>
+        </div>
+      </div>
+      <div class="layer" style="margin-top:8px;">
+        <div class="row" style="justify-content:flex-end;">
+          <a class="comp" data-id="soil" href="#hwitem?id=hw-moisture" style="flex:1 1 170px;max-width:220px;"><div class="ic">🌱</div><div class="nm">土壤湿度 ×4</div><div class="sb">埋根系层 · 回传 ESP32</div><span class="tag2">浇水的裁判</span></a>
+          <a class="comp" data-id="rain" href="#hwitem?id=hw-rain" style="flex:1 1 170px;max-width:220px;"><div class="ic">🌦️</div><div class="nm">雨量传感器</div><div class="sb">杭州雨季的关键</div></a>
+        </div>
+      </div>
+      <div class="flow-note">💡 提示：悬停查看简介，点击进入硬件专题页。整条链路每一环都在地下或密封阀箱里——地表只看得见草、树和那台摄像头。</div>
+    </div>
+  </section>
+
+  <section class="block" id="zone">
+    <div class="sec-label">THREE ZONES</div>
+    <h2 class="sec-title">三分区，三种需水</h2>
+    <p class="sec-lead">灌溉按植物需水分三档：草坪、树木、点缀带各浇各的，绝不一刀切。已按你的选择——观赏效果优先的草种、点缀带浇水为未来养花打底。</p>
+    <div class="zgrid">
+      <div class="zcard">
+        <div class="art"><img src="https://aka.doubaocdn.com/s/icEbFxbCTQ" alt="草坪区地埋滴灌效果" loading="lazy"></div>
+        <div class="zlabel">雨养为主 · 晴热期补水</div>
+        <h3>草坪区 · 35㎡</h3>
+        <p>16mm 地埋滴灌管，管距 40cm、滴头 30cm，水从根系层直接渗出。杭州雨多，草坪以“靠天 + 湿度兜底”为主，仅晴热少雨季补水；水肥一体时顺便补肥。</p>
+        <div class="key">高羊茅耐旱混播 · 绿期长、观赏性好</div>
+      </div>
+      <div class="zcard">
+        <div class="art"><img src="https://aka.doubaocdn.com/s/dUYgexmV4Y" alt="树木区滴箭补水效果" loading="lazy"></div>
+        <div class="zlabel">靠天为主 · 偶补</div>
+        <h3>树木区 · 2~3 棵（已栽）</h3>
+        <p>每树 4 个滴箭/涌泉头，沿树冠滴水线环形补水。大树建成后根系深，基本靠天，仅持续干旱时补一点。</p>
+        <div class="key">树已栽好 · 成本不计入</div>
+      </div>
+      <div class="zcard">
+        <div class="art"><img src="https://aka.doubaocdn.com/s/psOuSZeOZF" alt="点缀带花境与微滴灌效果" loading="lazy"></div>
+        <div class="zlabel">预留待用 · 现旱养</div>
+        <h3>点缀带 · 8㎡</h3>
+        <p>观赏草丛现在旱养不浇；预埋微滴灌管，等你想在局部养花时，随时接入新分区、接上施肥支路，不用再动土。</p>
+        <div class="key">为以后局部养花打基础</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="fert">
+    <div class="sec-label">FERTIGATION</div>
+    <h2 class="sec-title">水肥一体化 · 浇水即施肥</h2>
+    <p class="sec-lead">在主管道上旁通一个文丘里施肥器，配一只施肥桶：水流经过时产生的负压自动把肥液吸进水里——浇水的同时就把肥喂了，一次完成、全自动调配。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/Tk6WfQHOJO" alt="文丘里施肥器原理" loading="lazy"><div class="cap">文丘里施肥器原理 · 水流喉部负压吸肥，无需电力（示意海报）</div></div>
+    <div class="dgrid">
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/UgU1pdXW8B" alt="水肥一体化全链路" loading="lazy"></div><div class="bd"><h3>全链路</h3><p>施肥桶 → 文丘里 → 主管道合流 → 滴灌管 → 草根：水和养分一起走地下，地表无痕。</p></div></div>
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/hyDfAtnKIo" alt="施肥桶与水溶肥" loading="lazy"></div><div class="bd"><h3>施肥桶</h3><p>20~50L 桶装水溶肥，文丘里从这里吸肥；薄肥勤施，肥液浓度自己调。</p></div></div>
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/djt7Kvu0oO" alt="水肥同步滴灌" loading="lazy"></div><div class="bd"><h3>水肥同步</h3><p>滴头同时渗出水和养分到根系层，肥随水走、不淋叶面，吸收率更高、病害更少。</p></div></div>
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/q0TxsAHvb3" alt="智能施肥控制系统" loading="lazy"></div><div class="bd"><h3>自动化调配</h3><p>ESP32 在“该施肥”时打开施肥电磁阀几分钟，肥液随浇水一起进土；华为 App 一键触发“施肥场景”。</p></div></div>
+    </div>
+    <div class="flow-note">💡 <b>施肥策略（杭州）</b>：生长期每 2~3 周一次薄肥（平衡型水溶肥，比例约 1:1000），随浇水进行；梅雨季湿度大，减少施肥防徒长与病害；施肥后用清水冲灌 5 分钟，冲净管路残留。想更省事的平替 = 手动往施肥桶倒一次肥，系统照常自动浇。</div>
+  </section>
+
+  <section class="block" id="weather">
+    <div class="sec-label">WEATHER TRIGGER</div>
+    <h2 class="sec-title">天气联动 · 彩云预报当第四把钥匙</h2>
+    <p class="sec-lead">接入彩云天气的分钟级降水预报（未来 2 小时逐分钟降水、1 公里精度，个人开发者有免费额度）：云层什么时候到、会下多久，系统提前就知道——集雨网该开就开，浇水该停就停。天气数据从此成为触发条件之一。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/Wlyr4VHV2w" alt="彩云天气降雨预报触发联动" loading="lazy"><div class="cap">彩云天气降雨预报 → 集雨网张开 / 浇水暂停（示意海报）</div></div>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🛰️</div><div><h3>预报源</h3><p>彩云天气开放平台，实况准确率约 95%、分钟级降水预报 91%；分钟级数据未来 2 小时逐分钟降水强度，1km 级精度，正好覆盖一个院子。</p></div></div>
+      <div class="wcard"><div class="ic">⚙️</div><div><h3>触发规则</h3><p>主机/ESP32 每 5~10 分钟轮询一次：未来 1~2 小时内有持续降雨（降水强度超阈值且持续 15 分钟以上）→ 张开集雨网 + 跳过/延后浇水；本地翻斗雨量计实测降雨做兜底，预报失灵也不漏。</p></div></div>
+      <div class="wcard"><div class="ic">🎛️</div><div><h3>对浇水决策的影响</h3><p>预报有雨 → 今天不浇（省水省电）；预报连晴 → 恢复正常按湿度浇水；台风预警 → 集雨网收起 + 排水系统待命。四把钥匙：App、湿度、长势、天气，全部满足才浇。</p></div></div>
+    </div>
+    <div class="tbl-wrap" style="margin-top:14px;">
+    <table>
+      <thead><tr><th>信号</th><th>自动集雨网</th><th>浇水</th><th>施肥</th></tr></thead>
+      <tbody>
+        <tr><td>预报 1~2h 内有持续雨</td><td>张开</td><td>暂停 / 延后</td><td>暂停（肥随雨流失）</td></tr>
+        <tr><td>正在降雨（实测）</td><td>保持张开</td><td>暂停</td><td>暂停</td></tr>
+        <tr><td>雨停 + 预报转晴</td><td>折叠收起</td><td>按湿度恢复</td><td>按周期恢复</td></tr>
+        <tr><td>台风 / 暴雨预警</td><td>强制收起防损坏</td><td>暂停 + 排水待命</td><td>暂停</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="block" id="collect">
+    <div class="sec-label">AUTO RAIN COLLECTOR</div>
+    <h2 class="sec-title">自动开合集雨网 · 云层到了就张开</h2>
+    <p class="sec-lead">一个能自动开合的大网面装置，像网球网那样在庭院上方撑开接雨，雨停就自动折叠收好。展开时约 12㎡ 集雨面，杭州一年能多收约 1 万升雨水——和屋顶雨水合在一起，让 1000L 罐在雨季常满、旱季有备。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/MYyH2VGcf8" alt="自动开合集雨装置效果" loading="lazy"><div class="cap">自动集雨装置 · 斜面集雨面 → 导流槽 → 储罐（效果示意）</div></div>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/5sUpnFMTXl" alt="集雨面导流进水箱示意" loading="lazy"><div class="cap">集雨面导流 → 储水罐 · 一片网就是一片小屋顶（效果示意）</div></div>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🕸️</div><div><h3>它是什么</h3><p>一卷防水涂层网面装在顶部卷轴上，由线性推杆/卷绕电机驱动：张开时呈 30° 倾斜的集雨面，雨水沿网面流到低缘导流槽 → 管道 → 储水罐；收拢时叠成小卷藏进侧边立柱，防风防尘。</p></div></div>
+      <div class="wcard"><div class="ic">⚙️</div><div><h3>怎么自动开合</h3><p>ESP32/主机按彩云预报判断：预报 1~2h 内有持续雨 → 电机正转展开；雨停 + 预报转晴 → 电机反转折叠。限位开关定开/合两端，断电记忆位置；本地雨量计兜底触发。</p></div></div>
+      <div class="wcard"><div class="ic">💧</div><div><h3>集雨量与收益</h3><p>12㎡ × 杭州 1450mm 年降雨 ≈ 理论 17,000L/年，按有效系数约 1 万升——相当于让雨水收集量直接翻倍，罐更常满、自来水更少用。</p></div></div>
+    </div>
+    <div class="flow-note">💡 <b>诚实提醒</b>：这是 DIY 装置，网上没有成品卖。网面用防水涂层布或 90% 遮阳网 + PVC 涂层面料；结构参照“电动卷帘 / 折叠雨棚”原理自组，预算约 500 元。台风预警联动收起是必做的保护逻辑。</div>
+  </section>
+
+  <section class="block" id="vision">
+    <div class="sec-label">CLOUD VISION</div>
+    <h2 class="sec-title">云端大模型 · 摄像头接云上看草长</h2>
+    <p class="sec-lead">你家那台能接入华为全屋智能的摄像头，不只是安防——它定时截图上传云端视觉大模型，让 AI 直接“看懂”草：草色绿不绿、覆盖密不密、有没有枯黄或病害，再决定要不要浇水、要不要施肥。这是第三把钥匙。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/riJn5IYmoV" alt="云端大模型长势分析" loading="lazy"><div class="cap">云端大模型长势分析 · 摄像头 → 云 → 诊断 → 决策（示意海报）</div></div>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/LuUPdM08QX" alt="华为智能摄像头庭院监控效果图" loading="lazy"><div class="cap">华为智能摄像头 · 屋檐下朝草坪，定时自动截图（效果图）</div></div>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/y5KXxdqaDM" alt="草长势视觉监测示意" loading="lazy"><div class="cap">草长势监测 · 画面 → 草色/覆盖度 → 生长指数（示意海报）</div></div>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">📷</div><div><h3>摄像头 = 眼睛</h3><p>华为智选室外摄像头接入华为智慧生活 App，实时画面随时看；系统每天 1~2 次自动截一张草坪全景图，交给云端分析。</p></div></div>
+      <div class="wcard"><div class="ic">☁️</div><div><h3>云端大模型 = 大脑</h3><p>截图上传视觉大模型 API，返回结构化诊断：草色指数（绿 / 黄 / 枯占比）、覆盖度、枯黄原因判断（缺水 / 缺肥 / 病害 / 正常休眠），以及建议动作（浇水 / 施肥 / 修剪 / 打孔透气）。</p></div></div>
+      <div class="wcard"><div class="ic">🎛️</div><div><h3>联动闭环</h3><p>诊断结果写回决策：缺肥 → 触发施肥场景；缺水 → 补水；过湿 / 病害 → 停水停肥并提示排水；夏季休眠泛黄 → 只保命不施肥。长势好 → 自动降低浇水施肥频次。</p></div></div>
+    </div>
+    <div class="flow-note">💡 <b>成本与边界</b>：视觉大模型按次计费，每天 2 次 × 每月 60 次，全年约 200 元内（多数平台免费额度够用）。华为生态仍不做这类分析，所以走“摄像头取图 → 云端 API 分析 → 结果回本地 ESP32 决策”，华为 App 管场景与展示。最省事的平替 = 打开手机看画面 + 人工点一次施肥。</div>
+  </section>
+
+  <section class="block" id="canopy">
+    <div class="sec-label">CANOPY &amp; SUNLIGHT</div>
+    <h2 class="sec-title">树冠日照 · 阴影多了就该剪枝</h2>
+    <p class="sec-lead">摄像头不只盯着草，也盯着树：云端分析树冠大小与生长趋势，结合太阳位置算出每块草皮的实际日照时长。一旦树荫把草皮的光抢走太多，系统会给出明确的剪枝建议——这是“全年视觉”里最容易被忽略的一环。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/fB4MYAe98q" alt="树冠与日照热力图分析" loading="lazy"><div class="cap">树冠 + 日照热力图分析 · 摄像头画面 → 树冠分割 → 草皮日照时长分布（示意海报）</div></div>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🌳</div><div><h3>树冠监测</h3><p>云端大模型在画面中分割树冠区域，估算冠幅与枝叶密度；随时间对比算出冠幅增长率，判断树是不是正在“越长越遮”。金合欢类稀树草原树冠偏开散，正是监控重点。</p></div></div>
+      <div class="wcard"><div class="ic">☀️</div><div><h3>日照时长分析</h3><p>结合日期 + 经纬度算太阳轨迹，把树冠阴影映射到草坪分区，算出每块草皮日累计直射日照（小时）。杭州年日照约 1700h、春秋多云雾，冷季型草需要日直射光 ≥4~6h。</p></div></div>
+      <div class="wcard"><div class="ic">✂️</div><div><h3>剪枝逻辑</h3><p>某分区日照连续 2~3 周低于下限、且树冠仍在扩大 → 系统生成“剪枝任务”：提示树冠方向、覆盖比例、建议回缩主枝 1~1.5m。剪枝由人工执行，系统只监测、提醒、看趋势。</p></div></div>
+    </div>
+    <div class="tbl-wrap" style="margin-top:14px;">
+    <table>
+      <thead><tr><th>草皮分区日照判定</th><th>日直射光</th><th>系统动作</th></tr></thead>
+      <tbody>
+        <tr><td>充足</td><td>≥ 6 小时</td><td>正常管理</td></tr>
+        <tr><td>临界</td><td>4~6 小时</td><td>观察趋势，减少该区施肥</td></tr>
+        <tr><td>不足（树荫遮蔽）</td><td>&lt; 4 小时</td><td>触发剪枝建议 + 该区改耐阴草 / 减少耗水管理</td></tr>
+        <tr><td>过量（夏季暴晒）</td><td>夏季全日照无遮挡</td><td>高温期提示保水 / 留高遮阴</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="flow-note">💡 <b>落地口径</b>：日照分析是云端大模型的扩展能力（同一次视觉分析返回冠幅 + 阴影覆盖），不新增硬件；“剪枝”仍由你或园丁动手，系统负责在 7 寸屏和华为 App 里给出清晰的任务卡与趋势曲线。</div>
+  </section>
+
+  <section class="block" id="panel">
+    <div class="sec-label">7-INCH DASHBOARD</div>
+    <h2 class="sec-title">7 寸数据屏 · 一屏看全园</h2>
+    <p class="sec-lead">在玄关或室内挂一块 7 英寸小屏，把系统所有数据实时呈现出来：四路土壤湿度、罐水位、雨量、天气、长势指数、日照时长，带历史曲线；还有“一帧/天”的季度延时影像——像给院子拍了一部纪录片。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/CrpiF0UjvD" alt="7寸智能监测屏界面" loading="lazy"><div class="cap">7 寸智能监测屏 · 实时参数 + 变化曲线 + 季度延时（示意海报）</div></div>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/QEw3ugSaTY" alt="季度延时影像" loading="lazy"><div class="cap">季度延时影像 · 过去一个季度每天一帧自动拼接成片（示意海报）</div></div>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🖥️</div><div><h3>硬件</h3><p>7 寸 IPS 触屏（1024×600，HDMI 或 SPI），由已有 NAS / 迷你主机驱动；网页仪表盘跑在屏幕浏览器里，壁挂 / 桌面皆可。只读监测，不替代华为 App 控制。</p></div></div>
+      <div class="wcard"><div class="ic">📊</div><div><h3>实时参数 + 曲线</h3><p>湿度×4、罐水位、雨量、气温 / 天气、浇灌状态、长势指数、各分区日照小时；曲线覆盖 24h / 7d / 30d，深色霓虹科技风 UI。</p></div></div>
+      <div class="wcard"><div class="ic">🎞️</div><div><h3>季度延时影像</h3><p>摄像头每天固定机位存一帧，一个季度约 90 帧自动拼成 3~6 秒延时视频在屏幕循环播放——草色从返青到茂盛的变化一目了然，也是长势分析最直观的证据。</p></div></div>
+    </div>
+    <div class="flow-note">💡 <b>控制边界</b>：屏幕只做“看”，不做“第二套遥控器”——浇水、施肥、场景依然全部走华为智慧生活 App（小艺语音 / 定时 / 手动），保持单一控制面、逻辑不打架。</div>
+  </section>
+
+  <section class="block" id="huawei">
+    <div class="sec-label">HUAWEI ORCHESTRATION</div>
+    <h2 class="sec-title">华为全屋智能 · 统一管理</h2>
+    <p class="sec-lead">水阀、摄像头、场景、语音、监控画面，全部收进华为智慧生活 App；ESP32 做本地硬判断，云端长势与彩云天气做智能判断，华为生态只做它擅长的事。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/cU4XD8Cm3U" alt="华为全屋智能统一管理示意图" loading="lazy"><div class="cap">华为全屋智能统一管理 · 灌溉、施肥、监控集中到一个管理面（示意海报）</div></div>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/CUUkY5Yx4z" alt="华为智慧生活App联动场景" loading="lazy"><div class="cap">华为智慧生活 App · 浇水 / 施肥 / 监控三场景一键联动（示意海报）</div></div>
+    <div class="wlist">
+      <div class="wcard"><div class="ic">🎛️</div><div><h3>管理面 = 华为</h3><p>三个智慧场景：<b>浇水场景</b>（定时 + 手动 + 小艺）、<b>施肥场景</b>（一键开施肥电磁阀 10 分钟）、<b>监控场景</b>（摄像头实时画面 + AI 事件）。全部在智慧生活 App 里一个界面管。</p></div></div>
+      <div class="wcard"><div class="ic">🧠</div><div><h3>判断面 = 本地 + 云端</h3><p>ESP32 管湿度/雨量/水位的硬逻辑（第二把钥匙），云端视觉大模型管长势（第三把钥匙），彩云预报管天气触发（第四把钥匙）。华为生态做不到的、或做了不可靠的，交给本地 + 云端闭环——这是“华为 App + 全自动化”最稳的组合。</p></div></div>
+      <div class="wcard"><div class="ic">🗣️</div><div><h3>语音与远程</h3><p>对小艺说“给草坪浇 20 分钟”“启动施肥”就能操作；出差在外打开 App 就能看监控画面、看浇灌记录、手动补一次水。</p></div></div>
+    </div>
+  </section>
+
+  <section class="block" id="allyear">
+    <div class="sec-label">ALL-YEAR VISUAL</div>
+    <h2 class="sec-title">全年视觉 · 让草皮四季都好看</h2>
+    <p class="sec-lead">目标只有一个：让草皮全年都有不错的视觉。围绕杭州气候拆成四件事——旱了补、涝了排、冷了护、热了控。完整运维手册已独立成页。</p>
+    <div class="dgrid">
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/vKbfK1hG6L" alt="草坪四季管理月历" loading="lazy"></div><div class="bd"><h3>四季管理月历</h3><p>12 个月逐月拆浇水 / 施肥 / 修剪 / 重点操作，一套手册管一整年。</p></div></div>
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/e4To6i44Kn" alt="草坪地下排水系统" loading="lazy"></div><div class="bd"><h3>雨季排水 · 泄掉土里的水</h3><p>盲沟 + 透水管 + 渗水井，梅雨台风季不烂根；ESP32 湿度过高自动停水提示。</p></div></div>
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/joA8gTyycU" alt="冬季草皮保绿" loading="lazy"></div><div class="bd"><h3>冬季保绿 · 低温也不黄</h3><p>冷季型草混播，杭州冬季保持绿；减水停肥、修剪留高、极端寒潮盖防冻布。</p></div></div>
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/fB4MYAe98q" alt="树冠与日照分析" loading="lazy"></div><div class="bd"><h3>光照剪枝 · 树荫别把草闷黄</h3><p>日照不足且树冠在扩大 → 自动生成剪枝任务，由人工 / 园丁执行。</p></div></div>
+    </div>
+    <div class="flow-note">💡 完整运维手册（排水 / 冬季 / 夏季 / 光照要点 + 12 个月度管理表）已独立成页：<a href="#season" style="color:var(--accent-deep);font-weight:700;">进入「四季管理手册」→</a></div>
+  </section>
+
+  <section class="block" id="explore">
+    <div class="sec-label">EXPLORE</div>
+    <h2 class="sec-title">深入了解每个部分</h2>
+    <p class="sec-lead">从硬件到施工，从四季管理到配置运维，每个专题都有完整的清单和步骤。</p>
+    <div class="egrid">
+      <a class="ecard" href="#hw"><div class="ic">🔧</div><h3>硬件专题</h3><p>26 个核心器件的结构、原理、购买渠道与闲鱼价，一器件一专题页逐一拆解。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#build"><div class="ic">🛠️</div><h3>施工指南</h3><p>从放线挖沟、铺管装阀、施肥支路、集雨网与排水、7寸屏，到入冬泄水，一步一图走完 DIY。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#season"><div class="ic">🗓️</div><h3>四季管理</h3><p>排水 / 冬季保绿 / 夏季控温 / 光照剪枝四大要点 + 12 个月度管理表，全年视觉的运维手册。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#program"><div class="ic">🧩</div><h3>程序与流程图</h3><p>从传感器到水阀的代码路径：主决策 / 浇水 / 施肥 / 集雨网 / 云端长势 / 季节策略，6 张主流程图逐一拆解。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#cost"><div class="ic">💰</div><h3>成本评估</h3><p>一次性部署成本与每年使用成本两大模块，5 年总拥有成本横向对比，帮你决策装多大规模。</p><span class="go">开始探索 →</span></a>
+      <a class="ecard" href="#manual"><div class="ic">⚙️</div><h3>配置运维</h3><p>雨水与施肥水账 + 彩云天气接入 + 云端长势 + 排水 + 7寸屏 + 华为智慧生活 App 场景配置。</p><span class="go">开始探索 →</span></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="t">种一片草原，让它自己喝水、自己吃饭</div>
+  <div style="margin-top:4px;">杭州 · 稀树草原庭院全隐藏智能水肥 · 部署约 ¥7,285 · 年使用约 ¥510（不含摄像头/树）</div>
+</footer>
+</div>
+
+<!-- ===== 硬件专题总览 ===== -->
+<div data-view="hw" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#">← 返回首页</a><span class="sec-label" style="color:var(--accent-deep)">HARDWARE</span></div>
+    <div class="detail-body">
+      <h2>硬件专题 · 26 个器件逐一拆解</h2>
+      <p>每个器件一页：讲清它是干什么的、内部结构、工作原理，以及去哪买、新品和闲鱼大概多少钱。点卡片进入专题页。含水肥、视觉、天气、排水、数据屏与日照分析的新增件。</p>
+      <div class="poster"><img src="https://aka.doubaocdn.com/s/Xt6sZUUU7T" alt="系统硬件全家福" loading="lazy"><div class="cap">系统硬件全家福 · 26 个器件（示意海报，含水肥/视觉/天气/排水/数据屏模块）</div></div>
+      <div class="hw-groups" id="hw-groups"></div>
+      <div class="poster"><img src="https://aka.doubaocdn.com/s/DUBoYN0W7P" alt="地埋滴灌迷宫流道原理" loading="lazy"><div class="cap">地埋滴灌原理 · 迷宫流道消能、压力补偿、均匀出水（示意海报）</div></div>
+      <h3>完整 BOM 采购清单（含草皮/施肥/天气/排水模块，不含人工、树、摄像头）</h3>
+      <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>项目</th><th>规格</th><th>数量</th><th class="num">单价</th><th class="num">小计</th></tr></thead>
+        <tbody>
+          <tr><td>鸿蒙智联智能水阀</td><td>电动球阀 · 智慧生活 App 控制</td><td>3</td><td class="num">260</td><td class="num">780</td></tr>
+          <tr><td>主切断电磁阀</td><td>24VAC 常闭</td><td>1</td><td class="num">110</td><td class="num">110</td></tr>
+          <tr><td>24VAC 变压器</td><td>供电电磁阀</td><td>1</td><td class="num">80</td><td class="num">80</td></tr>
+          <tr><td>地埋 PC 滴灌管</td><td>16mm · 草坪 35㎡</td><td>90m</td><td class="num">2.5</td><td class="num">225</td></tr>
+          <tr><td>微滴灌管 + 配件</td><td>点缀带预留</td><td>1 套</td><td class="num">80</td><td class="num">80</td></tr>
+          <tr><td>树下滴灌</td><td>滴箭 / 涌泉头</td><td>1 套</td><td class="num">180</td><td class="num">180</td></tr>
+          <tr><td>PE 主管 + 配件</td><td>20mm</td><td>50m</td><td class="num">5</td><td class="num">250</td></tr>
+          <tr><td>叠片过滤器</td><td>120 目</td><td>1</td><td class="num">90</td><td class="num">90</td></tr>
+          <tr><td>阀箱 + 控制箱</td><td>地埋密封盒</td><td>2</td><td class="num">80</td><td class="num">160</td></tr>
+          <tr><td>冬季泄水件</td><td>排水阀 / 坡度件</td><td>1 批</td><td class="num">120</td><td class="num">120</td></tr>
+          <tr><td>线缆杂项</td><td>控制线 / 卡箍 / 密封</td><td>1 批</td><td class="num">150</td><td class="num">150</td></tr>
+          <tr class="sub"><td colspan="4">小计 ① 灌溉主体</td><td class="num">2,225</td></tr>
+          <tr><td>ESP32 开发板 + 继电器</td><td>本地逻辑</td><td>1</td><td class="num">80</td><td class="num">80</td></tr>
+          <tr><td>电容式土壤湿度传感器</td><td>防水 · 埋地</td><td>4</td><td class="num">80</td><td class="num">320</td></tr>
+          <tr><td>雨量传感器</td><td>翻斗式</td><td>1</td><td class="num">90</td><td class="num">90</td></tr>
+          <tr><td>水位开关 / 浮球</td><td>雨水罐</td><td>1</td><td class="num">60</td><td class="num">60</td></tr>
+          <tr><td>防水接线盒 / 电缆</td><td>户外级</td><td>1 批</td><td class="num">120</td><td class="num">120</td></tr>
+          <tr class="sub"><td colspan="4">小计 ② 感知与决策层</td><td class="num">670</td></tr>
+          <tr><td>PE 储水罐</td><td>1000L · 地上 / 埋地</td><td>1</td><td class="num">950</td><td class="num">950</td></tr>
+          <tr><td>首雨弃流器 + 滤网</td><td>雨落管截留</td><td>1</td><td class="num">160</td><td class="num">160</td></tr>
+          <tr><td>自吸泵</td><td>约 800L/h</td><td>1</td><td class="num">350</td><td class="num">350</td></tr>
+          <tr><td>自来水补位阀 + 单向阀</td><td>低水位切入</td><td>1 套</td><td class="num">200</td><td class="num">200</td></tr>
+          <tr><td>雨水管路件</td><td>弯头 / 浮球 / 溢流</td><td>1 批</td><td class="num">150</td><td class="num">150</td></tr>
+          <tr class="sub"><td colspan="4">小计 ③ 雨水收集模块</td><td class="num">1,810</td></tr>
+          <tr><td>文丘里施肥器</td><td>旁通 · 无电吸肥</td><td>1</td><td class="num">80</td><td class="num">80</td></tr>
+          <tr><td>施肥桶 + 配件</td><td>20~50L + 吸肥管</td><td>1 套</td><td class="num">80</td><td class="num">80</td></tr>
+          <tr><td>施肥电磁阀 + 单向阀</td><td>12V 常闭 + 防倒流</td><td>1 套</td><td class="num">120</td><td class="num">120</td></tr>
+          <tr><td>水溶肥</td><td>平衡型 · 季用量</td><td>1 批</td><td class="num">150</td><td class="num">150</td></tr>
+          <tr class="sub"><td colspan="4">小计 ④ 水肥一体化模块</td><td class="num">430</td></tr>
+          <tr><td>云端视觉大模型 API</td><td>年用量 · 每天 2 次截图分析</td><td>1 批</td><td class="num">200</td><td class="num">200</td></tr>
+          <tr><td>长势分析主机</td><td>可选 · 云端可替代，复用则 0</td><td>1</td><td class="num">300</td><td class="num">300</td></tr>
+          <tr class="sub"><td colspan="4">小计 ⑤ 云端长势分析</td><td class="num">500</td></tr>
+          <tr><td>自动开合集雨网装置</td><td>网面 + 推杆 + 轨道 + 支架</td><td>1 套</td><td class="num">500</td><td class="num">500</td></tr>
+          <tr><td>彩云天气 API 接入</td><td>免费额度 + 可选转发</td><td>1 批</td><td class="num">50</td><td class="num">50</td></tr>
+          <tr class="sub"><td colspan="4">小计 ⑥ 天气与集雨网</td><td class="num">550</td></tr>
+          <tr><td>排水盲沟</td><td>透水管 + 土工布 + 碎石</td><td>1 套</td><td class="num">300</td><td class="num">300</td></tr>
+          <tr><td>渗水井 / 检查井</td><td>汇水 + 清理口</td><td>1</td><td class="num">100</td><td class="num">100</td></tr>
+          <tr class="sub"><td colspan="4">小计 ⑦ 排水系统</td><td class="num">400</td></tr>
+          <tr><td>7 寸数据屏</td><td>IPS 触屏 · 复用主机驱动</td><td>1</td><td class="num">350</td><td class="num">350</td></tr>
+          <tr class="sub"><td colspan="4">小计 ⑧ 数据屏（日照/剪枝为软件，无新增硬件）</td><td class="num">350</td></tr>
+          <tr><td>草皮 / 草种</td><td>高羊茅+黑麦草耐寒混播 · 35㎡</td><td>1</td><td class="num">350</td><td class="num">350</td></tr>
+          <tr class="total"><td colspan="4">总计（含可选主机，不含摄像头/树）</td><td class="num">≈ 7,285</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p style="font-size:12.5px;color:var(--muted);margin-top:8px;">新品价格为 2026 年淘宝 / 1688 / 京东零售区间；闲鱼价为二手行情区间（随成色浮动）。摄像头你已拥有、树已栽好均不计；长势分析主机推荐复用已有 NAS/迷你主机（可省 300）；7 寸屏二手可再省 100~200。若需控制预算：砍自动集雨网（-500）+ 用本地人工看长势（省 200 API + 300 主机）≈ 6,285；或进一步去施肥自动化（-120）≈ 6,160。全年视觉的核心（排水 + 耐寒草种）不建议省。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 器件详情 ===== -->
+<div data-view="hwitem" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#hw">← 返回硬件专题</a><span class="sec-label" style="color:var(--accent-deep)">HARDWARE</span></div>
+    <div class="detail-body" id="hwitem-body"></div>
+  </div>
+</div>
+
+<!-- ===== 详情：施工指南 ===== -->
+<div data-view="build" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#">← 返回首页</a><span class="sec-label" style="color:var(--accent-deep)">BUILD GUIDE</span></div>
+    <div class="detail-body">
+      <h2>施工指南 · 自己动手（杭州版）</h2>
+      <p>按"放线 → 挖沟 → 铺管 → 装阀 → 加装施肥支路 → 做排水 → 装集雨网 → 接线 → 试压 → 覆土铺草 → 调试 → 入冬泄水"推进，50㎡ 约 3~4 天集中施工 + 2 周建立期调参。</p>
+      <div class="poster"><img src="https://aka.doubaocdn.com/s/WRvKaBKghu" alt="地埋滴灌施工流程" loading="lazy"><div class="cap">施工流程一览 · 放线 → 挖沟 → 铺管 → 装阀 → 覆土铺草（示意海报）</div></div>
+      <div class="steps">
+        <div class="step"><div class="no"></div><div class="bd"><b>放线分区</b><p>标出草坪 / 树木 / 点缀带，画主管与滴灌管走向（主管 30~40cm 深，滴灌管 10cm 深，带坡度向排水阀）。杭州多雨，同步规划好排水方向与溢流去路。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>挖沟铺管</b><p>先铺 PE 主管，再铺 16mm 滴灌管（迷宫纹朝上），树下布滴箭；避免锐弯、石子压管。梅雨季前完工，避开连雨期施工。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>装阀与滤器</b><p>阀箱内装：120 目过滤器 → 主切断电磁阀 → 分区分水管接鸿蒙智能水阀。所有接头密封，试压查漏。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>加装施肥支路（新增）</b><p>在过滤器之后旁通接文丘里施肥器：主管给水段 → 文丘里 → 回水段，吸肥管伸进施肥桶；施肥电磁阀串在文丘里吸肥回路，单向阀防肥液倒灌。置于阀箱或施肥小箱。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>做排水（新增）</b><p>草坪区挖盲沟：铺土工布 → 填碎石 → 放 Φ50 透水管 → 坡度 1% 汇入渗水井；铺草前垫蓄排水板 / 沙砾层，防杭州雨季涝根。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>装自动集雨网（新增）</b><p>立支架装卷轴 / 推杆 → 铺防水网面 → 低缘接导流槽进罐 → 接 ESP32 开合控制（限位开关定两端）；接彩云预报联动逻辑，台风预警强制收起。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>接线与传感器</b><p>拉 24V 控制线 + 电源线进阀箱；ESP32 接 4 路湿度传感器（埋 10~15cm）+ 雨量 + 水位 + 施肥电磁阀控制，全部防水入密封箱。摄像头安装位置对好草坪视角、避开逆光。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>华为 App 配置</b><p>鸿蒙水阀配网进智慧生活 App → 建三个场景（浇水定时场景、施肥触发场景、监控查看）→ 绑定小艺语音；ESP32 设湿度阈值（草坪 25% / 40%）+ 施肥时机。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>长势分析调参（可选）</b><p>摄像头每天 1~2 次定时截图上传云端视觉大模型，返回草色 / 覆盖度 / 枯黄原因 / 建议动作；结果写回 ESP32，联动补水补肥。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>装 7 寸屏 + 日照剪枝调参（新增）</b><p>挂 7 寸 IPS 屏，主机跑网页仪表盘（实时参数 + 曲线 + 季度延时）；云端分析扩展到树冠分割与分区日照热力图，标定“光照充足”基准，日照连续不足自动生成剪枝任务。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>覆土铺草 + 建立期</b><p>回填压实、铺耐旱草皮。前 2~3 个月勤补水促扎根，之后切到旱养模式。</p></div></div>
+        <div class="step"><div class="no"></div><div class="bd"><b>入冬泄水（杭州也要做）</b><p>杭州极端低温约 -1~-5°C，仍有冻裂风险：11 月底前打开各支管排水阀 + 主管放水、拆下易冻件与施肥支路；春季回装、试压、重新校准阈值。</p></div></div>
+      </div>
+      <div class="flow-note">💡 杭州特别提醒：梅雨季湿度大，草坪注意排水防涝、减少施肥防病害；8-9 月台风前加固摄像头与罐体；雨量传感器放开阔处别被树冠挡雨。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 详情：雨水与华为联动 ===== -->
+<div data-view="manual" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#">← 返回首页</a><span class="sec-label" style="color:var(--accent-deep)">MANUAL &amp; HUAWEI</span></div>
+    <div class="detail-body">
+      <h2>配置与运维手册 · 水账 / 天气 / 长势 / 排水 / 7寸屏 / 华为场景</h2>
+      <div class="poster"><img src="https://aka.doubaocdn.com/s/BivgVjGtsY" alt="雨水收集系统原理" loading="lazy"><div class="cap">雨水收集原理 · 屋面 → 弃流 → 储罐 → 泵 → 滴灌（示意海报）</div></div>
+      <h3>杭州雨水水账</h3>
+      <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>项目</th><th>估算</th><th>口径</th></tr></thead>
+        <tbody>
+          <tr><td>杭州年降雨</td><td>约 1400~1500 mm</td><td>多年平均约 1423~1450mm；2025 年实测 1409.2mm（偏少 12.7%）</td></tr>
+          <tr><td>建成后草坪需水</td><td>约 80~200 L/周（非雨季）</td><td>耐旱草皮 35㎡ × 2~5mm/周；梅雨/台风季几乎为 0</td></tr>
+          <tr><td>年集雨潜力</td><td>20㎡ 屋面 ≈ 17000~21000 L/年</td><td>约 1450mm × 20㎡ × 有效系数 0.6~0.7</td></tr>
+          <tr><td>1000L 罐的角色</td><td>缓冲 + 峰谷调节</td><td>杭州雨季频繁满溢 → 溢流/排水重要；冬季少雨季靠罐供水</td></tr>
+          <tr><td>自来水角色</td><td>仅低水位补位</td><td>连雨期几乎用不到</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3>水肥一体化 · 施肥水账</h3>
+      <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>项目</th><th>方案</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>施肥频率</td><td>生长期每 2~3 周一次</td><td>随浇水进行，梅雨季减少</td></tr>
+          <tr><td>肥液配比</td><td>平衡型水溶肥 1:1000</td><td>如氮磷钾 20-20-20，薄肥勤施</td></tr>
+          <tr><td>每次施肥量</td><td>施肥桶 20L 肥液 / 次</td><td>文丘里吸肥约 8~15 分钟</td></tr>
+          <tr><td>年耗肥成本</td><td>约 300~600 元 / 年</td><td>视草皮面积与季节；雨季少用</td></tr>
+          <tr><td>自动触发条件</td><td>长势指数低 或 到施肥周期 且 非雨天</td><td>四把钥匙（App / 湿度 / 长势 / 天气）同时满足才施肥</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <h3>天气触发 · 彩云接入配置</h3>
+      <ul>
+        <li><b>拿 Token：</b>彩云开放平台注册 → 个人开发者认证 → 生成 API Token（有免费额度）→ 记下你庭院的经纬度。</li>
+        <li><b>轮询：</b>ESP32 / 主机每 5~10 分钟请求一次分钟级降水接口，读未来 1~2h 降水强度（1km 精度）。</li>
+        <li><b>开合阈值：</b>未来 1~2h 内降水强度 ≥ 中雨且持续 ≥15 分钟 → 张开集雨网、跳过浇水；雨停 + 预报转晴 → 折叠恢复；台风预警 → 强制收起集雨网、排水待命。本地翻斗雨量计实测兜底。</li>
+      </ul>
+      <h3>云端长势 · 摄像头分析配置</h3>
+      <ul>
+        <li><b>取图：</b>摄像头固定机位，每天 08:00 / 17:00 各截一张草坪全景。</li>
+        <li><b>分析：</b>截图上传视觉大模型 API，返回草色 / 覆盖度 / 枯黄原因 / 建议动作。</li>
+        <li><b>联动：</b>结果写回 ESP32：缺肥 → 触发施肥场景；缺水 → 补水；过湿 / 病害 → 停水停肥并提示排水；长势好 → 自动降频次。</li>
+      </ul>
+      <h3>排水 · 雨季泄水</h3>
+      <ul>
+        <li>盲沟 + 透水管 + 渗水井把雨季土中水分排走；ESP32 读到湿度持续 &gt;60% 且在下雨 → 判定过湿，暂停浇水并提示排水。</li>
+        <li>台风暴雨预警：彩云预警联动 → 集雨网收起 + 排水待命；低洼积水点可加小排水泵强制排走。</li>
+      </ul>
+      <h3>7 寸屏 · 数据呈现配置</h3>
+      <ul>
+        <li>主机汇总 ESP32 传感器 + 云端长势 / 日照结果 → 网页仪表盘（深色科技风：实时卡片 + 24h / 7d / 30d 曲线 + 环形仪表 + 季度“一帧/天”延时循环播放）。</li>
+        <li>摄像头每天固定机位存 1 帧，一个季度约 90 帧自动拼成 3~6 秒延时视频；树冠分割 + 分区日照热力图 → 日照不足生成剪枝任务。控制仍全部走华为智慧生活 App，屏幕只读。</li>
+      </ul>
+      <h3>华为智慧生活 App 配置步骤（三个场景）</h3>
+      <ul>
+        <li><b>浇水场景：</b>首页家居 → 智慧场景 → 新建自动场景 → 触发条件"每天 05:00 或 湿度低于阈值" → 执行任务"打开草坪区水阀 40 分钟"。ESP32 侧再套湿度/雨量校验，双保险。</li>
+        <li><b>施肥场景：</b>新建场景"启动施肥" → 执行任务"打开施肥电磁阀 10 分钟 + 打开对应分区水阀"；可绑定小艺语音"给草坪施肥"、或在长势指数低时由本地触发。</li>
+        <li><b>监控场景：</b>摄像头添加到智慧生活 App → 实时画面、回看、AI 侦测事件提醒；想看长势直接打开画面，配合云端长势诊断看趋势。</li>
+        <li><b>小艺语音：</b>启用语音控制后，对小艺说"给草坪浇 20 分钟""启动施肥"即可手动操作。</li>
+        <li><b>双水源切换：</b>ESP32 读罐内水位，低水位自动打开自来水补位电磁阀；水位恢复即关。全程无需在 App 操作。</li>
+      </ul>
+      <div class="flow-note" style="margin-top:14px;">💡 生态边界说明：华为智慧生活 App 原生生态里土壤湿度传感器很少、也不做草色分析，所以湿度闭环与视觉判断放本地（ESP32 + 长势分析），App 负责场景 / 开关 / 定时 / 语音 / 监控画面。这是目前"华为 App + 全自动化水肥"最可靠、最便宜的组合。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 详情：四季管理 ===== -->
+<div data-view="season" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#">← 返回首页</a><span class="sec-label" style="color:var(--accent-deep)">ALL-YEAR SEASON</span></div>
+    <div class="detail-body">
+    <h2>四季管理手册 · 草皮全年视觉</h2>
+    <p class="sec-lead">目标只有一个：让草皮全年都有不错的视觉。围绕杭州气候拆成四件事——雨季要会排（土里水分过大），冬天要会护（低温保绿），夏天要会控（高温防枯），春秋要会养（生长期管理）。</p>
+    <div class="poster"><img src="https://aka.doubaocdn.com/s/vKbfK1hG6L" alt="草坪四季管理月历" loading="lazy"><div class="cap">四季管理月历 · 春萌芽返青 → 夏茂盛控温 → 秋过渡养根 → 冬保持绿色（示意海报）</div></div>
+    <div class="dgrid">
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/e4To6i44Kn" alt="草坪地下排水系统" loading="lazy"></div><div class="bd"><h3>雨季排水 · 泄掉土里的水</h3><p>杭州 6 月梅雨 + 8-9 月台风，土里水分过多会烂根黄叶。地下做盲沟 + 透水管 + 渗水井，把多余水排走；ESP32 读到土壤湿度过高就自动停水、提示排水。</p></div></div>
+      <div class="dcard"><div class="art"><img src="https://aka.doubaocdn.com/s/joA8gTyycU" alt="冬季草皮保绿" loading="lazy"></div><div class="bd"><h3>冬季保绿 · 低温也不黄</h3><p>杭州 1 月平均最低 1~4°C、极端 -5°C，选冷季型草（高羊茅 + 多年生黑麦草混播）基本能全年保持绿；冬季减水停肥、修剪留高保温，极端寒潮盖防冻布。</p></div></div>
+    </div>
+    <h3>雨季排水 · 方案要点</h3>
+    <ul>
+      <li>草坪区地下铺<b>盲沟排水</b>：碎石层 + Φ50 透水管 + 土工布，间距 3~5m、坡度 1%，汇入渗水井 / 排水检查井；杭州粘性土（红壤 / 水稻土）必须做，否则一下大雨就涝。</li>
+      <li>铺草前垫<b>蓄排水板或沙砾层</b>，让根系层不泡水。</li>
+      <li><b>智能泄水</b>：ESP32 读湿度上限，持续 &gt;60% 且在下雨 → 判定“过湿”，暂停浇水并提示；有积水点 → 可加小排水泵强制排走。</li>
+      <li>地表做<b>微坡</b>，低洼处设雨水口，让水往盲沟走、不往草根里沤。</li>
+    </ul>
+    <h3>冬季保绿 · 方案要点</h3>
+    <ul>
+      <li><b>草种</b>：高羊茅（冷季型，耐 -15°C）+ 多年生黑麦草混播，杭州冬季能保持绿色，不像暖季型草会枯黄休眠。</li>
+      <li><b>冬季管理</b>：减少浇水（土温低、蒸腾小）、停止施肥（防嫩梢冻伤）、修剪留高 3~5cm 保温；11 月底完成泄水防冻裂。</li>
+      <li><b>极端寒潮</b>（预报 -3°C 以下）：给草坪覆盖防冻无纺布，白天揭开；彩云低温预警可联动提醒。</li>
+    </ul>
+    <h3>夏季控温 · 高温不枯</h3>
+    <ul>
+      <li>杭州 7-8 月常 35~40°C，冷季型草可能“夏枯”变黄：清晨补水降温、停氮肥、修剪留高 5~7cm 遮阴。</li>
+      <li>必要时混播少量耐热品种过渡；高温天系统按“保命不催长”策略自动降低施肥。</li>
+    </ul>
+    <h3>光照与剪枝 · 树荫别把草闷黄</h3>
+    <ul>
+      <li><b>日照监测</b>：摄像头画面 + 云端分析算出每块草皮日直射日照（小时），杭州年日照约 1700h、春秋多云，冷季型草需 ≥4~6h。</li>
+      <li><b>树冠趋势</b>：跟踪冠幅与覆盖率的季度变化，判断树是不是越长越遮。</li>
+      <li><b>剪枝任务</b>：某区日照连续 2~3 周低于下限且树冠在扩大 → 7 寸屏 / 华为 App 生成剪枝任务卡（方向 / 覆盖比例 / 回缩建议），由人工或园丁执行。</li>
+    </ul>
+    <h3>月度管理表（按杭州常年气候）</h3>
+    <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>月份</th><th>平均气温</th><th>浇水</th><th>施肥</th><th>修剪</th><th>重点操作</th></tr></thead>
+      <tbody>
+        <tr><td>1 月</td><td>约 4°C</td><td>极少</td><td>停</td><td>停</td><td>极端寒潮覆盖防冻布</td></tr>
+        <tr><td>2 月</td><td>约 6°C</td><td>极少</td><td>停</td><td>停</td><td>月底开始返青管理</td></tr>
+        <tr><td>3 月</td><td>约 13°C</td><td>按需</td><td>开始薄肥</td><td>轻剪</td><td>返青促根</td></tr>
+        <tr><td>4 月</td><td>约 19°C</td><td>按需</td><td>薄肥</td><td>常规</td><td>生长期 · 修边</td></tr>
+        <tr><td>5 月</td><td>约 24°C</td><td>按需</td><td>薄肥</td><td>常规</td><td>梅雨前准备 · 查排水</td></tr>
+        <tr><td>6 月</td><td>约 26°C</td><td>基本停</td><td>停</td><td>少剪</td><td>梅雨 · 排水防涝</td></tr>
+        <tr><td>7 月</td><td>约 33°C</td><td>晨间补水</td><td>停</td><td>留高</td><td>高温遮阴 · 控氮</td></tr>
+        <tr><td>8 月</td><td>约 34°C</td><td>晨间补水</td><td>停</td><td>留高</td><td>台风 · 排涝加固</td></tr>
+        <tr><td>9 月</td><td>约 28°C</td><td>按需</td><td>恢复薄肥</td><td>常规</td><td>秋雨 · 复壮</td></tr>
+        <tr><td>10 月</td><td>约 22°C</td><td>按需</td><td>薄肥</td><td>常规</td><td>秋季最佳生长期</td></tr>
+        <tr><td>11 月</td><td>约 15°C</td><td>减少</td><td>停</td><td>轻剪留高</td><td>降温 · 准备越冬</td></tr>
+        <tr><td>12 月</td><td>约 7°C</td><td>极少</td><td>停</td><td>停</td><td>泄水 · 防冻覆盖</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="flow-note">💡 <b>一句话总结</b>：草皮“好看”不靠死浇水，靠四个字——旱了补、涝了排、冷了护、热了控。天气、湿度、长势三路信号一起管，草一年四季都能维持绿。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 详情：软件与程序 ===== -->
+<div data-view="program" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#">← 返回首页</a><span class="sec-label" style="color:var(--accent-deep)">SOFTWARE &amp; FLOW</span></div>
+    <div class="detail-body">
+      <h2>软件与程序 · 从传感器到水阀的代码路径</h2>
+      <p>硬件是骨架，程序是神经。整套逻辑由四段程序协作完成：<b>本地 ESP32 决策</b>（读传感器 + 硬切断）、<b>华为智慧生活 App 场景</b>（想不想浇 / 定时 / 语音）、<b>彩云天气轮询</b>（下不下雨）、<b>云端视觉分析</b>（长势 / 树冠 / 日照）。下面按 6 张主流程图逐一拆解。</p>
+      <div class="wlist">
+        <div class="wcard"><div class="ic">📡</div><div><h3>程序分层</h3><p>采集层（ESP32 每 30s 读湿度×4 / 雨量 / 水位）→ 决策层（四把钥匙逻辑，任一不满足就硬切断）→ 执行层（继电器驱动 电磁阀 / 电动球阀 / 泵 / 推杆）→ 数据层（MQTT / HTTP 上报主机）→ 呈现层（7 寸屏 + 华为 App）。</p></div></div>
+        <div class="wcard"><div class="ic">🧠</div><div><h3>ESP32 固件职责</h3><p>主循环：采集 → 本地校验 → 按场景执行 → 上报。它不抢华为 App 的活，只做“该不该出水”的最后一道物理闸门——App 开了计划、土壤够湿、在下雨、长势异常或预报有雨，都在这层被拦下。</p></div></div>
+      </div>
+
+      <h3>流程图 1 · 主决策总流程（四把钥匙串联）</h3>
+      <div class="diagram-fig"><svg viewBox="0 0 520 480" xmlns="http://www.w3.org/2000/svg"><text x="260" y="18" text-anchor="middle" font-size="12" fill="#9a6f1f">主决策总流程 · 四把钥匙串联</text><rect x="90" y="34" width="340" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="260" y="59" text-anchor="middle" font-size="11" fill="#9a6f1f">事件触发：定时 / 湿度低 / 人工 / App 场景</text><line x1="260" y1="74" x2="260" y2="94" stroke="#c08f35" stroke-width="2"/><polygon points="260,100 254,90 266,90" fill="#c08f35"/><rect x="90" y="102" width="340" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="127" text-anchor="middle" font-size="11" fill="#3f6f56">读取传感器：湿度×4 · 雨量 · 罐水位</text><line x1="260" y1="142" x2="260" y2="162" stroke="#c08f35" stroke-width="2"/><polygon points="260,168 254,158 266,158" fill="#c08f35"/><rect x="90" y="170" width="340" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="195" text-anchor="middle" font-size="11" fill="#3f6f56">查询彩云：未来 1-2h 降水强度</text><line x1="260" y1="210" x2="260" y2="230" stroke="#c08f35" stroke-width="2"/><polygon points="260,236 254,226 266,226" fill="#c08f35"/><rect x="90" y="238" width="340" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="263" text-anchor="middle" font-size="11" fill="#3f6f56">查询云端长势：草色 / 覆盖 / 病害 / 日照</text><line x1="260" y1="278" x2="260" y2="298" stroke="#c08f35" stroke-width="2"/><polygon points="260,304 254,294 266,294" fill="#c08f35"/><rect x="70" y="306" width="380" height="54" rx="9" fill="#f6ecd4" stroke="#c08f35"/><text x="260" y="328" text-anchor="middle" font-size="11" fill="#9a6f1f">四把钥匙判断</text><text x="260" y="346" text-anchor="middle" font-size="10" fill="#9a6f1f">App 要浇 ∧ 土壤缺水 ∧ 无雨 ∧ 长势需水</text><line x1="180" y1="360" x2="180" y2="380" stroke="#3f6f56" stroke-width="2"/><polygon points="180,386 174,376 186,376" fill="#3f6f56"/><text x="166" y="374" text-anchor="end" font-size="10" fill="#3f6f56">是</text><line x1="360" y1="360" x2="360" y2="380" stroke="#c08f35" stroke-width="2"/><polygon points="360,386 354,376 366,376" fill="#c08f35"/><text x="374" y="374" text-anchor="start" font-size="10" fill="#c08f35">否</text><rect x="80" y="388" width="200" height="42" rx="8" fill="#a9c08a" stroke="#3f6f56"/><text x="180" y="414" text-anchor="middle" font-size="11" fill="#3f6f56">开阀 浇灌 / 施肥</text><rect x="320" y="388" width="140" height="42" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="390" y="414" text-anchor="middle" font-size="11" fill="#9a6f1f">跳过 · 记录原因</text><line x1="180" y1="430" x2="180" y2="446" stroke="#c08f35" stroke-width="2"/><line x1="390" y1="430" x2="390" y2="446" stroke="#c08f35" stroke-width="2"/><rect x="70" y="448" width="380" height="30" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="468" text-anchor="middle" font-size="10" fill="#3f6f56">关阀 · 写日志 · 上报华为 App / 7 寸屏</text></svg></div>
+      <ul>
+        <li><b>触发源：</b>每天定时（如 05:00）、湿度低于阈值、小艺语音“浇 20 分钟”、App 手动，都能发起一次流程。</li>
+        <li><b>四把钥匙全过才出水：</b>App 已授权 ∧ 土壤真的缺水 ∧ 此刻无雨且预报无雨 ∧ 长势需要水。任何一把钥匙不满足，系统直接跳过并记录原因——这就是“不会乱浇”的代码保证。</li>
+        <li><b>双保险：</b>App 层和 ESP32 层各校验一次；ESP32 是物理闸门，即使 App 出错也由它兜底。</li>
+      </ul>
+
+      <h3>流程图 2 · 浇水决策</h3>
+      <div class="diagram-fig"><svg viewBox="0 0 520 490" xmlns="http://www.w3.org/2000/svg"><text x="260" y="18" text-anchor="middle" font-size="12" fill="#9a6f1f">浇水决策流程</text><rect x="40" y="34" width="280" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="180" y="59" text-anchor="middle" font-size="11" fill="#9a6f1f">浇水事件触发</text><line x1="180" y1="74" x2="180" y2="94" stroke="#c08f35" stroke-width="2"/><polygon points="180,100 174,90 186,90" fill="#c08f35"/><rect x="40" y="102" width="280" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="180" y="127" text-anchor="middle" font-size="11" fill="#3f6f56">湿度 &lt; 下限？</text><line x1="320" y1="122" x2="342" y2="122" stroke="#c08f35" stroke-width="2"/><polygon points="348,122 338,116 338,128" fill="#c08f35"/><text x="330" y="114" text-anchor="end" font-size="10" fill="#c08f35">否</text><rect x="350" y="102" width="130" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="415" y="127" text-anchor="middle" font-size="10" fill="#9a6f1f">不浇 · 土壤够湿</text><line x1="180" y1="142" x2="180" y2="162" stroke="#3f6f56" stroke-width="2"/><polygon points="180,168 174,158 186,158" fill="#3f6f56"/><text x="168" y="158" text-anchor="end" font-size="10" fill="#3f6f56">是</text><rect x="40" y="170" width="280" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="180" y="195" text-anchor="middle" font-size="11" fill="#3f6f56">正在下雨 / 预报 1-2h 有雨？</text><line x1="320" y1="190" x2="342" y2="190" stroke="#c08f35" stroke-width="2"/><polygon points="348,190 338,184 338,196" fill="#c08f35"/><text x="330" y="182" text-anchor="end" font-size="10" fill="#c08f35">是</text><rect x="350" y="170" width="130" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="415" y="195" text-anchor="middle" font-size="10" fill="#9a6f1f">跳过 · 等雨</text><line x1="180" y1="210" x2="180" y2="230" stroke="#3f6f56" stroke-width="2"/><polygon points="180,236 174,226 186,226" fill="#3f6f56"/><text x="168" y="226" text-anchor="end" font-size="10" fill="#3f6f56">否</text><rect x="40" y="238" width="280" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="180" y="263" text-anchor="middle" font-size="11" fill="#3f6f56">长势异常（过湿 / 病害）？</text><line x1="320" y1="258" x2="342" y2="258" stroke="#c08f35" stroke-width="2"/><polygon points="348,258 338,252 338,264" fill="#c08f35"/><text x="330" y="250" text-anchor="end" font-size="10" fill="#c08f35">是</text><rect x="350" y="238" width="130" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="415" y="263" text-anchor="middle" font-size="10" fill="#9a6f1f">不浇 · 提示处理</text><line x1="180" y1="278" x2="180" y2="298" stroke="#3f6f56" stroke-width="2"/><polygon points="180,304 174,294 186,294" fill="#3f6f56"/><text x="168" y="294" text-anchor="end" font-size="10" fill="#3f6f56">否</text><rect x="40" y="306" width="280" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="180" y="331" text-anchor="middle" font-size="11" fill="#3f6f56">低水位？</text><line x1="320" y1="326" x2="342" y2="326" stroke="#c08f35" stroke-width="2"/><polygon points="348,326 338,320 338,332" fill="#c08f35"/><text x="330" y="318" text-anchor="end" font-size="10" fill="#c08f35">是</text><rect x="350" y="306" width="130" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="415" y="331" text-anchor="middle" font-size="10" fill="#9a6f1f">先开自来水补位</text><line x1="180" y1="346" x2="180" y2="366" stroke="#3f6f56" stroke-width="2"/><polygon points="180,372 174,362 186,362" fill="#3f6f56"/><text x="168" y="362" text-anchor="end" font-size="10" fill="#3f6f56">是/否</text><rect x="40" y="374" width="280" height="40" rx="8" fill="#a9c08a" stroke="#3f6f56"/><text x="180" y="399" text-anchor="middle" font-size="11" fill="#3f6f56">打开分区水阀 X 分钟</text><line x1="180" y1="414" x2="180" y2="434" stroke="#c08f35" stroke-width="2"/><polygon points="180,440 174,430 186,430" fill="#c08f35"/><rect x="40" y="442" width="280" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="180" y="467" text-anchor="middle" font-size="11" fill="#3f6f56">关阀 · 写日志 · 上报</text></svg></div>
+      <ul>
+        <li><b>湿度是第一道闸：</b>只有土壤真的缺水才考虑浇；杭州雨多，多数时候流程在这一步就结束。</li>
+        <li><b>雨是第二道闸：</b>本地雨量计 + 彩云预报双路，正在下雨或马上要下雨都停手。</li>
+        <li><b>长势是第三道闸：</b>云端说“过湿 / 有病害”时不但不浇，还会提示排水或处理。</li>
+        <li><b>水源保障：</b>低水位先自动开自来水补位阀，避免水泵空转。</li>
+      </ul>
+
+      <h3>流程图 3 · 施肥决策（浇水=施肥）</h3>
+      <div class="diagram-fig"><svg viewBox="0 0 520 460" xmlns="http://www.w3.org/2000/svg"><text x="260" y="18" text-anchor="middle" font-size="12" fill="#9a6f1f">施肥决策流程 · 水肥一体</text><rect x="80" y="34" width="360" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="260" y="59" text-anchor="middle" font-size="11" fill="#9a6f1f">施肥触发：周定时 / 长势缺肥 / 小艺语音</text><line x1="260" y1="74" x2="260" y2="94" stroke="#c08f35" stroke-width="2"/><polygon points="260,100 254,90 266,90" fill="#c08f35"/><rect x="80" y="102" width="300" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="230" y="127" text-anchor="middle" font-size="11" fill="#3f6f56">非雨天 ∧ 湿度适中？</text><line x1="380" y1="122" x2="402" y2="122" stroke="#c08f35" stroke-width="2"/><polygon points="408,122 398,116 398,128" fill="#c08f35"/><text x="390" y="114" text-anchor="end" font-size="10" fill="#c08f35">否</text><rect x="410" y="102" width="90" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="455" y="127" text-anchor="middle" font-size="10" fill="#9a6f1f">顺延下次</text><line x1="230" y1="142" x2="230" y2="162" stroke="#3f6f56" stroke-width="2"/><polygon points="230,168 224,158 236,158" fill="#3f6f56"/><text x="218" y="158" text-anchor="end" font-size="10" fill="#3f6f56">是</text><rect x="80" y="170" width="360" height="40" rx="8" fill="#a9c08a" stroke="#3f6f56"/><text x="260" y="195" text-anchor="middle" font-size="11" fill="#3f6f56">开施肥电磁阀 + 对应分区水阀</text><line x1="260" y1="210" x2="260" y2="230" stroke="#c08f35" stroke-width="2"/><polygon points="260,236 254,226 266,226" fill="#c08f35"/><rect x="80" y="238" width="360" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="263" text-anchor="middle" font-size="11" fill="#3f6f56">文丘里负压吸肥 T 分钟</text><line x1="260" y1="278" x2="260" y2="298" stroke="#c08f35" stroke-width="2"/><polygon points="260,304 254,294 266,294" fill="#c08f35"/><rect x="80" y="306" width="360" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="331" text-anchor="middle" font-size="11" fill="#3f6f56">关施肥阀 → 清水冲灌 5 分钟</text><line x1="260" y1="346" x2="260" y2="366" stroke="#c08f35" stroke-width="2"/><polygon points="260,372 254,362 266,362" fill="#c08f35"/><rect x="80" y="374" width="360" height="40" rx="8" fill="#a9c08a" stroke="#3f6f56"/><text x="260" y="399" text-anchor="middle" font-size="11" fill="#3f6f56">关水阀 · 写日志 · 上报华为 App</text></svg></div>
+      <ul>
+        <li><b>时机：</b>只在非雨天且土壤湿度适中时施肥——雨前施会被冲走，太干施容易烧根。</li>
+        <li><b>稀释保护：</b>施肥期间先开水阀再开施肥阀，肥液被水流稀释；结束后必须清水冲灌 5 分钟，防肥液残留在管内结晶堵滴头。</li>
+        <li><b>薄肥勤施：</b>低浓度多次，比一次浓肥安全；梅雨停肥、冬季停肥由季节策略自动控制。</li>
+      </ul>
+
+      <h3>流程图 4 · 集雨网开合</h3>
+      <div class="diagram-fig"><svg viewBox="0 0 520 470" xmlns="http://www.w3.org/2000/svg"><text x="260" y="18" text-anchor="middle" font-size="12" fill="#9a6f1f">自动开合集雨网流程</text><rect x="40" y="34" width="300" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="190" y="59" text-anchor="middle" font-size="11" fill="#9a6f1f">彩云预报每 5-10min 拉取</text><line x1="190" y1="74" x2="190" y2="94" stroke="#c08f35" stroke-width="2"/><polygon points="190,100 184,90 196,90" fill="#c08f35"/><rect x="40" y="102" width="300" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="190" y="127" text-anchor="middle" font-size="11" fill="#3f6f56">未来 1-2h 有持续雨？</text><line x1="340" y1="122" x2="362" y2="122" stroke="#c08f35" stroke-width="2"/><polygon points="368,122 358,116 358,128" fill="#c08f35"/><text x="350" y="114" text-anchor="end" font-size="10" fill="#c08f35">否</text><rect x="370" y="102" width="120" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="430" y="127" text-anchor="middle" font-size="10" fill="#9a6f1f">保持 / 恢复折叠</text><line x1="190" y1="142" x2="190" y2="162" stroke="#3f6f56" stroke-width="2"/><polygon points="190,168 184,158 196,158" fill="#3f6f56"/><text x="178" y="158" text-anchor="end" font-size="10" fill="#3f6f56">是</text><rect x="40" y="170" width="300" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="190" y="195" text-anchor="middle" font-size="11" fill="#3f6f56">台风 / 大风预警？</text><line x1="340" y1="190" x2="362" y2="190" stroke="#c08f35" stroke-width="2"/><polygon points="368,190 358,184 358,196" fill="#c08f35"/><text x="350" y="182" text-anchor="end" font-size="10" fill="#c08f35">是</text><rect x="370" y="170" width="120" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="430" y="195" text-anchor="middle" font-size="10" fill="#9a6f1f">强制折叠防损坏</text><line x1="190" y1="210" x2="190" y2="230" stroke="#3f6f56" stroke-width="2"/><polygon points="190,236 184,226 196,226" fill="#3f6f56"/><text x="178" y="226" text-anchor="end" font-size="10" fill="#3f6f56">否</text><rect x="40" y="238" width="300" height="40" rx="8" fill="#a9c08a" stroke="#3f6f56"/><text x="190" y="263" text-anchor="middle" font-size="11" fill="#3f6f56">推杆正转 · 网面张开 30°</text><line x1="190" y1="278" x2="190" y2="298" stroke="#c08f35" stroke-width="2"/><polygon points="190,304 184,294 196,294" fill="#c08f35"/><rect x="40" y="306" width="300" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="190" y="331" text-anchor="middle" font-size="11" fill="#3f6f56">雨停 ∧ 预报转晴？</text><line x1="340" y1="326" x2="362" y2="326" stroke="#c08f35" stroke-width="2"/><polygon points="368,326 358,320 358,332" fill="#c08f35"/><text x="350" y="318" text-anchor="end" font-size="10" fill="#c08f35">否</text><rect x="370" y="306" width="120" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="430" y="331" text-anchor="middle" font-size="10" fill="#9a6f1f">保持张开</text><line x1="190" y1="346" x2="190" y2="366" stroke="#3f6f56" stroke-width="2"/><polygon points="190,372 184,362 196,362" fill="#3f6f56"/><text x="178" y="362" text-anchor="end" font-size="10" fill="#3f6f56">是</text><rect x="40" y="374" width="300" height="40" rx="8" fill="#a9c08a" stroke="#3f6f56"/><text x="190" y="399" text-anchor="middle" font-size="11" fill="#3f6f56">推杆反转 · 折叠收好</text></svg></div>
+      <ul>
+        <li><b>预告才张开：</b>靠彩云分钟级预报“提前知道要下雨”，网面张开接住第一波雨，一年多收上万升。</li>
+        <li><b>台风必须收：</b>大风预警优先于集雨，强制折叠防止网面与支架损坏——安全第一，集雨第二。</li>
+        <li><b>本地兜底：</b>若断网收不到预报，本地雨量计检测到雨也会张开，双路保险。</li>
+      </ul>
+
+      <h3>流程图 5 · 云端长势联动（含树冠日照与剪枝）</h3>
+      <div class="diagram-fig"><svg viewBox="0 0 520 420" xmlns="http://www.w3.org/2000/svg"><text x="260" y="18" text-anchor="middle" font-size="12" fill="#9a6f1f">云端长势联动流程</text><rect x="80" y="34" width="360" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="260" y="59" text-anchor="middle" font-size="11" fill="#9a6f1f">摄像头每日 08:00 / 17:00 抓拍</text><line x1="260" y1="74" x2="260" y2="94" stroke="#c08f35" stroke-width="2"/><polygon points="260,100 254,90 266,90" fill="#c08f35"/><rect x="80" y="102" width="360" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="127" text-anchor="middle" font-size="11" fill="#3f6f56">上传视觉大模型</text><line x1="260" y1="142" x2="260" y2="162" stroke="#c08f35" stroke-width="2"/><polygon points="260,168 254,158 266,158" fill="#c08f35"/><rect x="80" y="170" width="360" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="195" text-anchor="middle" font-size="11" fill="#3f6f56">输出：草色 / 覆盖 / 枯黄 / 病害 / 冠幅 / 日照</text><line x1="260" y1="210" x2="260" y2="230" stroke="#c08f35" stroke-width="2"/><polygon points="260,236 254,226 266,226" fill="#c08f35"/><rect x="80" y="238" width="360" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="260" y="263" text-anchor="middle" font-size="11" fill="#9a6f1f">对照阈值 → 生成诊断 + 任务卡</text><line x1="260" y1="278" x2="260" y2="298" stroke="#c08f35" stroke-width="2"/><polygon points="260,304 254,294 266,294" fill="#c08f35"/><rect x="80" y="306" width="360" height="40" rx="8" fill="#a9c08a" stroke="#3f6f56"/><text x="260" y="331" text-anchor="middle" font-size="11" fill="#3f6f56">写回决策：缺肥→施肥 ｜ 缺水→补水 ｜ 过湿→停水 ｜ 树荫→剪枝</text><line x1="260" y1="346" x2="260" y2="366" stroke="#c08f35" stroke-width="2"/><polygon points="260,372 254,362 266,362" fill="#c08f35"/><rect x="80" y="374" width="360" height="40" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="399" text-anchor="middle" font-size="11" fill="#3f6f56">7 寸屏 + 华为 App 展示趋势</text></svg></div>
+      <ul>
+        <li><b>固定机位 + 固定取景框：</b>分析更稳定，避免角度漂移误判。</li>
+        <li><b>树冠与日照是扩展项：</b>同一张画面做树冠分割，结合太阳轨迹算各草坪分区的直射日照；日照不足且树冠扩大 → 生成剪枝任务卡（方向 / 覆盖比例 / 回缩建议），剪枝由人工执行。</li>
+        <li><b>结果回流：</b>诊断写回本地决策层，长势好自动降频，缺肥自动触发施肥——形成“看草说话”的闭环。</li>
+      </ul>
+
+      <h3>流程图 6 · 季节策略自动切换（全年视觉）</h3>
+      <div class="diagram-fig"><svg viewBox="0 0 520 300" xmlns="http://www.w3.org/2000/svg"><text x="260" y="18" text-anchor="middle" font-size="12" fill="#9a6f1f">季节策略自动切换</text><rect x="40" y="34" width="440" height="40" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="260" y="59" text-anchor="middle" font-size="11" fill="#9a6f1f">读取系统当前月份</text><line x1="260" y1="74" x2="260" y2="94" stroke="#c08f35" stroke-width="2"/><polygon points="260,100 254,90 266,90" fill="#c08f35"/><rect x="40" y="102" width="105" height="66" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="92" y="126" text-anchor="middle" font-size="11" fill="#3f6f56">6月 梅雨</text><text x="92" y="144" text-anchor="middle" font-size="10" fill="#3f6f56">排水防涝 · 停水</text><rect x="158" y="102" width="105" height="66" rx="8" fill="#f6ecd4" stroke="#c08f35"/><text x="210" y="126" text-anchor="middle" font-size="11" fill="#9a6f1f">7-8月 高温</text><text x="210" y="144" text-anchor="middle" font-size="10" fill="#9a6f1f">晨间补水 · 控氮</text><rect x="276" y="102" width="105" height="66" rx="8" fill="#d9e6f0" stroke="#5f8a4e"/><text x="328" y="126" text-anchor="middle" font-size="11" fill="#3f6f56">12-2月 低温</text><text x="328" y="144" text-anchor="middle" font-size="10" fill="#3f6f56">减水停肥 · 防冻</text><rect x="394" y="102" width="86" height="66" rx="8" fill="#a9c08a" stroke="#3f6f56"/><text x="437" y="126" text-anchor="middle" font-size="11" fill="#3f6f56">春秋</text><text x="437" y="144" text-anchor="middle" font-size="10" fill="#3f6f56">薄肥 · 生长期</text><line x1="150" y1="168" x2="230" y2="196" stroke="#c08f35" stroke-width="2"/><line x1="370" y1="168" x2="290" y2="196" stroke="#c08f35" stroke-width="2"/><polygon points="290,202 298,192 282,192" fill="#c08f35"/><line x1="60" y1="168" x2="170" y2="196" stroke="#c08f35" stroke-width="2"/><line x1="460" y1="168" x2="350" y2="196" stroke="#c08f35" stroke-width="2"/><polygon points="350,202 358,192 342,192" fill="#c08f35"/><rect x="40" y="204" width="440" height="52" rx="9" fill="#a9c08a" stroke="#3f6f56"/><text x="260" y="228" text-anchor="middle" font-size="11" fill="#3f6f56">各分支按策略自动调节</text><text x="260" y="245" text-anchor="middle" font-size="10" fill="#3f6f56">浇水 / 施肥 / 集雨 / 排水 / 修剪留高</text></svg></div>
+      <ul>
+        <li><b>按月份查表：</b>系统内置 12 个月策略表（见「四季管理」），每月自动切换浇水频次、施肥开关、集雨与排水策略。</li>
+        <li><b>雨天与低温叠加判断：</b>梅雨月自动停水 + 启用排水；寒潮预警联动防冻布提醒；高温月“保命不催长”。</li>
+        <li><b>目的唯一：</b>草皮全年视觉呈现，而不是机械地“每天浇多少”。</li>
+      </ul>
+
+      <div class="flow-note">💡 <b>程序实现要点</b>：ESP32 用 Arduino/ESP-IDF 轮询 + 中断；决策写成“条件全部通过才放行”的与门逻辑；所有动作落日志（时间 / 传感器值 / 触发源 / 结果），既方便排障，也是 7 寸屏曲线和季度影像的数据来源。华为 App 侧只做场景与开关，本地才是最终裁决者。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 详情：成本评估 ===== -->
+<div data-view="cost" hidden>
+  <div class="wrap">
+    <div class="detail-top"><a class="btn-back" href="#">← 返回首页</a><span class="sec-label" style="color:var(--accent-deep)">COST EVALUATION</span></div>
+    <div class="detail-body">
+      <h2>成本综合评估 · 部署一次 + 使用每年</h2>
+      <p>整套系统按「一次性部署成本」与「每年使用成本」两大模块拆开算，方便对比“装不装”和“装多大”。部署明细可在硬件专题逐件核对，此处按功能类别汇总。</p>
+      <div class="metrics">
+        <div class="metric"><div class="k">一次性部署成本</div><div class="v">¥7,285</div></div>
+        <div class="metric"><div class="k">每年使用成本</div><div class="v">约 ¥510</div></div>
+        <div class="metric"><div class="k">5 年总拥有成本</div><div class="v">约 ¥9,835</div></div>
+      </div>
+
+      <h3>模块一 · 部署成本（一次性投入）</h3>
+      <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>功能类别</th><th>主要明细</th><th>参考价</th></tr></thead>
+        <tbody>
+          <tr><td>输水与管网</td><td>地埋滴灌管×6 卷、PE 主管/支管、滴箭、接头卡扣</td><td>≈¥1,350</td></tr>
+          <tr><td>水阀与执行</td><td>鸿蒙智联电动球阀×3、12V 电磁阀×3、24V 变压器</td><td>≈¥1,120</td></tr>
+          <tr><td>储水与泵送</td><td>1000L 储水罐（闲鱼 IBC）、首雨弃流、增压泵、自来水补位阀</td><td>≈¥1,180</td></tr>
+          <tr><td>传感与决策</td><td>ESP32×2、土壤湿度×4、雨量计、水位浮球、阀门箱</td><td>≈¥760</td></tr>
+          <tr><td>施肥系统</td><td>文丘里施肥器、施肥桶、施肥电磁阀+单向阀、水溶肥（首年）</td><td>≈¥560</td></tr>
+          <tr><td>雨水收集扩展</td><td>自动开合集雨网（网面/推杆/导轨/导流槽）</td><td>≈¥500</td></tr>
+          <tr><td>排水系统</td><td>盲沟透水管、土工布、渗水井</td><td>≈¥400</td></tr>
+          <tr><td>呈现与监控</td><td>7 寸数据屏（HDMI 款，复用主机驱动）</td><td>≈¥350</td></tr>
+          <tr><td>软件与云服务（首年）</td><td>彩云天气 API、云端长势/日照视觉 API</td><td>≈¥500</td></tr>
+          <tr><td>施工与耗材</td><td>管胶/卡扣/密封/防冻布/杂项</td><td>≈¥565</td></tr>
+          <tr style="background:var(--accent-soft);font-weight:800;"><td>合计</td><td>不含摄像头 / 树木 / 人工土建</td><td>≈¥7,285</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="sec-hint" style="margin-top:10px;">弹性空间：若去掉 7 寸屏、云端长势或集雨网，可省 ¥350~¥1,000；摄像头与树木为已有资产，未计入。闲鱼淘二手罐 / 阀 / 屏可再降 ¥500 左右。</p>
+
+      <h3>模块二 · 使用成本（每年）</h3>
+      <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>项目</th><th>说明</th><th>年费用</th></tr></thead>
+        <tbody>
+          <tr><td>自来水补位水费</td><td>雨养优先，仅夏季晴热补位约 3 吨 × 综合水价</td><td>≈¥12</td></tr>
+          <tr><td>电费</td><td>泵 / 阀 / ESP32 / 主机 + 7 寸屏 24h 运行</td><td>≈¥120</td></tr>
+          <tr><td>水溶肥</td><td>薄肥勤施，全年约 3kg 平衡肥 20-20-20</td><td>≈¥80</td></tr>
+          <tr><td>彩云天气 API</td><td>个人开发者免费额度，家用几乎够用</td><td>≈¥0</td></tr>
+          <tr><td>云端视觉 API</td><td>每日抓拍长势 / 树冠 / 日照分析</td><td>≈¥200</td></tr>
+          <tr><td>维护耗材</td><td>滤芯 / 密封件 / 防冻布 / 年度检修</td><td>≈¥100</td></tr>
+          <tr style="background:var(--accent-soft);font-weight:800;"><td>合计</td><td>按杭州气候与雨养策略测算</td><td>≈¥510 / 年</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="sec-hint" style="margin-top:10px;">杭州雨多，浇水主要为“晴热期补水”，电费大头来自主机与 7 寸屏常开；若去掉长势分析，视觉 API 一项即省 ¥200。</p>
+
+      <h3>五年总拥有成本（TCO）对比</h3>
+      <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>方案</th><th>部署投入</th><th>每年使用</th><th>5 年合计</th></tr></thead>
+        <tbody>
+          <tr><td><b>本智能水肥系统</b></td><td>¥7,285</td><td>≈¥510</td><td>≈¥9,835</td></tr>
+          <tr><td>纯人工浇灌 + 养护</td><td>¥0</td><td>≈¥800~1,500</td><td>≈¥4,000~7,500</td></tr>
+          <tr><td>简易自动浇水（无传感/雨水/施肥）</td><td>≈¥2,000</td><td>≈¥700</td><td>≈¥5,500</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="flow-note">💡 <b>结论</b>：这套系统的价值不是“比人工更省钱”，而是<b>更省心 + 草皮全年视觉更稳定</b>——远程 / 语音控制、下雨自动停、缺肥自动补、雨季自动排、冬季自动护，5 年 TCO 约 ¥9,835，平均每天不到 ¥5.4。若只求“能浇上水”，简易方案 5 年省约 ¥4,000，但会失去全年视觉、自动施肥和防涝能力，也无法远程看草势。</div>
+    </div>
+  </div>
+</div>
+
+<div id="tip" role="tooltip"></div>
+
+<script>
+/* ===== 架构图部件（用于悬停简介） ===== */
+var COMPONENTS = {
+  app:{intro:"你在手机上看到的唯一管理面——遥控、定时、场景、小艺语音、监控画面都在这里。"},
+  cam:{intro:"第一只眼睛。实时画面进华为智慧生活 App，AI 事件可触发场景；也是长势分析的画面来源。"},
+  valve:{intro:"第一把钥匙，决定想不想浇。App 里手动 / 定时 / 场景控制每个分区。"},
+  esp32:{intro:"第二把钥匙，决定该不该浇。读湿度 / 雨量 / 水位后硬切断主阀。"},
+  vision:{intro:"第三把钥匙，决定长势如何。云端大模型分析草色/覆盖度/病害，输出诊断与建议。"},
+  weather:{intro:"第四把钥匙，决定下不下雨。彩云分钟级降水预报：有雨就张开集雨网、跳过浇水。"},
+  caiyun:{intro:"彩云天气开放平台——分钟级降水预报，1km 精度，个人开发者有免费额度。"},
+  colnet:{intro:"自动开合集雨网：预报有雨张开接雨、雨停折叠收好，一年多收上万升雨水。"},
+  drain:{intro:"雨季排水：盲沟 + 透水管 + 渗水井，泄掉土里过多的水，草不烂根。"},
+  panel:{intro:"7 寸数据屏：实时参数 + 历史曲线 + 季度“一帧/天”延时影像，一屏看全园。"},
+  shade:{intro:"树冠日照分析：分割树冠、算草皮日照时长，不足就生成剪枝任务。"},
+  prune:{intro:"剪枝逻辑：日照连续不足且树冠在扩大 → 给树冠方向 / 覆盖比例 / 回缩建议。"},
+  tank:{intro:"优先水源。杭州雨季频繁满溢，溢流与排水是关键；冬季少雨季靠它供水。"},
+  pump:{intro:"把雨水压力送进地下管网，驱动地埋滴灌。"},
+  tap:{intro:"罐空自动切入，绝不旱着。"},
+  fert:{intro:"水肥一体核心：水流负压吸肥，浇水即施肥，无需电力。"},
+  filter:{intro:"地埋滴灌与施肥的刚需——不精滤，滴头一堵就是大工程。"},
+  mainvalve:{intro:"四把钥匙的执行点——ESP32 允许才给电，水才流得过去。"},
+  fertvalve:{intro:"控制文丘里吸肥通断，需要时打开几分钟，肥随水走。"},
+  dripline:{intro:"水与养分从根系层渗出，地表无水痕、无蒸发。"},
+  tree:{intro:"大树根系深，靠天为主，偶尔补一点。"},
+  spot:{intro:"为以后局部养花打底，现在观赏草旱养。"},
+  soil:{intro:"浇水的裁判——埋在根系层，实时回报土壤含水量。"},
+  rain:{intro:"杭州雨季的关键：在下雨就自动停手，不白浇。"}
+};
+
+/* ===== 硬件专题数据 ===== */
+var HWCATS = [
+  {key:"ctrl",name:"控制与智能"},
+  {key:"irr",name:"灌溉与管网"},
+  {key:"rain",name:"雨水收集"},
+  {key:"sense",name:"感知与反馈"},
+  {key:"fert",name:"水肥与视觉"},
+  {key:"weather",name:"天气与排水"}
+];
+
+var HWITEMS = {
+  "hw-valve":{
+    ic:"🔑",name:"鸿蒙智联智能水阀",cat:"ctrl",tag:"钥匙① · 华为生态",
+    what:"直接拧在分区水管上的电动球阀，内置减速电机和鸿蒙智联通信模组。这是“四把钥匙”里的第一把钥匙：在华为智慧生活 App 里手动、定时、场景、小艺语音都能控制它开关。",
+    structure:["阀体：黄铜 / 不锈钢球阀，3/4 或 1 寸接口","驱动：蜗轮蜗杆减速电机（直流，缓慢转动球芯）","反馈：内置限位开关，上报开/关状态","通信：鸿蒙智联（HarmonyOS Connect）WiFi / 蓝牙模组","供电：220V 或电池盒（依型号）"],
+    principle:"App 指令经华为云下发到阀体 WiFi 模组 → 模组驱动减速电机带动球芯旋转 90° → 开或关。带断电状态记忆和手动机械扳手，停电也能应急开关。与 ESP32 的“钥匙②”串联，App 开了但土壤不需要时，主阀仍被切断、水不会流。",
+    buy:[
+      {ch:"淘宝",kw:"鸿蒙智联 智能水阀",pr:"210~300 元"},
+      {ch:"京东",kw:"华为智选 智能水阀",pr:"230~320 元"},
+      {ch:"闲鱼",kw:"鸿蒙 智能水阀 / 智能球阀",pr:"少见 · 150~250 元"}
+    ],
+    xianyu:"闲鱼上此类产品很少（新品本身就不贵、刚需属性强），遇到好价就收，但务必确认支持鸿蒙智联/HarmonyOS Connect、接口尺寸和 220V 供电，并到手先配网试机。",
+    tip:"认准“鸿蒙智联 / HarmonyOS Connect”认证标，别买成通用 433M 遥控阀；3 个分区各 1 个，接口和 App 里分区名对应好。",
+    dia:'<svg viewBox="0 0 520 170" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">电动球阀结构示意</text><rect x="150" y="60" width="220" height="70" rx="14" fill="#f6ecd4" stroke="#c08f35"/><line x1="60" y1="95" x2="150" y2="95" stroke="#7a725c" stroke-width="8"/><circle cx="185" cy="95" r="22" fill="#fff" stroke="#c08f35" stroke-width="3"/><line x1="170" y1="95" x2="200" y2="95" stroke="#c08f35" stroke-width="4"/><rect x="280" y="42" width="44" height="30" rx="6" fill="#5f8a4e"/><line x1="302" y1="42" x2="302" y2="18" stroke="#5f8a4e" stroke-width="3"/><text x="302" y="14" text-anchor="middle" font-size="10" fill="#5f8a4e">减速电机</text><line x1="370" y1="95" x2="460" y2="95" stroke="#7a725c" stroke-width="8"/><text x="185" y="140" text-anchor="middle" font-size="10" fill="#7a725c">球芯 90° 旋转 = 开/关</text><text x="330" y="128" text-anchor="middle" font-size="10" fill="#7a725c">WiFi 模组+限位开关</text></svg>'
+  },
+  "hw-solenoid":{
+    ic:"🚦",name:"主切断电磁阀 24VAC",cat:"irr",tag:"钥匙② 的执行器",
+    what:"常闭（NC）电磁阀：平时断电关闭、通电才开启，装在主管路上，是“第二把钥匙”的最终执行点。ESP32 判定“允许浇水”时才给它通电。",
+    structure:["阀体：尼龙 / 黄铜，3/4 或 1 寸接口","膜片：橡胶隔膜 + 先导小孔","线圈：24VAC 电磁线圈（外置可换）","辅助：手动开关（停电可手拧）"],
+    principle:"先导式隔膜阀：通电 → 电磁铁吸合打开先导孔 → 膜片上下压力失衡 → 主阀开启；断电 → 先导孔关闭、膜片复位 → 主阀关闭。常闭设计保证断电即停水，最安全。",
+    buy:[
+      {ch:"淘宝",kw:"24V 灌溉电磁阀",pr:"国产 90~130 元"},
+      {ch:"1688",kw:"24VAC 电磁阀 灌溉",pr:"70~120 元"},
+      {ch:"闲鱼",kw:"电磁阀 灌溉 / 雨鸟",pr:"50~90 元"}
+    ],
+    xianyu:"二手灌溉电磁阀在闲鱼不少（园林/大棚淘汰件），50~90 元可拿下，但先导膜片可能老化，到手先通电试开关、检查膜片，再决定是否换新膜片。",
+    tip:"务必选常闭（NC）；与 24VAC 变压器配套；装在阀箱内防潮；口径与主管一致。",
+    dia:'<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">先导式电磁阀剖面</text><rect x="120" y="60" width="280" height="80" rx="12" fill="#f6ecd4" stroke="#c08f35"/><rect x="235" y="30" width="50" height="34" rx="6" fill="#5f8a4e"/><line x1="260" y1="30" x2="260" y2="12" stroke="#5f8a4e" stroke-width="3"/><text x="260" y="148" text-anchor="middle" font-size="10" fill="#7a725c">电磁线圈</text><path d="M160 140 C160 120 190 118 190 100 C190 90 170 88 170 78 C170 66 200 64 200 80" fill="none" stroke="#7a5b36" stroke-width="3"/><line x1="80" y1="100" x2="120" y2="100" stroke="#7a725c" stroke-width="8"/><line x1="400" y1="100" x2="440" y2="100" stroke="#7a725c" stroke-width="8"/><text x="260" y="120" text-anchor="middle" font-size="10" fill="#7a725c">隔膜 + 先导孔</text><text x="260" y="170" text-anchor="middle" font-size="10" fill="#7a725c">断电常闭 · 通电开启</text></svg>'
+  },
+  "hw-transformer":{
+    ic:"⚡",name:"24VAC 变压器",cat:"irr",tag:"低压供电",
+    what:"把 220V 市电降到 24V 交流，给电磁阀供电。低压比 220V 安全得多，特别适合潮湿的户外阀箱环境。",
+    structure:["铁芯 + 初级/次级绕组","保险丝（过流保护）","接线端子 + 防水外壳"],
+    principle:"电磁感应降压：220V 交变电流过初级绕组，在次级感应出约 24V 交流；电磁阀启动时电流小（几瓦~十几瓦），变压器余量够即可。",
+    buy:[
+      {ch:"淘宝",kw:"24VAC 变压器 电磁阀",pr:"30~80 元"},
+      {ch:"闲鱼",kw:"24V 变压器 / 门禁电源",pr:"10~30 元"}
+    ],
+    xianyu:"二手小功率变压器非常多（门禁、对讲机淘汰件），10~30 元即可；确认是交流 24V 输出、功率≥电磁阀需求即可。",
+    tip:"功率选 10~20W 档；放阀箱内加防水盒；接线注意与 ESP32 继电器串联。",
+    dia:null
+  },
+  "hw-dripline":{
+    ic:"🟢",name:"地埋 PC 滴灌管 16mm",cat:"irr",tag:"草坪主执行器",
+    what:"内镶压力补偿（PC）滴头的 16mm 滴灌管，埋在草根层下方 10cm。草坪区约用 90 米，是整套系统里真正“给草喝水、吃饭”的部分。",
+    structure:["PE 管壁（地埋用厚壁 ≥0.6mm 抗压扁）","内镶圆柱滴头：每 30cm 一个","滴头内：压力补偿硅胶片 + 迷宫流道"],
+    principle:"迷宫流道让水流形成紊流、消耗压力，保证沿程各滴头出水量基本一致；压力补偿片在系统压力波动时自动调节开度，管路有起伏也影响不大。水肥混合液从地下 10cm 的滴头直接渗出到根系层，地表无痕、蒸发极小。",
+    buy:[
+      {ch:"淘宝",kw:"16mm 压力补偿滴灌管",pr:"1.5~3 元/米"},
+      {ch:"1688",kw:"内镶圆柱式滴灌管",pr:"0.4~0.8 元/米"},
+      {ch:"闲鱼",kw:"滴灌管 16mm 剩余",pr:"少见 · 按新品 5~7 折"}
+    ],
+    xianyu:"滴灌管基本是“一次性件”，闲鱼很少、且大多是别人剩的零头，不建议二手（老化影响出水均匀度），直接买新更省心。",
+    tip:"地埋必须配 120 目过滤 + 冬季泄水；铺设时迷宫纹朝上；单条长度≤80 米（超长末端水压不足）。",
+    dia:'<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">滴灌管剖面 · 迷宫流道</text><rect x="60" y="55" width="400" height="40" rx="8" fill="#c9963f" opacity=".9"/><path d="M100 55 L100 95 M140 55 L140 95 M180 55 L180 95 M220 55 L220 95 M260 55 L260 95 M300 55 L300 95 M340 55 L340 95 M380 55 L380 95 M420 55 L420 95" stroke="#fff" stroke-width="2" stroke-dasharray="3 3"/><text x="260" y="118" text-anchor="middle" font-size="10" fill="#7a725c">迷宫流道（消能 · 均匀出水）</text><line x1="40" y1="140" x2="480" y2="140" stroke="#8a6b47" stroke-width="3"/><text x="260" y="158" text-anchor="middle" font-size="10" fill="#7a725c">埋深 10cm · 地表无痕</text></svg>'
+  },
+  "hw-dripj":{
+    ic:"🌳",name:"树下滴箭 / 微滴灌管",cat:"irr",tag:"树木与点缀带",
+    what:"树下沿滴水线的滴箭/涌泉头，以及点缀带预留的微滴灌管。大树建成后基本靠天，这套只是“偶尔补一点”；点缀带现在旱养、为以后养花预留接口。",
+    structure:["滴箭：毛管 + 箭式滴头（可插土固定）","涌泉头：小流量散射头（2~4L/h）","微滴灌管：小口径 PE 管 + 旁通阀"],
+    principle:"小流量、精准浇到树根/花根周围：不浇叶面、不淋树干，水都进根系区，蒸发少、病害少。旁通带阀门，可以单独关某一棵树或某一段花境。",
+    buy:[
+      {ch:"淘宝",kw:"滴箭 滴灌",pr:"0.5~2 元/个"},
+      {ch:"淘宝",kw:"微滴灌管 16mm",pr:"0.5~1.5 元/米"},
+      {ch:"闲鱼",kw:"滴箭 / 滴灌配件",pr:"少见 · 建议买新"}
+    ],
+    xianyu:"这类小件价值低，闲鱼基本没人卖，直接买新；整套树下+点缀带也就一两百元。",
+    tip:"每树 4 点沿滴水线均布；旁通带阀门；点缀带预留的管子末端堵死、留活结，未来养花直接接新分区。",
+    dia:null
+  },
+  "hw-pe":{
+    ic:"〰️",name:"PE 主管 + 接头",cat:"irr",tag:"输水干管",
+    what:"20mm PE 管把水从阀箱送到各分区，配套直通、三通、弯头、旁通等接头。是整套地下管网的主干。",
+    structure:["PE 管：LLDPE 材质，柔韧耐腐蚀","接头：快插/锁扣式（直通/三通/弯头/旁通）","密封：O 形圈 / 卡簧"],
+    principle:"快插接头靠锁扣和密封圈压紧管壁，无需胶水；PE 管柔韧，弯曲半径大，埋地不怕冻裂（配合冬季泄水）。",
+    buy:[
+      {ch:"1688",kw:"PE管 20mm 灌溉",pr:"1~3 元/米"},
+      {ch:"淘宝",kw:"灌溉快接 三通 弯头",pr:"1~5 元/个"},
+      {ch:"闲鱼",kw:"PE管 剩余 / 灌溉接头",pr:"少见 · 建议买新"}
+    ],
+    xianyu:"管材按需买新即可；接头可留意闲鱼“灌溉剩余配件”打包买，能省一点。",
+    tip:"埋深 30~40cm 防机械损伤；转弯用大半径弧；接头处回填前先试压。",
+    dia:null
+  },
+  "hw-filter":{
+    ic:"🌀",name:"叠片过滤器 120 目",cat:"irr",tag:"滴头保护第一关",
+    what:"水进入滴灌管前的最后一道防线。地埋滴灌滴头孔径极小，不精滤必堵，这一件是整个系统里最不能省的——现在还要管住肥液里的颗粒。",
+    structure:["外壳：PP / 尼龙，带快拆","叠片组：带沟槽的塑料片叠成","密封圈 + 底部排污阀"],
+    principle:"叠片被压紧后，沟槽交错形成迷宫过滤通道，把大于 120 目（约 0.125mm）的泥沙、藻类、肥渣挡在外面；旋开外壳即可拆洗叠片，水压表可观察是否堵塞。",
+    buy:[
+      {ch:"淘宝",kw:"叠片过滤器 灌溉",pr:"50~150 元"},
+      {ch:"1688",kw:"120目 叠片过滤器",pr:"40~120 元"},
+      {ch:"闲鱼",kw:"叠片过滤器 / 灌溉过滤器",pr:"30~80 元"}
+    ],
+    xianyu:"二手灌溉过滤器常见，30~80 元；重点检查叠片是否完好、外壳有无裂纹，密封圈老化了就换新。",
+    tip:"宁可买大不买小；雨水、自来水和肥液都过它；装在主切断电磁阀前；每季度拆洗一次叠片。",
+    dia:'<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">叠片过滤器 · 迷宫过滤</text><rect x="180" y="50" width="160" height="90" rx="12" fill="#f6ecd4" stroke="#c08f35"/><line x1="90" y1="95" x2="180" y2="95" stroke="#7a725c" stroke-width="8"/><line x1="340" y1="95" x2="430" y2="95" stroke="#7a725c" stroke-width="8"/><g stroke="#5f8a4e" stroke-width="2"><line x1="205" y1="70" x2="315" y2="70"/><line x1="205" y1="84" x2="315" y2="84"/><line x1="205" y1="98" x2="315" y2="98"/><line x1="205" y1="112" x2="315" y2="112"/><line x1="205" y1="126" x2="315" y2="126"/></g><text x="260" y="160" text-anchor="middle" font-size="10" fill="#7a725c">120 目（0.125mm）拦截泥沙与肥渣</text></svg>'
+  },
+  "hw-tank":{
+    ic:"🌧️",name:"PE 储水罐 1000L",cat:"rain",tag:"优先水源",
+    what:"1000L 的一次吹塑 PE 储水罐，储存经过弃流过滤的雨水，是系统的优先水源。杭州雨多，罐的角色从“撑 4 周”变成“峰谷缓冲 + 冬季供水”。",
+    structure:["罐体：一次吹塑 PE（或二手 IBC 吨桶）","顶部：开口 + 防蚊盖 + 进水口","侧面/底部：出水口","上部：溢流口（防满罐）"],
+    principle:"屋面 / 硬化面雨水经“首雨弃流 + 滤网”后重力进罐；出水经自吸泵加压进管网；溢流口把多余水排走；遮光防藻、防蚊盖防孳生。杭州雨季罐经常满，溢流与排水是刚需。",
+    buy:[
+      {ch:"1688",kw:"1吨 PE 水塔",pr:"全新 280~600 元"},
+      {ch:"淘宝",kw:"IBC 吨桶 1000L",pr:"全新 600~900 元"},
+      {ch:"闲鱼",kw:"IBC 吨桶 / 1吨水塔",pr:"二手 150~500 元"}
+    ],
+    xianyu:"闲鱼和本地回收站二手 IBC 吨桶 150~500 元、二手 PE 水塔 120~350 元，性价比极高；但务必彻底清洗（最好原来装食品/饮用水），检查桶壁无裂纹，进水口先过弃流再进罐。",
+    tip:"罐体遮光防藻 + 防蚊盖；进水先弃流；放在屋檐雨落管附近、地势低处方便重力进水；溢流口接排水沟，别泡地基。",
+    dia:'<svg viewBox="0 0 520 190" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">雨水罐 · 进水 / 出水 / 溢流</text><rect x="170" y="45" width="180" height="110" rx="14" fill="#d9e6f0" stroke="#5f8a4e"/><line x1="90" y1="55" x2="170" y2="55" stroke="#5f8a4e" stroke-width="6"/><line x1="350" y1="150" x2="440" y2="150" stroke="#5f8a4e" stroke-width="6"/><line x1="350" y1="60" x2="430" y2="60" stroke="#c08f35" stroke-width="5"/><text x="260" y="120" text-anchor="middle" font-size="12" fill="#3f6f56">1000L</text><text x="100" y="50" text-anchor="middle" font-size="10" fill="#5f8a4e">进水(弃流后)</text><text x="400" y="160" text-anchor="middle" font-size="10" fill="#5f8a4e">出水→泵</text><text x="395" y="54" text-anchor="middle" font-size="10" fill="#9a6f1f">溢流(杭州常满)</text><text x="260" y="178" text-anchor="middle" font-size="10" fill="#7a725c">防蚊盖 · 遮光防藻</text></svg>'
+  },
+  "hw-firstflush":{
+    ic:"🚿",name:"首雨弃流器",cat:"rain",tag:"雨水净化第一关",
+    what:"把污染最重的“初期雨水”（前 1~2mm，含屋顶粉尘、鸟粪）排掉，只把干净雨水收进罐里。",
+    structure:["截污挂篮 / 立管过滤筒","滤网（拦树叶杂物）","浮球式弃流结构（雨停自动排空）"],
+    principle:"初期雨水最脏，直接进罐会让整罐水发臭、长藻、堵滴头。弃流器先让头几毫米雨水流走，等水干净了再自动转进储罐。家用用“雨水立管过滤器 + 滤网”就够，工程级大装置是给大楼用的。",
+    buy:[
+      {ch:"淘宝",kw:"雨水立管过滤器",pr:"家用 100~300 元"},
+      {ch:"1688",kw:"雨水弃流装置",pr:"工程级 285~510 元"},
+      {ch:"闲鱼",kw:"雨水过滤 / 弃流器",pr:"50~200 元"}
+    ],
+    xianyu:"工程级弃流装置二手偶尔出现，50~200 元；家用小庭院建议直接买“立管过滤器”，便宜且够用。",
+    tip:"小庭院用“立管过滤器 + 滤网”最省事；装在雨落管靠近地面处，便于清洗。",
+    dia:null
+  },
+  "hw-pump":{
+    ic:"⚙️",name:"自吸泵",cat:"rain",tag:"把雨水送进管网",
+    what:"把雨水罐里的水加压送进滴灌管网。自吸式能自动排气，小流量家用款即可。",
+    structure:["电机（220V 或低压）","离心叶轮","自吸腔（泵体储水）","进出水口 + 压力/干转保护"],
+    principle:"叶轮高速旋转产生离心力，把泵体内的空气排出形成负压，水被吸入并加压送出（离心泵原理）。自吸式在断电/停水后还能自动重新吸水，不用每次灌引水。",
+    buy:[
+      {ch:"淘宝",kw:"家用自吸泵 220V",pr:"100~480 元"},
+      {ch:"1688",kw:"微型自吸泵",pr:"35~130 元"},
+      {ch:"闲鱼",kw:"自吸泵 / 增压泵",pr:"50~180 元"}
+    ],
+    xianyu:"闲鱼自吸泵很常见（家用换下来的九成新全铜泵 180 左右、普通款 50~120 元）；到手检查电机异响、有无漏水、叶轮磨损。",
+    tip:"选 800L/h 档即可；泵前加过滤；带干转保护；放在阀箱或泵坑里，注意防雨。",
+    dia:null
+  },
+  "hw-backup":{
+    ic:"🚰",name:"自来水补位阀 + 单向阀",cat:"rain",tag:"旱季兜底",
+    what:"罐空时自动切入自来水的电磁阀，加一只防倒流的单向阀。这套让系统“永不缺水”也“不污染自来水”。",
+    structure:["补位电磁阀：12/24V DC 常闭","单向阀：弹簧式，单向导通","接口：与水管同口径"],
+    principle:"ESP32 读罐内水位：低于下限 → 给补位电磁阀通电 → 自来水进罐/管网；水位恢复 → 断电关闭。单向阀保证罐内雨水不会倒流进自来水管道（卫生安全，也是规范要求）。",
+    buy:[
+      {ch:"淘宝",kw:"12V 电磁阀 水",pr:"20~60 元"},
+      {ch:"淘宝",kw:"净水器 单向阀",pr:"5~20 元"},
+      {ch:"闲鱼",kw:"12V 电磁阀 / 单向阀",pr:"10~40 元"}
+    ],
+    xianyu:"12V 电磁阀二手常见（净水/水族淘汰件），10~40 元；单向阀便宜，建议买新。",
+    tip:"单向阀必须装（防倒流，卫生安全）；电磁阀注意接口尺寸与 12V 驱动（ESP32 经继电器控制）。",
+    dia:null
+  },
+  "hw-esp32":{
+    ic:"🧠",name:"ESP32 开发板 + 继电器",cat:"ctrl",tag:"本地大脑（钥匙②）",
+    what:"整套系统的本地决策中心，跑“湿度 / 雨量 / 水位 → 是否允许浇水”的逻辑，用继电器硬切断主阀供电；同时控制施肥电磁阀。",
+    structure:["ESP32 模组：双核 + WiFi + 蓝牙","USB / 5V 供电 + 复位 / BOOT 键","引出 GPIO：模拟输入（ADC）+ 数字 IO","继电器模块：干接点，控 24V 回路 + 施肥阀 12V 回路"],
+    principle:"ESP32 通过 ADC 读土壤湿度传感器的模拟值、通过 GPIO 数雨量计脉冲、读水位开关高低电平；在本地判断“土壤含水量低于阈值 且 非雨天 且 在允许时段” → 拉高继电器 → 主切断电磁阀得电 → 水才流向 App 已打开的分区。需要施肥时再开施肥电磁阀几分钟，肥随水走。跑 Arduino / ESPHome / MicroPython 都行。",
+    buy:[
+      {ch:"淘宝",kw:"ESP32 开发板",pr:"20~30 元"},
+      {ch:"淘宝",kw:"继电器模块 5V 1路",pr:"2~8 元"},
+      {ch:"闲鱼",kw:"ESP32 / ESP32-S3",pr:"15~25 元"}
+    ],
+    xianyu:"ESP32 开发板是闲鱼大户（吃灰党极多），15~25 元全新闲置常有，性价比极高；选 ESP32-S3 或 WROOM 双核版即可。",
+    tip:"选 ESP32 而非 8266（双核、ADC 精度好、扩展富余）；户外放防水盒；逻辑默认“故障即关闭”（安全）。",
+    dia:'<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">ESP32 接线逻辑</text><rect x="60" y="50" width="150" height="80" rx="10" fill="#d9e6f0" stroke="#5f8a4e"/><text x="135" y="92" text-anchor="middle" font-size="11" fill="#3f6f56">ESP32</text><rect x="300" y="50" width="140" height="80" rx="10" fill="#f6ecd4" stroke="#c08f35"/><text x="370" y="92" text-anchor="middle" font-size="11" fill="#9a6f1f">继电器</text><line x1="210" y1="90" x2="300" y2="90" stroke="#c08f35" stroke-width="3"/><text x="255" y="82" text-anchor="middle" font-size="9" fill="#7a725c">GPIO</text><line x1="370" y1="130" x2="370" y2="160" stroke="#7a725c" stroke-width="4"/><text x="370" y="172" text-anchor="middle" font-size="10" fill="#7a725c">→ 电磁阀 24V / 施肥阀 12V</text><text x="135" y="145" text-anchor="middle" font-size="9" fill="#7a725c">湿度/雨量/水位 → ADC/GPIO</text></svg>'
+  },
+  "hw-moisture":{
+    ic:"🌱",name:"电容式土壤湿度传感器",cat:"sense",tag:"浇水的唯一裁判",
+    what:"埋在根系层的土壤含水量传感器，共 4 路（草坪 2、树下 1、花境 1）。它决定“土壤到底缺不缺水”。",
+    structure:["PCB 探针：铜箔电极（埋土部分）","振荡电路：把电容变化转成频率/电压","输出：模拟量（ADC）","灌封：埋地款环氧防水灌封"],
+    principle:"土壤含水量越高，探针间的介电常数越大 → 电容越大 → 输出频率/电压变化，ESP32 据此换算含水量。电容式不裸露金属电极，不像电阻式那样电解腐蚀，寿命长很多。",
+    buy:[
+      {ch:"淘宝",kw:"电容式土壤湿度传感器",pr:"5~10 元/个"},
+      {ch:"DFRobot",kw:"Gravity 电容式",pr:"35 元 / IP65 款更高"},
+      {ch:"闲鱼",kw:"土壤湿度传感器",pr:"2~15 元"}
+    ],
+    xianyu:"土壤传感器散件在闲鱼非常便宜（2~15 元），但要选电容式 + 注意防水；埋地款一定要自己做灌封防水（704 硅胶 + AB 胶），否则泡水一两周就坏。",
+    tip:"必须电容式（电阻式易腐蚀）；埋深 10~15cm 根系层；传感器 PCB 侧边用 AB 胶封死防渗水。",
+    dia:'<svg viewBox="0 0 520 180" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">电容式探针原理</text><rect x="210" y="40" width="100" height="30" rx="6" fill="#d9e6f0" stroke="#5f8a4e"/><text x="260" y="60" text-anchor="middle" font-size="10" fill="#3f6f56">电路</text><rect x="225" y="70" width="70" height="80" rx="4" fill="#8fb08f" opacity=".7"/><line x1="235" y1="84" x2="235" y2="140" stroke="#c08f35" stroke-width="5"/><line x1="285" y1="84" x2="285" y2="140" stroke="#c08f35" stroke-width="5"/><text x="260" y="168" text-anchor="middle" font-size="10" fill="#7a725c">土壤含水量 → 介电常数 → 电容 → 输出</text><text x="260" y="34" text-anchor="middle" font-size="9" fill="#7a725c">环氧灌封防水</text></svg>'
+  },
+  "hw-rain":{
+    ic:"🌦️",name:"雨量传感器（翻斗式）",cat:"sense",tag:"下雨自动停",
+    what:"下雨时自动“叫停”浇水的传感器。累计到一定雨量就判定在下雨，让系统跳过本次浇水计划——杭州雨季它是真正的主角。",
+    structure:["承雨漏斗（收集雨水）","计量翻斗（双翻斗）","干簧管 / 磁簧开关（计数）","排水口"],
+    principle:"雨水汇入漏斗流入翻斗，每接满固定量翻倒一次，磁铁扫过干簧管产生一个脉冲；ESP32 累计脉冲判断“正在下雨 / 雨量多少”，从而跳过浇水。",
+    buy:[
+      {ch:"淘宝",kw:"翻斗式雨量计",pr:"50~129 元"},
+      {ch:"淘宝",kw:"雨滴传感器模块",pr:"几元（简版）"},
+      {ch:"闲鱼",kw:"雨量计 / 气象站拆机",pr:"30~80 元"}
+    ],
+    xianyu:"翻斗雨量计二手 30~80 元（气象站淘汰件常见），检查翻斗是否顺畅、干簧管是否灵敏。",
+    tip:"放在开阔处避免树冠挡雨；杭州多雨，建议加 48 小时“雨后停浇窗口”，避免刚下完雨又补浇。",
+    dia:null
+  },
+  "hw-float":{
+    ic:"🛟",name:"水位开关 / 浮球",cat:"sense",tag:"雨水罐管家",
+    what:"检测雨水罐内高/低水位的开关，触发“自来水补位”和“满罐停止”。",
+    structure:["浮球 + 连杆/线缆","干簧开关或微动开关","固定支架 / 卡扣"],
+    principle:"浮球随水位升降：到达低水位位置 → 触发开关 → ESP32 打开自来水补位阀；到达高水位 → 触发另一开关 → 停止。高低两点做“区间控制”，避免频繁启停。",
+    buy:[
+      {ch:"淘宝",kw:"水位浮球开关",pr:"5~30 元"},
+      {ch:"淘宝",kw:"不锈钢水满停 浮球",pr:"29.9 元档"},
+      {ch:"闲鱼",kw:"浮球开关 / 水位控制器",pr:"2~15 元"}
+    ],
+    xianyu:"浮球开关几块钱的二手件很多，买新的也就一杯奶茶钱，直接买新更稳。",
+    tip:"装高低两个点做区间控制；线缆走罐顶防磨损。",
+    dia:null
+  },
+  "hw-valvebox":{
+    ic:"📦",name:"阀箱 / 控制箱",cat:"irr",tag:"全隐藏的关键",
+    what:"地埋密封阀箱，把过滤器、电磁阀、变压器、ESP32 全部收进去，盖上盖子和草皮齐平——地表零设备就靠它。",
+    structure:["高强度 PP 阀箱（可承压）","密封盖（防雨防尘）","侧向管道/线缆孔 + 密封胶泥"],
+    principle:"把所有水路和电气件保护在箱内：防晒、防雨、防鼠咬、防踩踏，打开盖子就能检修。是“地下埋管 + 全隐藏”的收口件。",
+    buy:[
+      {ch:"淘宝",kw:"地埋阀箱 灌溉",pr:"50~100 元/个"},
+      {ch:"闲鱼",kw:"灌溉阀箱 / 阀门井",pr:"20~60 元"}
+    ],
+    xianyu:"二手灌溉阀箱偶尔有（园林改造淘汰），20~60 元；注意箱盖能否承压、密封是否完好。",
+    tip:"箱盖要能承压（人走不塌）；进出管用密封胶泥封孔；电气件在箱内再套防水盒。",
+    dia:null
+  },
+  "hw-cam":{
+    ic:"📷",name:"华为智选室外摄像头",cat:"fert",tag:"系统的眼睛 · 你已有",
+    what:"你已经拥有的、能接入华为全屋智能的室外摄像头。它负责“看”：把院子草的长势画面实时接到华为生态，同时它的画面是长势分析的原始素材。",
+    structure:["摄像头本体（华为智选 / 鸿蒙智选 海雀 / 小豚当家等）","云台（360° 巡航）","红外夜视 + 双向语音","WiFi + 内存卡 / 云存储"],
+    principle:"摄像头把画面实时传到智慧生活 App，随时可看、可回看；AI 侦测（人形 / 异动 / 移动侦测）事件可触发华为智慧场景；同时可通过 RTSP / 本地流把画面喂给“长势分析”模块，做草色与覆盖度分析。",
+    buy:[
+      {ch:"淘宝",kw:"华为智选 室外摄像头",pr:"300~700 元（你已有则 0）"},
+      {ch:"华为商城",kw:"鸿蒙智选 鲸瞳 / 小豚当家",pr:"330~700 元"},
+      {ch:"闲鱼",kw:"华为智选 / 鸿蒙智选 摄像头",pr:"150~400 元"}
+    ],
+    xianyu:"二手华为生态室外摄像头 150~400 元常见；但你是复用已有设备，成本为 0。若要补一个，确认支持华为智慧生活 App、室外防水、云台与夜视。",
+    tip:"安装位置对好草坪视角、避免逆光；画面里留一棵树作参照物，方便长势分析标定“正常绿色”基准。",
+    dia:null
+  },
+  "hw-vision":{
+    ic:"👁️",name:"云端长势分析（视觉大模型 API）",cat:"fert",tag:"钥匙③ · 云端视觉",
+    what:"把摄像头截图上传云端视觉大模型，让 AI 直接“看懂”草：草色、覆盖度、枯黄原因、病害，输出结构化诊断作为第三把钥匙的输入。",
+    structure:["摄像头定时截图（每天 1~2 次，固定机位）","上传视觉大模型 API（豆包 / 通义 / 智谱等）","返回结构化诊断：草色指数 / 覆盖度 / 建议动作","结果写回 ESP32 / 主机 → 联动浇水施肥"],
+    principle:"视觉大模型对图片做多模态理解：识别草坪区域 → 计算绿 / 黄 / 枯占比、覆盖度 → 结合季节判断枯黄原因（缺水 / 缺肥 / 病害 / 正常休眠）→ 输出建议动作。比本地色度算法更能区分“缺肥的黄”和“病害的黄”。",
+    buy:[
+      {ch:"API",kw:"豆包 / 通义 视觉大模型",pr:"按次计费 · 年约 200 元内"},
+      {ch:"复用",kw:"已有 NAS / 迷你主机跑调度",pr:"0 元"},
+      {ch:"免费",kw:"多数平台每月有免费额度",pr:"够日常 60 次/月"}
+    ],
+    xianyu:"这不是硬件，是云服务——没有闲鱼行情；免费额度用完再按量付费即可。",
+    tip:"固定摄像头机位 + 固定取景框，分析更稳定；每天 08:00 / 17:00 各拍一张；结果接 ESP32 决策，华为 App 看诊断报告。",
+    dia:null
+  },
+  "hw-venturi":{
+    ic:"🧪",name:"文丘里施肥器",cat:"fert",tag:"水肥一体核心",
+    what:"水肥一体化的核心小件：利用管道水流在喉部产生的负压，自动把肥液吸进主管道，实现“浇水即施肥”。无需电力、无运动件。",
+    structure:["文丘里管：喉部收缩段（流速加快、压力降低）","吸肥管：连到施肥桶","旁通阀 / 流量调节","接口：1/2 ~ 1 寸，配旁通接入主管"],
+    principle:"伯努利原理：水在喉部加速 → 该处压力低于大气压（负压）→ 肥液被吸入并与水流混合，随水进入滴灌管。肥液浓度由吸肥管粗细与文丘里前后压差决定，可通过旁通阀微调。",
+    buy:[
+      {ch:"淘宝",kw:"文丘里施肥器",pr:"45~130 元"},
+      {ch:"1688",kw:"文丘里施肥器",pr:"23~107 元"},
+      {ch:"闲鱼",kw:"文丘里 / 施肥器",pr:"少见 · 建议买新"}
+    ],
+    xianyu:"这类件价值低、闲鱼少见，直接买新更省心；家用 1/2~3/4 寸款 50~80 元足够。",
+    tip:"装在过滤器之后、主切断电磁阀之后（旁通）；吸肥管加过滤网；用后清水冲灌 5 分钟，防止肥液残留结晶。",
+    dia:'<svg viewBox="0 0 520 200" xmlns="http://www.w3.org/2000/svg"><text x="260" y="20" text-anchor="middle" font-size="12" fill="#9a6f1f">文丘里施肥器 · 负压吸肥</text><rect x="60" y="70" width="400" height="46" rx="12" fill="#d9e6f0" stroke="#5f8a4e"/><path d="M150 70 C150 93 220 93 220 70 M220 93 C220 70 300 70 300 93 M300 93 C300 70 370 70 370 93" fill="none" stroke="#3f6f56" stroke-width="4"/><line x1="260" y1="116" x2="260" y2="150" stroke="#5f8a4e" stroke-width="5"/><rect x="205" y="150" width="110" height="36" rx="8" fill="#a9c08a"/><text x="260" y="174" text-anchor="middle" font-size="10" fill="#3f6f56">施肥桶</text><text x="70" y="60" text-anchor="middle" font-size="10" fill="#3f6f56">进水(高压)</text><text x="450" y="60" text-anchor="middle" font-size="10" fill="#3f6f56">出水(混合)</text><text x="260" y="138" text-anchor="middle" font-size="10" fill="#9a6f1f">喉部负压 ← 吸肥</text><text x="260" y="192" text-anchor="middle" font-size="10" fill="#7a725c">水肥混合 → 滴灌管 → 草根</text></svg>'
+  },
+  "hw-ferttank":{
+    ic:"🪣",name:"施肥桶 + 水溶肥",cat:"fert",tag:"肥液储备",
+    what:"装水溶肥的桶，文丘里从这里吸肥液。用平衡型水溶肥按需配制，薄肥勤施。",
+    structure:["塑料桶（20~50L，带盖）","吸肥管 + 底部过滤网","搅拌（定期晃动即可）","水溶肥：氮磷钾 20-20-20 或草坪专用肥"],
+    principle:"肥液浓度 = 水溶肥用量 / 桶水量；文丘里吸肥比例决定最终肥水浓度。按“薄肥勤施”原则：低浓度、勤次数，比一次浓肥对草更安全、吸收更好。",
+    buy:[
+      {ch:"淘宝",kw:"水溶肥 20-20-20",pr:"30~80 元/袋"},
+      {ch:"淘宝",kw:"草坪专用 水溶肥",pr:"40~100 元/季"},
+      {ch:"闲鱼",kw:"肥料 剩余",pr:"少见 · 建议买新"}
+    ],
+    xianyu:"肥料不建议买二手（成分/保质期难保证）；桶用家里闲置的塑料桶即可，成本归零。",
+    tip:"薄肥勤施；梅雨季减少施肥防徒长/病害；施肥后清水冲灌 5 分钟；冬季停肥。",
+    dia:null
+  },
+  "hw-fertvalve":{
+    ic:"🔬",name:"施肥电磁阀 + 单向阀",cat:"fert",tag:"施肥回路开关",
+    what:"控制“施肥回路”通断的电磁阀 + 防肥液倒流的单向阀，让施肥只在需要时发生、且绝不污染水源。",
+    structure:["施肥电磁阀：12V DC 常闭","单向阀：弹簧式，只允许肥液单向进主管","接头：与文丘里吸肥回路匹配"],
+    principle:"ESP32 在“该施肥”时给施肥电磁阀通电 → 文丘里吸肥 → 水肥混合入管；断电即停。单向阀保证肥液不会倒灌进水箱或自来水管道（卫生安全）。",
+    buy:[
+      {ch:"淘宝",kw:"12V 电磁阀 水",pr:"20~60 元"},
+      {ch:"淘宝",kw:"净水器 单向阀",pr:"5~20 元"},
+      {ch:"闲鱼",kw:"12V 电磁阀 / 单向阀",pr:"10~40 元"}
+    ],
+    xianyu:"12V 电磁阀二手常见（净水/水族淘汰件），10~40 元；单向阀便宜，建议买新。",
+    tip:"单向阀必须装（防倒灌污染水源）；施肥回路单独一条，不施肥时完全隔离；用 12V 驱动（ESP32 经继电器控制）。",
+    dia:null
+  },
+  "hw-colnet":{
+    ic:"🕸️",name:"自动开合集雨网",cat:"rain",tag:"预报张开 · 雨停折叠",
+    what:"一个能自动开合的集雨装置：像网球网一样在庭院上方撑开接雨，雨停自动折叠收好。网面收集的雨水汇入导流槽进储水罐，是屋顶收集之外的第二水源。",
+    structure:["网面：PVC 涂层面料 / 90% 遮阳网（防水）","驱动：线性推杆或卷绕电机（12V）","导轨 + 限位开关：定位张开 / 折叠两端","导流槽 + 管道：网面低缘接水进储水罐"],
+    principle:"ESP32 / 主机按彩云预报判断：未来 1~2h 有持续雨 → 电机正转展开（约 30° 倾斜集雨面）→ 雨水沿网面流到导流槽进罐；雨停 + 预报转晴 → 电机反转折叠。限位开关定两端，断电记忆位置，本地雨量计兜底触发。",
+    buy:[
+      {ch:"淘宝",kw:"PVC 涂层布 / 遮阳网",pr:"50~120 元"},
+      {ch:"淘宝",kw:"线性推杆 12V",pr:"60~150 元"},
+      {ch:"淘宝",kw:"卷轴 / 滑轮 / 导轨",pr:"50~120 元"},
+      {ch:"闲鱼",kw:"电动卷帘 / 推杆 / 电机",pr:"30~100 元"}
+    ],
+    xianyu:"推杆、电机、卷帘轨道在闲鱼很多（智能家居 / 遮阳棚淘汰件），30~100 元能收；网面建议买新。整套自组约 400~550 元。",
+    tip:"台风预警必须联动收起防损坏；网面坡度 ≥15° 保证水流向导流槽；支架固定牢靠、防风。",
+    dia:null
+  },
+  "hw-caiyun":{
+    ic:"🛰️",name:"彩云天气接入（天气触发源）",cat:"weather",tag:"钥匙④ · 预报",
+    what:"接入彩云天气开放平台的分钟级降水预报，让系统“提前知道要下雨”——云层数据成为第四把钥匙。",
+    structure:["彩云开放平台账号 + API Token","分钟级降水接口：未来 2 小时逐分钟降水强度（1km 精度）","实况接口：准确率约 95%","本地轮询：ESP32 / 主机每 5~10 分钟请求一次"],
+    principle:"彩云融合全球 800+ 雷达站分钟级更新降水预测；系统每 5~10 分钟拉一次未来 1~2h 降水强度，判定“有持续雨”则张开集雨网、跳过浇水；雨停转晴则折叠、恢复。个人开发者认证后有免费额度，家用足够。",
+    buy:[
+      {ch:"官方",kw:"彩云开放平台 个人开发者",pr:"免费额度 / 充值按量"},
+      {ch:"第三方",kw:"天气 API 聚合（免费档）",pr:"每日 100~2000 次免费"},
+      {ch:"复用",kw:"已有主机 / ESP32 跑轮询",pr:"0 元"}
+    ],
+    xianyu:"纯数据服务，无闲鱼行情；免费额度家用足够，几乎零成本。",
+    tip:"申请个人开发者认证拿免费额度；定时轮询别太频繁（5~10 分钟足够）；与本地雨量计双保险。",
+    dia:null
+  },
+  "hw-drain":{
+    ic:"🌊",name:"智能排水系统（盲沟 / 渗水井）",cat:"weather",tag:"雨季泄水 · 全年视觉",
+    what:"把雨季土里过多的水排走的地下排水系统，配合智能判断：湿度过高就停水、提示排水。是“草皮全年好看”的防涝地基。",
+    structure:["盲沟：碎石层 + Φ50 透水管 + 土工布","坡度：约 1% 向渗水井 / 检查井","渗水井 / 排水检查井：汇水 + 清理口","可选手动 / 泵排积水点"],
+    principle:"雨水渗过草皮和土壤，进入盲沟碎石层后沿透水管流动（靠坡度自流），汇入渗水井排走，根系层不再泡水。ESP32 读湿度：持续 >60% 且在下雨 → 判定过湿，暂停浇水；有积水点可加小排水泵强制排。",
+    buy:[
+      {ch:"淘宝",kw:"透水管 Φ50 / 盲沟管",pr:"2~6 元/米"},
+      {ch:"淘宝",kw:"土工布 / 碎石",pr:"50~120 元/批"},
+      {ch:"淘宝",kw:"渗水井 / 检查井",pr:"60~150 元"},
+      {ch:"闲鱼",kw:"透水管 / 管件剩余",pr:"20~60 元"}
+    ],
+    xianyu:"透水管、井筒等常有人按剩余卖，20~60 元能收；石子土工布建议买新。整套约 300~500 元。",
+    tip:"杭州粘性土必做；间距 3~5m、坡度 1%；盲沟避开滴灌管；渗水井设清理口，每年清一次。",
+    dia:null
+  },
+  "hw-panel":{
+    ic:"🖥️",name:"7 寸数据屏（智能监测台）",cat:"ctrl",tag:"一屏看全园",
+    what:"一块 7 英寸小屏，把系统所有数据实时呈现出来：四路土壤湿度、罐水位、雨量、天气、长势指数、各分区日照时长，带历史曲线和季度延时影像。只读监测，不做第二套控制。",
+    structure:["屏体：7 寸 IPS 触屏 1024×600（HDMI 或 SPI）","驱动：复用已有 NAS / 迷你主机（跑网页仪表盘）","数据源：ESP32 MQTT + 云端长势 / 日照 API","供电：5V / 12V，USB 或电源适配器"],
+    principle:"主机把 ESP32 上报的传感器数据 + 云端长势 / 日照分析结果汇总成 JSON，7 寸屏浏览器渲染网页仪表盘（深色科技风）：实时数值卡片 + 24h / 7d / 30d 曲线 + 环形仪表 + 季度“一帧/天”延时视频循环播放。",
+    buy:[
+      {ch:"淘宝",kw:"7 寸 IPS HDMI 屏",pr:"180~380 元"},
+      {ch:"淘宝",kw:"7 寸 SPI 屏",pr:"60~120 元"},
+      {ch:"闲鱼",kw:"7 寸屏 / 二手触屏",pr:"50~250 元"}
+    ],
+    xianyu:"7 寸 HDMI / 触屏二手很常见（智能家居 / 车载淘汰件），50~250 元能收；优先复用你已有的主机，成本集中在屏幕本身。",
+    tip:"屏幕只读展示，不抢华为 App 的活；用静音主机或树莓派驱动；延时影像固定机位、每天 1 帧存本地。",
+    dia:null
+  },
+  "hw-shade":{
+    ic:"☀️",name:"树冠日照分析（云端视觉扩展）",cat:"sense",tag:"日照 + 剪枝逻辑",
+    what:"在云端长势分析基础上扩展：分割树冠、估算冠幅、结合太阳轨迹算出每块草皮的实际日照时长，日照不足且树冠在扩大时生成剪枝任务。纯软件能力，不新增硬件。",
+    structure:["摄像头每日帧 → 云端视觉大模型","树冠分割：冠幅 / 枝叶密度 / 覆盖率","太阳轨迹：日期 + 经纬度算方位角与高度角","树影映射到草皮网格 → 分区日照热力图 → 剪枝任务卡"],
+    principle:"深度学习模型分割树冠轮廓（实例分割）→ 算冠幅与覆盖率；用天文公式算当日太阳位置，把树冠投影映射到草坪网格，累计每块草皮的直射日照小时；对照阈值（冷季型草 ≥4~6h）判定不足 / 过量 → 不足且树冠在扩大则触发剪枝建议。",
+    buy:[
+      {ch:"云端",kw:"视觉大模型 API（复用）",pr:"含在长势分析内"},
+      {ch:"算法",kw:"太阳位置计算 / 阴影映射",pr:"0 元（开源）"},
+      {ch:"复用",kw:"已有摄像头 + 主机",pr:"0 元"}
+    ],
+    xianyu:"纯软件逻辑，无闲鱼行情；关键成本是视觉 API 调用，随长势分析一起计费。",
+    tip:"每天同一时段截图更稳；按季节太阳高度角修正；剪枝仍由人工执行，系统只给任务卡与趋势。",
+    dia:null
+  }
+};
+
+var HWDIAS = {
+  "hw-transformer": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">电源链路 · 220V → 安全低压</text><rect x=\"50\" y=\"65\" width=\"110\" height=\"46\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"105\" y=\"92\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">220V 市电</text><rect x=\"200\" y=\"65\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"260\" y=\"88\" text-anchor=\"middle\" font-size=\"11\" fill=\"#9a6f1f\">防水变压器</text><text x=\"260\" y=\"102\" text-anchor=\"middle\" font-size=\"9\" fill=\"#9a6f1f\">IP67 地埋款</text><rect x=\"360\" y=\"65\" width=\"110\" height=\"46\" rx=\"8\" fill=\"#a9c08a\" stroke=\"#3f6f56\"/><text x=\"415\" y=\"92\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">24V / 12V 输出</text><line x1=\"160\" y1=\"88\" x2=\"200\" y2=\"88\" stroke=\"#c08f35\" stroke-width=\"3\"/><line x1=\"320\" y1=\"88\" x2=\"360\" y2=\"88\" stroke=\"#c08f35\" stroke-width=\"3\"/><text x=\"260\" y=\"140\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">低压驱动电磁阀 / 电动球阀 / ESP32，安全又省电</text></svg>",
+  "hw-dripj": "<svg viewBox=\"0 0 520 190\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">滴箭 · 点灌到根部</text><rect x=\"50\" y=\"55\" width=\"200\" height=\"40\" rx=\"8\" fill=\"#c9963f\" opacity=\".9\"/><text x=\"150\" y=\"80\" text-anchor=\"middle\" font-size=\"11\" fill=\"#fff\">地埋滴灌管</text><line x1=\"150\" y1=\"95\" x2=\"150\" y2=\"118\" stroke=\"#5f8a4e\" stroke-width=\"5\"/><rect x=\"122\" y=\"118\" width=\"56\" height=\"20\" rx=\"5\" fill=\"#5f8a4e\"/><text x=\"150\" y=\"132\" text-anchor=\"middle\" font-size=\"9\" fill=\"#fff\">滴箭</text><line x1=\"150\" y1=\"138\" x2=\"150\" y2=\"158\" stroke=\"#7a725c\" stroke-width=\"3\"/><ellipse cx=\"330\" cy=\"155\" rx=\"95\" ry=\"22\" fill=\"#8fb08f\" opacity=\".5\"/><text x=\"330\" y=\"152\" text-anchor=\"middle\" font-size=\"10\" fill=\"#3f6f56\">树木 / 花境根区</text><text x=\"330\" y=\"168\" text-anchor=\"middle\" font-size=\"9\" fill=\"#7a725c\">局部精准补水</text><text x=\"260\" y=\"185\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">低流量持续渗入 · 不溅叶不蒸发</text></svg>",
+  "hw-pe": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">PE 管 · 输水主干</text><rect x=\"60\" y=\"60\" width=\"400\" height=\"36\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><line x1=\"90\" y1=\"78\" x2=\"430\" y2=\"78\" stroke=\"#5f8a4e\" stroke-width=\"2\" stroke-dasharray=\"6 4\"/><text x=\"260\" y=\"118\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">黑色 HDPE 主管 / 支管：耐压 · 抗紫外 · 地埋 20 年</text><rect x=\"200\" y=\"128\" width=\"120\" height=\"22\" rx=\"5\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"260\" y=\"143\" text-anchor=\"middle\" font-size=\"9\" fill=\"#9a6f1f\">承插 / 快插接头 · 免胶</text></svg>",
+  "hw-firstflush": "<svg viewBox=\"0 0 520 190\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">首雨弃流 · 脏水不进罐</text><rect x=\"45\" y=\"55\" width=\"140\" height=\"60\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"115\" y=\"88\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">集雨管</text><rect x=\"210\" y=\"55\" width=\"120\" height=\"60\" rx=\"8\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"270\" y=\"88\" text-anchor=\"middle\" font-size=\"11\" fill=\"#9a6f1f\">弃流腔</text><rect x=\"355\" y=\"55\" width=\"120\" height=\"60\" rx=\"8\" fill=\"#a9c08a\" stroke=\"#3f6f56\"/><text x=\"415\" y=\"88\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">进储水罐</text><line x1=\"185\" y1=\"85\" x2=\"210\" y2=\"85\" stroke=\"#c08f35\" stroke-width=\"3\"/><line x1=\"330\" y1=\"85\" x2=\"355\" y2=\"85\" stroke=\"#c08f35\" stroke-width=\"3\"/><line x1=\"270\" y1=\"115\" x2=\"270\" y2=\"140\" stroke=\"#7a725c\" stroke-width=\"4\"/><text x=\"270\" y=\"155\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">前 2mm 首雨（灰尘 / 鸟粪）自动排走</text><text x=\"270\" y=\"172\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">雨量足够 → 浮球关弃流口 → 清水进罐</text></svg>",
+  "hw-pump": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">增压泵 · 稳流供水</text><rect x=\"45\" y=\"65\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"105\" y=\"92\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">进水(罐)</text><rect x=\"200\" y=\"55\" width=\"120\" height=\"66\" rx=\"10\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"260\" y=\"80\" text-anchor=\"middle\" font-size=\"11\" fill=\"#9a6f1f\">泵体·叶轮</text><text x=\"260\" y=\"96\" text-anchor=\"middle\" font-size=\"9\" fill=\"#9a6f1f\">自吸 / 离心</text><rect x=\"355\" y=\"65\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#a9c08a\" stroke=\"#3f6f56\"/><text x=\"415\" y=\"92\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">恒压出水</text><line x1=\"165\" y1=\"88\" x2=\"200\" y2=\"88\" stroke=\"#c08f35\" stroke-width=\"3\"/><line x1=\"320\" y1=\"88\" x2=\"355\" y2=\"88\" stroke=\"#c08f35\" stroke-width=\"3\"/><text x=\"260\" y=\"148\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">ESP32 / 继电器启停 · 水位过低自动停泵保护</text></svg>",
+  "hw-backup": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">双水源 · 雨养优先 自来水兜底</text><rect x=\"45\" y=\"65\" width=\"140\" height=\"50\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"115\" y=\"93\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">1000L 储水罐</text><rect x=\"230\" y=\"65\" width=\"110\" height=\"50\" rx=\"8\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"285\" y=\"86\" text-anchor=\"middle\" font-size=\"11\" fill=\"#9a6f1f\">水位传感器</text><text x=\"285\" y=\"100\" text-anchor=\"middle\" font-size=\"9\" fill=\"#9a6f1f\">低位 / 高位</text><rect x=\"380\" y=\"65\" width=\"100\" height=\"50\" rx=\"8\" fill=\"#a9c08a\" stroke=\"#3f6f56\"/><text x=\"430\" y=\"93\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">自来水补位阀</text><line x1=\"185\" y1=\"90\" x2=\"230\" y2=\"90\" stroke=\"#c08f35\" stroke-width=\"3\"/><line x1=\"340\" y1=\"90\" x2=\"380\" y2=\"90\" stroke=\"#c08f35\" stroke-width=\"3\"/><text x=\"260\" y=\"150\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">低位自动开补位 · 高位自动关 · 全程无需人工</text></svg>",
+  "hw-rain": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">翻斗式雨量计 · 每 0.2mm 一跳</text><rect x=\"190\" y=\"45\" width=\"140\" height=\"26\" rx=\"6\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"260\" y=\"62\" text-anchor=\"middle\" font-size=\"10\" fill=\"#3f6f56\">集雨漏斗</text><polygon points=\"260,92 240,72 280,72\" fill=\"#c9963f\"/><path d=\"M235 92 L240 130 L280 130 L285 92\" fill=\"none\" stroke=\"#5f8a4e\" stroke-width=\"3\"/><line x1=\"260\" y1=\"130\" x2=\"260\" y2=\"152\" stroke=\"#5f8a4e\" stroke-width=\"3\"/><text x=\"260\" y=\"168\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">干接点计数 → ESP32 判定「正在下雨」→ 停水</text></svg>",
+  "hw-float": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">浮球液位开关 · 高低位两态</text><rect x=\"140\" y=\"45\" width=\"240\" height=\"110\" rx=\"12\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"260\" y=\"100\" text-anchor=\"middle\" font-size=\"12\" fill=\"#3f6f56\">水</text><line x1=\"210\" y1=\"45\" x2=\"210\" y2=\"155\" stroke=\"#7a725c\" stroke-width=\"3\"/><circle cx=\"210\" cy=\"120\" r=\"16\" fill=\"#f6ecd4\" stroke=\"#c08f35\" stroke-width=\"3\"/><text x=\"210\" y=\"125\" text-anchor=\"middle\" font-size=\"9\" fill=\"#9a6f1f\">浮球</text><line x1=\"210\" y1=\"100\" x2=\"300\" y2=\"100\" stroke=\"#c08f35\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><text x=\"330\" y=\"104\" text-anchor=\"middle\" font-size=\"9\" fill=\"#9a6f1f\">高位</text><line x1=\"210\" y1=\"130\" x2=\"300\" y2=\"130\" stroke=\"#c08f35\" stroke-width=\"2\" stroke-dasharray=\"4 3\"/><text x=\"330\" y=\"134\" text-anchor=\"middle\" font-size=\"9\" fill=\"#9a6f1f\">低位</text><text x=\"260\" y=\"172\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">低位开补位阀 · 高位满罐提示溢流</text></svg>",
+  "hw-valvebox": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">地埋阀门箱 · 检修不挖草</text><rect x=\"130\" y=\"60\" width=\"260\" height=\"80\" rx=\"8\" fill=\"#c9b989\" stroke=\"#8a6b47\" stroke-dasharray=\"6 4\"/><text x=\"260\" y=\"85\" text-anchor=\"middle\" font-size=\"11\" fill=\"#5f4a2a\">地埋箱体（与草坪齐平）</text><rect x=\"160\" y=\"70\" width=\"200\" height=\"34\" rx=\"6\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"260\" y=\"92\" text-anchor=\"middle\" font-size=\"10\" fill=\"#9a6f1f\">电磁阀 / 接头 / 检修口</text><line x1=\"260\" y1=\"60\" x2=\"260\" y2=\"46\" stroke=\"#5f8a4e\" stroke-width=\"4\"/><rect x=\"230\" y=\"34\" width=\"60\" height=\"14\" rx=\"4\" fill=\"#5f8a4e\"/><text x=\"260\" y=\"44\" text-anchor=\"middle\" font-size=\"8\" fill=\"#fff\">上盖可掀</text><text x=\"260\" y=\"162\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">草皮上只留一个可掀检修盖 · 无缝覆盖</text></svg>",
+  "hw-cam": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">华为智能摄像头 · 全园之眼</text><rect x=\"180\" y=\"45\" width=\"120\" height=\"30\" rx=\"6\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"240\" y=\"64\" text-anchor=\"middle\" font-size=\"10\" fill=\"#3f6f56\">屋檐 / 灯杆</text><line x1=\"240\" y1=\"75\" x2=\"240\" y2=\"95\" stroke=\"#7a725c\" stroke-width=\"4\"/><rect x=\"205\" y=\"95\" width=\"70\" height=\"44\" rx=\"8\" fill=\"#5f8a4e\"/><circle cx=\"225\" cy=\"117\" r=\"12\" fill=\"#d9e6f0\"/><line x1=\"275\" y1=\"117\" x2=\"330\" y2=\"117\" stroke=\"#7a725c\" stroke-width=\"3\" stroke-dasharray=\"5 4\"/><text x=\"360\" y=\"114\" text-anchor=\"middle\" font-size=\"10\" fill=\"#3f6f56\">固定机位 →</text><text x=\"360\" y=\"128\" text-anchor=\"middle\" font-size=\"9\" fill=\"#7a725c\">覆盖草坪 / 树冠</text><text x=\"260\" y=\"162\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">实时画面进智慧生活 App + 每日抓拍上传云</text></svg>",
+  "hw-vision": "<svg viewBox=\"0 0 520 200\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">云端长势分析 · 画面变决策</text><rect x=\"35\" y=\"55\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"95\" y=\"82\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">每日抓拍</text><rect x=\"185\" y=\"55\" width=\"150\" height=\"46\" rx=\"8\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"260\" y=\"82\" text-anchor=\"middle\" font-size=\"11\" fill=\"#9a6f1f\">视觉大模型</text><rect x=\"365\" y=\"55\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#a9c08a\" stroke=\"#3f6f56\"/><text x=\"425\" y=\"82\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">诊断 + 任务卡</text><line x1=\"155\" y1=\"78\" x2=\"185\" y2=\"78\" stroke=\"#c08f35\" stroke-width=\"3\"/><line x1=\"335\" y1=\"78\" x2=\"365\" y2=\"78\" stroke=\"#c08f35\" stroke-width=\"3\"/><text x=\"260\" y=\"128\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">输出：草色 / 覆盖度 / 枯黄 / 病害 / 冠幅 / 日照热力</text><text x=\"260\" y=\"148\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">缺肥→施肥 ｜ 缺水→补水 ｜ 过湿→停水 ｜ 树荫→剪枝</text><text x=\"260\" y=\"172\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">结果写回 ESP32 + 华为 App 与 7 寸屏</text></svg>",
+  "hw-ferttank": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">施肥桶 · 肥液储备</text><rect x=\"60\" y=\"55\" width=\"140\" height=\"80\" rx=\"10\" fill=\"#a9c08a\" stroke=\"#3f6f56\"/><text x=\"130\" y=\"100\" text-anchor=\"middle\" font-size=\"12\" fill=\"#3f6f56\">20-50L 桶</text><line x1=\"130\" y1=\"135\" x2=\"130\" y2=\"150\" stroke=\"#5f8a4e\" stroke-width=\"4\"/><rect x=\"110\" y=\"150\" width=\"40\" height=\"14\" rx=\"4\" fill=\"#5f8a4e\"/><text x=\"130\" y=\"160\" text-anchor=\"middle\" font-size=\"8\" fill=\"#fff\">吸肥管+滤网</text><rect x=\"250\" y=\"65\" width=\"110\" height=\"50\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"305\" y=\"92\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">水溶肥 20-20-20</text><text x=\"305\" y=\"108\" text-anchor=\"middle\" font-size=\"9\" fill=\"#7a725c\">薄肥勤施</text><line x1=\"170\" y1=\"157\" x2=\"250\" y2=\"90\" stroke=\"#c08f35\" stroke-width=\"3\" stroke-dasharray=\"5 4\"/><text x=\"260\" y=\"170\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">文丘里从桶中吸肥 → 与水混合进滴灌</text></svg>",
+  "hw-fertvalve": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">施肥回路 · 只进不回流</text><rect x=\"45\" y=\"60\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"105\" y=\"87\" text-anchor=\"middle\" font-size=\"11\" fill=\"#9a6f1f\">施肥电磁阀</text><rect x=\"200\" y=\"60\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"260\" y=\"87\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">文丘里</text><rect x=\"355\" y=\"60\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#a9c08a\" stroke=\"#3f6f56\"/><text x=\"415\" y=\"87\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">主管道</text><line x1=\"165\" y1=\"83\" x2=\"200\" y2=\"83\" stroke=\"#c08f35\" stroke-width=\"3\"/><line x1=\"320\" y1=\"83\" x2=\"355\" y2=\"83\" stroke=\"#c08f35\" stroke-width=\"3\"/><text x=\"260\" y=\"132\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">单向阀装在吸肥管上：只许肥液单向进主管</text><text x=\"260\" y=\"150\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">通电才吸肥 · 断电即停 · 绝不污染水源</text></svg>",
+  "hw-colnet": "<svg viewBox=\"0 0 520 200\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">自动开合集雨网 · 预报张开</text><line x1=\"60\" y1=\"60\" x2=\"460\" y2=\"60\" stroke=\"#8a6b47\" stroke-width=\"4\"/><text x=\"470\" y=\"56\" text-anchor=\"middle\" font-size=\"9\" fill=\"#7a725c\">导轨</text><line x1=\"120\" y1=\"60\" x2=\"180\" y2=\"120\" stroke=\"#5f8a4e\" stroke-width=\"5\"/><line x1=\"180\" y1=\"120\" x2=\"380\" y2=\"120\" stroke=\"#5f8a4e\" stroke-width=\"5\"/><line x1=\"380\" y1=\"120\" x2=\"400\" y2=\"60\" stroke=\"#5f8a4e\" stroke-width=\"5\"/><text x=\"260\" y=\"115\" text-anchor=\"middle\" font-size=\"10\" fill=\"#3f6f56\">网面 30° 倾斜集雨</text><line x1=\"260\" y1=\"120\" x2=\"260\" y2=\"150\" stroke=\"#5f8a4e\" stroke-width=\"4\"/><rect x=\"220\" y=\"150\" width=\"80\" height=\"18\" rx=\"4\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"260\" y=\"163\" text-anchor=\"middle\" font-size=\"8\" fill=\"#9a6f1f\">导流槽→罐</text><text x=\"260\" y=\"186\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">线性推杆驱动 · 预报雨张开 · 雨停折叠 · 台风强制收起</text></svg>",
+  "hw-caiyun": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">彩云天气 · 云层变信号</text><rect x=\"35\" y=\"60\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"95\" y=\"87\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">全球雷达站</text><rect x=\"185\" y=\"60\" width=\"150\" height=\"46\" rx=\"8\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"260\" y=\"82\" text-anchor=\"middle\" font-size=\"11\" fill=\"#9a6f1f\">分钟级降水预报</text><text x=\"260\" y=\"96\" text-anchor=\"middle\" font-size=\"9\" fill=\"#9a6f1f\">未来2h · 1km 精度</text><rect x=\"365\" y=\"60\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#a9c08a\" stroke=\"#3f6f56\"/><text x=\"425\" y=\"87\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">本地轮询 5-10min</text><line x1=\"155\" y1=\"83\" x2=\"185\" y2=\"83\" stroke=\"#c08f35\" stroke-width=\"3\"/><line x1=\"335\" y1=\"83\" x2=\"365\" y2=\"83\" stroke=\"#c08f35\" stroke-width=\"3\"/><text x=\"260\" y=\"132\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">钥匙④：有持续雨 → 张开集雨网 + 跳过浇水</text><text x=\"260\" y=\"150\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">个人开发者认证有免费额度 · 家用几乎零成本</text></svg>",
+  "hw-drain": "<svg viewBox=\"0 0 520 190\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">盲沟排水 · 雨季不泡根</text><rect x=\"60\" y=\"55\" width=\"400\" height=\"20\" rx=\"4\" fill=\"#8fb08f\" opacity=\".7\"/><text x=\"260\" y=\"46\" text-anchor=\"middle\" font-size=\"9\" fill=\"#3f6f56\">草皮 + 根系层</text><rect x=\"60\" y=\"75\" width=\"400\" height=\"24\" fill=\"#c9b989\"/><text x=\"260\" y=\"92\" text-anchor=\"middle\" font-size=\"9\" fill=\"#5f4a2a\">碎石层（透水）</text><rect x=\"60\" y=\"99\" width=\"400\" height=\"22\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"260\" y=\"115\" text-anchor=\"middle\" font-size=\"9\" fill=\"#3f6f56\">Φ50 透水管 · 坡度 1%</text><line x1=\"430\" y1=\"121\" x2=\"470\" y2=\"150\" stroke=\"#7a725c\" stroke-width=\"5\"/><rect x=\"455\" y=\"150\" width=\"45\" height=\"30\" rx=\"6\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"478\" y=\"170\" text-anchor=\"middle\" font-size=\"8\" fill=\"#9a6f1f\">渗水井</text><text x=\"260\" y=\"176\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">雨水渗入 → 碎石层 → 透水管自流 → 渗水井排走</text></svg>",
+  "hw-panel": "<svg viewBox=\"0 0 520 180\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">7寸数据屏 · 一屏看全园</text><rect x=\"35\" y=\"60\" width=\"130\" height=\"46\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"100\" y=\"80\" text-anchor=\"middle\" font-size=\"10\" fill=\"#3f6f56\">ESP32 传感器</text><text x=\"100\" y=\"94\" text-anchor=\"middle\" font-size=\"9\" fill=\"#7a725c\">湿度/雨量/水位</text><rect x=\"195\" y=\"60\" width=\"130\" height=\"46\" rx=\"8\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"260\" y=\"80\" text-anchor=\"middle\" font-size=\"10\" fill=\"#9a6f1f\">主机汇总 JSON</text><text x=\"260\" y=\"94\" text-anchor=\"middle\" font-size=\"9\" fill=\"#7a725c\">+ 云端长势/日照</text><rect x=\"355\" y=\"60\" width=\"130\" height=\"46\" rx=\"8\" fill=\"#a9c08a\" stroke=\"#3f6f56\"/><text x=\"420\" y=\"80\" text-anchor=\"middle\" font-size=\"10\" fill=\"#3f6f56\">7寸屏仪表盘</text><text x=\"420\" y=\"94\" text-anchor=\"middle\" font-size=\"9\" fill=\"#7a725c\">深色科技风</text><line x1=\"165\" y1=\"83\" x2=\"195\" y2=\"83\" stroke=\"#c08f35\" stroke-width=\"3\"/><line x1=\"325\" y1=\"83\" x2=\"355\" y2=\"83\" stroke=\"#c08f35\" stroke-width=\"3\"/><text x=\"260\" y=\"136\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">实时卡片 + 24h/7d/30d 曲线 + 环形仪表</text><text x=\"260\" y=\"154\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">+ 季度「一帧/天」延时影像 · 只读不抢控制</text></svg>",
+  "hw-shade": "<svg viewBox=\"0 0 520 200\" xmlns=\"http://www.w3.org/2000/svg\"><text x=\"260\" y=\"20\" text-anchor=\"middle\" font-size=\"12\" fill=\"#9a6f1f\">树冠日照 · 剪枝逻辑</text><rect x=\"35\" y=\"55\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#d9e6f0\" stroke=\"#5f8a4e\"/><text x=\"95\" y=\"82\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">摄像头每日帧</text><rect x=\"185\" y=\"55\" width=\"150\" height=\"46\" rx=\"8\" fill=\"#f6ecd4\" stroke=\"#c08f35\"/><text x=\"260\" y=\"80\" text-anchor=\"middle\" font-size=\"11\" fill=\"#9a6f1f\">树冠分割</text><text x=\"260\" y=\"94\" text-anchor=\"middle\" font-size=\"9\" fill=\"#9a6f1f\">冠幅 / 覆盖率</text><rect x=\"365\" y=\"55\" width=\"120\" height=\"46\" rx=\"8\" fill=\"#a9c08a\" stroke=\"#3f6f56\"/><text x=\"425\" y=\"82\" text-anchor=\"middle\" font-size=\"11\" fill=\"#3f6f56\">日照热力图</text><line x1=\"155\" y1=\"78\" x2=\"185\" y2=\"78\" stroke=\"#c08f35\" stroke-width=\"3\"/><line x1=\"335\" y1=\"78\" x2=\"365\" y2=\"78\" stroke=\"#c08f35\" stroke-width=\"3\"/><text x=\"260\" y=\"128\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">太阳轨迹(日期+经纬度) → 树影映射草坪网格</text><text x=\"260\" y=\"148\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">分区日照 &lt; 4-6h 且树冠扩大 → 剪枝任务卡</text><text x=\"260\" y=\"170\" text-anchor=\"middle\" font-size=\"10\" fill=\"#7a725c\">剪枝由人工执行 · 系统只给方向与趋势</text></svg>"
+};
+
+/* ===== 渲染：硬件专题总览 ===== */
+function renderHwGroups(){
+  var wrap = document.getElementById("hw-groups");
+  var html = "";
+  HWCATS.forEach(function(cat){
+    var items = Object.keys(HWITEMS).filter(function(k){return HWITEMS[k].cat===cat.key;});
+    if(!items.length) return;
+    html += '<div class="hw-group"><h3>'+cat.name+'</h3><div class="hw-grid">';
+    items.forEach(function(k){
+      var it = HWITEMS[k];
+      html += '<a class="hwcard" href="#hwitem?id='+k+'"><div class="ic">'+it.ic+'</div><div class="nm">'+it.name+'</div><div class="sb">'+it.tag+'</div><div class="price">新品 '+it.buy[0].pr+'</div></a>';
+    });
+    html += '</div></div>';
+  });
+  wrap.innerHTML = html;
+}
+
+/* ===== 渲染：器件详情 ===== */
+function renderHwItem(id){
+  var it = HWITEMS[id];
+  var el = document.getElementById("hwitem-body");
+  if(!it){
+    el.innerHTML = "<h2>未找到该器件</h2><p><a href='#hw' style='color:var(--accent-deep)'>返回硬件专题</a>。</p>";
+    return;
+  }
+  var html = '<div class="hw-head"><div class="bigic">'+it.ic+'</div><div><h2>'+it.name+'</h2><div class="hw-meta"><span class="chip">'+it.tag+'</span><span class="chip">'+it.catname()+'</span></div></div></div>';
+  html += '<h3>它是什么</h3><p>'+it.what+'</p>';
+  var dia = it.dia || HWDIAS[id];
+  if(dia){ html += '<div class="diagram-fig">'+dia+'</div>'; }
+  html += '<h3>内部结构</h3><ul>';
+  it.structure.forEach(function(s){ html += '<li>'+s+'</li>'; });
+  html += '</ul>';
+  html += '<h3>工作原理</h3><p>'+it.principle+'</p>';
+  html += '<h3>购买渠道与新品价格</h3>';
+  it.buy.forEach(function(b){
+    html += '<div class="buy-row"><span class="ch">'+b.ch+'</span><span class="kw">搜「'+b.kw+'」</span><span class="pr">'+b.pr+'</span></div>';
+  });
+  html += '<h3>闲鱼（二手）行情</h3><div class="xy-box"><div class="t">💡 闲鱼怎么淘、什么价</div><p>'+it.xianyu+'</p></div>';
+  html += '<h3>选购 / 避坑提示</h3><div class="flow-note">'+it.tip+'</div>';
+  el.innerHTML = html;
+}
+
+/* 类别名 */
+HWCATS.forEach(function(c){ c._name = c.name; });
+function catName(key){
+  var c = HWCATS.filter(function(x){return x.key===key;})[0];
+  return c ? c.name : "";
+}
+Object.keys(HWITEMS).forEach(function(k){ HWITEMS[k].catname = function(){ return catName(this.cat); }; });
+
+/* ===== 路由 ===== */
+function parseHash(){
+  var h = location.hash.slice(1) || "";
+  if(h === "hw") return {view:"hw"};
+  if(h === "build") return {view:"build"};
+  if(h === "season") return {view:"season"};
+  if(h === "program") return {view:"program"};
+  if(h === "cost") return {view:"cost"};
+  if(h === "water" || h === "manual") return {view:"manual"};
+  if(h.indexOf("hwitem") === 0){
+    var m = h.match(/hwitem\?id=([A-Za-z0-9-]+)/);
+    return {view:"hwitem", id: m ? m[1] : null};
+  }
+  return {view:"home"};
+}
+
+function render(){
+  var r = parseHash();
+  var views = document.querySelectorAll("[data-view]");
+  for(var i=0;i<views.length;i++) views[i].hidden = true;
+  var el = document.querySelector('[data-view="'+r.view+'"]');
+  if(el) el.hidden = false;
+  var navs = document.querySelectorAll(".tnav-item");
+  var navKey = r.view === "hwitem" ? "hw" : r.view;
+  for(var j=0;j<navs.length;j++) navs[j].classList.toggle("on", navs[j].getAttribute("data-t")===navKey);
+  if(r.view === "hw") renderHwGroups();
+  if(r.view === "hwitem" && r.id) renderHwItem(r.id);
+  window.scrollTo(0,0);
+}
+
+window.addEventListener("hashchange", render);
+render();
+
+/* ===== 目录平滑滚动 ===== */
+document.addEventListener("click", function(e){
+  var a = e.target.closest ? e.target.closest("[data-scroll]") : null;
+  if(a){ e.preventDefault(); var el = document.getElementById(a.getAttribute("data-scroll")); if(el) el.scrollIntoView({behavior:"smooth", block:"start"}); }
+}, true);
+
+/* ===== 悬停简介 tooltip ===== */
+var tip = document.getElementById("tip");
+document.addEventListener("mouseover", function(e){
+  var a = e.target.closest ? e.target.closest(".comp") : null;
+  if(a && COMPONENTS[a.getAttribute("data-id")]){
+    tip.textContent = COMPONENTS[a.getAttribute("data-id")].intro;
+    tip.classList.add("on");
+    var r = a.getBoundingClientRect();
+    var tw = tip.offsetWidth;
+    var x = r.left + r.width/2 - tw/2;
+    x = Math.max(12, Math.min(x, window.innerWidth - tw - 12));
+    var y = r.top - tip.offsetHeight - 10;
+    if(y < 8) y = r.bottom + 10;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  } else {
+    tip.classList.remove("on");
+  }
+}, true);
+document.addEventListener("mouseout", function(e){
+  if(e.target.closest && e.target.closest(".comp")) tip.classList.remove("on");
+}, true);
+</script>
+</body>
+</html>

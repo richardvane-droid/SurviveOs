@@ -1,0 +1,188 @@
+# ============================================================
+# 3.5米电动滑轨 ESPHome 配置
+# 硬件：ESP32 + TMC2209驱动 + 57步进电机 + 同步带滑台
+# 功能：WiFi连接HA，精确位置控制(0-3500mm)，AB点定位
+# ============================================================
+
+esphome:
+  name: sunlight-slider
+  friendly_name: 阳光模拟滑轨
+  comment: 3.5米同步带电动滑轨，承载FS-300B+FL-20G+云台
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# WiFi配置
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # 手动指定IP（可选，稳定优先）
+  manual_ip:
+    static_ip: 192.168.1.101
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+
+  ap:
+    ssid: "Sunlight-Slider-Hotspot"
+    password: "12345678"
+
+captive_portal:
+
+# 启用OTA升级
+ota:
+  platform: esphome
+  password: !secret ota_password
+
+# 启用日志
+logger:
+  level: INFO
+
+# 启用HA API
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+# ============================================================
+# 步进电机配置 - TMC2209 UART模式
+# 接线：
+#   EN   -> GPIO26
+#   DIR  -> GPIO27
+#   STEP -> GPIO14
+#   TX   -> GPIO17 (UART2 TX)
+#   RX   -> GPIO16 (UART2 RX)
+# ============================================================
+
+uart:
+  id: uart_tmc
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 115200
+
+tmc2209:
+  - id: tmc_slider
+    uart_id: uart_tmc
+    address: 0x00
+    run_current: 1.5A      # 57步进电机运行电流
+    hold_current: 0.8A     # 保持电流（降低发热）
+    microsteps: 16         # 16细分，平滑运行
+    stealthchop_threshold: 50  # 低速静音模式
+
+stepper:
+  - platform: tmc2209
+    id: slider_motor
+    tmc2209_id: tmc_slider
+    step_pin: GPIO14
+    dir_pin: GPIO27
+    max_speed: 2000 steps/s   # 最大速度（约500mm/s）
+    acceleration: 800 steps/s² # 加速度（缓起缓停）
+    # 同步带导程140mm/转，57电机200步/转，16细分=3200步/转
+    # 每步距离 = 140mm / 3200 = 0.04375mm/步
+    # 3500mm = 80000步
+
+# ============================================================
+# 位置传感器 - 用步进电机位置作为反馈
+# ============================================================
+
+sensor:
+  - platform: template
+    name: "滑轨当前位置"
+    id: slider_position
+    unit_of_measurement: "mm"
+    accuracy_decimals: 0
+    lambda: |-
+      // 从步进电机目标位置换算mm
+      // 每步0.04375mm，当前位置通过target_position获取
+      return id(slider_motor).target_position * 0.04375;
+    update_interval: 500ms
+
+# ============================================================
+# 位置控制 - Number实体，HA里直接输入位置mm
+# ============================================================
+
+number:
+  - platform: template
+    name: "滑轨目标位置"
+    id: slider_target
+    unit_of_measurement: "mm"
+    min_value: 0
+    max_value: 3500
+    step: 1
+    optimistic: true
+    set_action:
+      - stepper.set_target:
+          id: slider_motor
+          target: !lambda 'return x / 0.04375;'
+
+# ============================================================
+# 预设位置按钮 - 四个场景快捷位置
+# ============================================================
+
+button:
+  - platform: template
+    name: "位置1-床头(0mm)"
+    on_press:
+      - number.set:
+          id: slider_target
+          value: 0
+
+  - platform: template
+    name: "位置2-运动区(1100mm)"
+    on_press:
+      - number.set:
+          id: slider_target
+          value: 1100
+
+  - platform: template
+    name: "位置3-书桌(2300mm)"
+    on_press:
+      - number.set:
+          id: slider_target
+          value: 2300
+
+  - platform: template
+    name: "位置4-电视墙(3500mm)"
+    on_press:
+      - number.set:
+          id: slider_target
+          value: 3500
+
+  - platform: template
+    name: "滑轨回零"
+    on_press:
+      - number.set:
+          id: slider_target
+          value: 0
+
+# ============================================================
+# 急停开关
+# ============================================================
+
+switch:
+  - platform: template
+    name: "滑轨电机使能"
+    id: slider_enable
+    optimistic: true
+    turn_on_action:
+      - output.set:
+          id: motor_en
+          level: 0%  # TMC2209 EN低电平有效
+    turn_off_action:
+      - output.set:
+          id: motor_en
+          level: 100%
+
+output:
+  - platform: gpio
+    id: motor_en
+    pin: GPIO26
+
+# ============================================================
+# 状态指示灯
+# ============================================================
+
+light:
+  - platform: status_led
+    name: "滑轨状态灯"
+    pin: GPIO2
