@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0103 · 电子画框墙 — 方案原理推演</title>
+<style>
+  :root{
+    --paper:#EDE7DC;
+    --panel:#FFFFFF;
+    --wood-dark:#3E2B21;
+    --wood-mid:#8A5A38;
+    --wood-light:#C79A66;
+    --ink:#2A241D;
+    --moss:#5C6B4A;
+    --brass:#A97C3F;
+    --line:#D8CFBE;
+    --maxw:880px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Songti SC","STSong","Noto Serif SC",serif;
+    line-height:1.75;
+  }
+  h1,h2,h3{
+    font-family:"Noto Serif SC","Songti SC",serif;
+    font-weight:700;
+    letter-spacing:0.02em;
+    color:var(--wood-dark);
+  }
+  .sans{font-family:"PingFang SC","Microsoft YaHei",sans-serif;}
+
+  header.hero{
+    background:
+      linear-gradient(180deg, rgba(62,43,33,0.88), rgba(62,43,33,0.72)),
+      repeating-linear-gradient(90deg, #6b4530 0 2px, #7a4f36 2px 90px);
+    color:#F3E9D8;
+    padding:64px 24px 48px;
+    text-align:center;
+  }
+  header.hero .eyebrow{
+    font-family:inherit;
+    font-size:14px;
+    letter-spacing:0.08em;
+    opacity:0.75;
+    margin-bottom:10px;
+  }
+  header.hero h1{
+    color:#F7EEDE;
+    font-size:clamp(28px,4.5vw,44px);
+    margin:0 0 14px;
+  }
+  header.hero p{
+    max-width:640px;
+    margin:0 auto;
+    font-size:16px;
+    opacity:0.9;
+  }
+
+  .frame-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    max-width:340px;
+    margin:32px auto 0;
+  }
+  .frame-grid .cell{
+    aspect-ratio:210/297;
+    background:linear-gradient(160deg,#D9CBB0,#C3B190);
+    border:6px solid var(--wood-mid);
+    border-radius:2px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.35);
+  }
+
+  nav.toc{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:rgba(237,231,220,0.96);
+    backdrop-filter:blur(4px);
+    border-bottom:1px solid var(--line);
+    padding:10px 16px;
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+  nav.toc a{
+    font-family:inherit;
+    font-size:14px;
+    color:var(--wood-dark);
+    text-decoration:none;
+    margin-right:20px;
+    padding-bottom:2px;
+    border-bottom:2px solid transparent;
+  }
+  nav.toc a:hover{border-bottom-color:var(--brass);}
+
+  main{
+    max-width:var(--maxw);
+    margin:0 auto;
+    padding:8px 24px 80px;
+  }
+  section{
+    padding:44px 0;
+    border-bottom:1px solid var(--line);
+  }
+  section:last-child{border-bottom:none;}
+  section h2{
+    font-size:23px;
+    margin:0 0 20px;
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+  }
+  section h2 .no{
+    font-family:"PingFang SC",sans-serif;
+    font-size:13px;
+    color:var(--brass);
+    letter-spacing:0.06em;
+  }
+  section h3{
+    font-size:17px;
+    margin:26px 0 10px;
+    color:var(--wood-mid);
+  }
+  p{margin:0 0 14px;}
+  ul,ol{margin:0 0 14px;padding-left:22px;}
+  li{margin-bottom:6px;}
+
+  .lead{
+    font-size:17px;
+    background:var(--panel);
+    border-left:4px solid var(--brass);
+    padding:18px 22px;
+    border-radius:2px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-family:"PingFang SC",sans-serif;
+    font-size:14px;
+    margin:12px 0 20px;
+    background:var(--panel);
+  }
+  th,td{
+    border:1px solid var(--line);
+    padding:9px 12px;
+    text-align:left;
+    vertical-align:top;
+  }
+  th{
+    background:#F2E9D8;
+    color:var(--wood-dark);
+    font-weight:600;
+  }
+
+  .diy{font-family:"PingFang SC",sans-serif;font-size:12px;padding:2px 8px;border-radius:10px;white-space:nowrap;}
+  .diy.self{background:#E4EADB;color:var(--moss);}
+  .diy.pro{background:#F3DCC9;color:#93502A;}
+
+  .arch{
+    display:flex;
+    flex-direction:column;
+    gap:0;
+    margin:16px 0 24px;
+    font-family:"PingFang SC",sans-serif;
+    font-size:14px;
+  }
+  .arch .layer{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:4px solid var(--wood-mid);
+    padding:12px 16px;
+    margin-bottom:2px;
+  }
+  .arch .layer b{color:var(--wood-dark);}
+  .arch .arrow{
+    text-align:center;
+    color:var(--brass);
+    font-size:13px;
+    margin:2px 0;
+  }
+
+  .decision{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-top:4px solid var(--moss);
+    padding:18px 20px;
+    margin-bottom:16px;
+    border-radius:2px;
+  }
+  .decision h3{margin-top:0;color:var(--moss);}
+  .decision .opts{font-family:"PingFang SC",sans-serif;font-size:14px;}
+  .decision .opts div{margin-bottom:8px;padding-left:14px;border-left:2px solid var(--line);}
+  .decision h3{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .decision .tag{font-family:"PingFang SC",sans-serif;font-size:12px;background:var(--moss);color:#F3F1E8;padding:3px 10px;border-radius:10px;}
+  .decision .opts .picked{border-left-color:var(--moss);color:var(--ink);}
+  .decision .opts .dim{color:#A79E8C;text-decoration:line-through;border-left-color:var(--line);}
+
+  .risk{
+    background:#FBF3EA;
+    border:1px solid #E7D3B8;
+    padding:14px 18px;
+    margin-bottom:12px;
+    border-radius:2px;
+  }
+  .risk b{color:#93502A;}
+
+  footer{
+    text-align:center;
+    font-family:"PingFang SC",sans-serif;
+    font-size:12px;
+    color:#8A7F6A;
+    padding:30px 24px 50px;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="eyebrow sans">SurviveOs · 01 暖村木屋 · 0103</div>
+  <h1>电子画框墙</h1>
+  <p>9 块屏幕、3×3 矩阵、木质画框，把 Pinterest 上的 PSK 板变成一整面会自己更新的展示墙</p>
+  <div class="frame-grid">
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+    <div class="cell"></div><div class="cell"></div><div class="cell"></div>
+  </div>
+</header>
+
+<nav class="toc sans">
+  <a href="#conclusion">结论</a>
+  <a href="#goals">目标与约束</a>
+  <a href="#concept">设计理念</a>
+  <a href="#arch">总体架构</a>
+  <a href="#modules">分区设计</a>
+  <a href="#eco">生态联动</a>
+  <a href="#cost">成本核算</a>
+  <a href="#build">施工纲要</a>
+  <a href="#risk">风险</a>
+  <a href="#decisions">决策点</a>
+</nav>
+
+<main>
+
+<section id="conclusion">
+  <h2><span class="no">01</span>结论先行</h2>
+  <p class="lead">用 9 台低成本二手平板／旧手机作为屏幕主体，拼成 3×3 矩阵挂在木屋木板墙上，每块外面套一个自制的实木相框，整体看起来像一整面传统画框墙。内容不是手动导入的固定图片，而是由家里一台常驻小主机定时去 PSK 的 Pinterest 板上抓取最新图片、缓存到本地，9 块屏幕再各自轮询播放——图钉更新了，墙上过一会儿就会跟着换。</p>
+</section>
+
+<section id="goals">
+  <h2><span class="no">02</span>核心目标 / 硬性约束 / 已有条件</h2>
+  <h3>核心目标（有取舍优先级）</h3>
+  <ol>
+    <li>低成本——9 块屏幕是这个模块成本的大头，优先级最高，宁可牺牲画质/尺寸精确度也要压成本</li>
+    <li>内容自动更新——新图钉不需要手动一张张导进去</li>
+    <li>3×3 矩阵、每块视觉尺寸接近 A4、带木框，形成统一的展示墙观感</li>
+  </ol>
+  <h3>硬性约束</h3>
+  <ul>
+    <li>器件必须是闲鱼/淘宝/京东能实际买到的东西</li>
+    <li>木框自己动手能做</li>
+    <li>挂在木屋的木板墙上，走线方式要迁就木板墙（不希望破坏墙面结构去开线管）</li>
+  </ul>
+  <h3>已有条件</h3>
+  <ul>
+    <li>已有内容源：Pinterest 账号下的 PSK 板</li>
+    <li>木屋本身尚未展开其他子模块设计，墙面插座/网络点位暂无法确认，先假设可就近取电，具体在施工阶段现场核实</li>
+  </ul>
+</section>
+
+<section id="concept">
+  <h2><span class="no">03</span>设计理念</h2>
+  <h3>屏幕主体：为什么是二手平板/旧手机，不是成品 WiFi 电子相框</h3>
+  <p>市面上现成的联网电子相框（Frameo、腾讯电子相册这类）几乎都是"App 推送"模式：家人在手机 App 里选照片、推给相框，相框被动接收。它们不开放"自己去某个网页/RSS 定时拉取图片"这种自动化接口，没法直接对接 Pinterest 板。要实现"图钉更新、墙上自动跟着换"，要么自己掌握屏幕这端的软件逻辑，要么退化成人工定期同步——这不符合"自动调取"的要求，所以放弃成品相框路线。</p>
+  <p>二手安卓平板/旧手机的优势是：自带完整安卓系统，装一个全屏轮播的浏览器书签（kiosk 模式网页）或简单相册 App 指向一个共享文件夹，就能实现"读取本地/局域网图片并轮播"，不需要额外买主控芯片、不需要自己写屏幕驱动。同样预算下，9 台闲鱼二手平板通常比 9 个成品联网相框更便宜，也比自己用 ESP32 单独驱动 9 块屏幕的开发和调试成本低得多。</p>
+  <h3>被放弃的替代方案：ESP32 + 彩色电子墨水屏</h3>
+  <p>墨水屏静态展示时更接近"纸"的质感、更省电，但彩色墨水屏价格高、刷新慢（几秒到十几秒一张），9 块叠加下来成本会明显超过二手平板方案，且需要自己写 9 份固件、处理图片格式转换。这条路线保留在下面"决策点"里，供你在预算/审美取舍后决定要不要换。</p>
+  <h3>内容同步：为什么是"中心节点定时抓取 + 局域网分发"，不是"每块屏各自连 Pinterest"</h3>
+  <p>让 9 块屏幕各自去连 Pinterest 既浪费流量，也意味着抓取逻辑要写 9 份、以后改动要改 9 次。更合理的做法是一台常驻主机（可以直接复用你已有的 HomeAssistant 主机）统一定时抓取、统一缓存成本地图片文件夹，9 块屏幕只需要在局域网内读同一份共享目录——这也是《总览与方法论》里"能力尽量集中在一个节点、末端只做展示"的思路，和 0201 模拟阳光的控制层设计逻辑是一致的。</p>
+</section>
+
+<section id="arch">
+  <h2><span class="no">04</span>系统总体架构</h2>
+  <div class="arch sans">
+    <div class="layer"><b>内容源层</b> — Pinterest「PSK」板，作为图片的唯一权威来源</div>
+    <div class="arrow">↓ 定时抓取（例如每天/每几小时一次）</div>
+    <div class="layer"><b>抓取与缓存层</b> — 常驻小主机（复用 HomeAssistant 主机或加一台树莓派）跑定时脚本，把新图钉下载到本地一个共享文件夹，旧图按策略保留或清理</div>
+    <div class="arrow">↓ 局域网共享（HTTP 静态目录 或 Samba 共享）</div>
+    <div class="layer"><b>分发层</b> — 家中局域网内的一个共享路径，9 块屏幕都能访问到同一份图片池</div>
+    <div class="arrow">↓ 各屏独立轮询、独立播放节奏</div>
+    <div class="layer"><b>显示层</b> — 9 台二手平板/旧手机，浏览器 kiosk 全屏网页或本地相册 App，定时切换图片，常年通电不休眠</div>
+    <div class="arrow">↓ 固定 / 走线</div>
+    <div class="layer"><b>结构层</b> — 3×3 木框阵列固定在木屋墙面，统一挂载方式，供电线走明线或简单线槽</div>
+  </div>
+  <p>这套架构的关键是"抓取"和"显示"解耦：以后想换内容源（比如从 Pinterest 换成别的相册服务），只需要改中心节点那一份脚本，9 块屏幕的显示逻辑完全不用动。</p>
+</section>
+
+<section id="modules">
+  <h2><span class="no">05</span>分区/子系统详细设计</h2>
+
+  <h3>屏幕规格 <span class="tag" style="background:var(--moss);color:#F3F1E8;font-family:'PingFang SC',sans-serif;font-size:12px;padding:3px 10px;border-radius:10px;">已定案：iPad Pro 12.9 一代</span></h3>
+  <table>
+    <tr><th>项目</th><th>方案</th><th>说明</th></tr>
+    <tr><td>机型</td><td>iPad Pro 12.9 英寸一代（2015 款，A9X）</td><td>闲鱼二手采购，9 台统一机型，尽量挑同批次/同色（深空灰或银色），减少边框和亮度差异</td></tr>
+    <tr><td>屏幕尺寸/比例</td><td>12.9 英寸对角线，4:3（竖屏 0.75）</td><td>A4 对角线约 14.3 英寸、比例约 0.71，是目前候选里最接近 A4 的方案，木框只需很薄留白就能把整体外沿撑到 A4 视觉大小</td></tr>
+    <tr><td>系统</td><td>可升级到 iPadOS 16（该机型最终支持版本）</td><td>Safari 内核较新，沿用"局域网 HTTP 图片池 + 全屏网页轮播"方案，无需另写客户端</td></tr>
+    <tr><td>常驻锁屏方案</td><td>访问引导（Guided Access）</td><td>设置 → 辅助功能 → 访问引导，锁定 Safari 全屏播放页，防止误触退出、防止自动息屏</td></tr>
+    <tr><td>存储</td><td>32GB 起步即可</td><td>只做图片轮播，用不到大存储，优先选价格更低的 32GB 版本</td></tr>
+  </table>
+
+  <h3>相框结构</h3>
+  <table>
+    <tr><th>部件</th><th>方案</th><th>分工</th></tr>
+    <tr><td>外框</td><td>杉木/松木条，按屏幕尺寸+留白量现场量尺定制</td><td><span class="diy self">自己动手</span></td></tr>
+    <tr><td>背板</td><td>薄木板或密度板，开走线孔和散热孔</td><td><span class="diy self">自己动手</span></td></tr>
+    <tr><td>固定方式</td><td>背板四角螺丝固定屏幕，外框卡背板</td><td><span class="diy self">自己动手</span></td></tr>
+    <tr><td>表面处理</td><td>木蜡油或清漆，统一 9 块的色调</td><td><span class="diy self">自己动手</span></td></tr>
+  </table>
+
+  <h3>供电与挂载</h3>
+  <ul>
+    <li>iPad Pro 12.9 单台 713g，比普通安卓平板重，背板固定孔位和挂墙五金要按这个重量选型，螺丝/挂片不能沿用轻量平板的规格</li>
+    <li>接口是 Lightning 而非 Type-C，采购数据线/充电头时认清型号，不要和后续其他模块的 Type-C 配件混用</li>
+    <li>建议 9 台设备集中到 1～2 个多口 USB-A 充电头供电（配 Lightning 线），减少插座数量和裸露插头</li>
+    <li>挂载用画框挂钩/背板挂条 + 墙面对应挂钉；因单台更重，挂钉建议选承重稍高的规格，木板墙钉挂钩仍可完成，不涉及结构改动</li>
+    <li>走线优先明线沿墙角/画框边缘走线槽收纳，避免破坏木板墙面</li>
+  </ul>
+</section>
+
+<section id="eco">
+  <h2><span class="no">06</span>智能生态联动</h2>
+  <p>这个模块本身不涉及传感器判断（不需要"该不该"这层逻辑），核心是内容展示，所以不强制接入华为智慧生活双钥匙模式。可选联动：</p>
+  <ul>
+    <li>给供电插座接一个智能插座，纳入 HomeAssistant，实现"离家/夜间自动断电省电、护屏"</li>
+    <li>如果未来做 0211 全屋中枢，可以把这面墙的在线状态（9 块是否都正常联网）作为一个监控项接入全屋数据看板</li>
+  </ul>
+</section>
+
+<section id="cost">
+  <h2><span class="no">07</span>成本核算</h2>
+  <table>
+    <tr><th>项目</th><th>数量</th><th>预估单价</th><th>预估小计</th></tr>
+    <tr><td>闲鱼二手 iPad Pro 12.9 一代（32G）</td><td>9</td><td>约 ¥400～800（波动较大，采购前需实时核价）</td><td>¥3600～7200</td></tr>
+    <tr><td>木框材料+五金+木蜡油（含加强背板/挂片）</td><td>9 套</td><td>约 ¥40～60/套</td><td>¥360～540</td></tr>
+    <tr><td>Lightning 数据线+多口 USB-A 充电头</td><td>1～2 套</td><td>—</td><td>¥120～180</td></tr>
+    <tr><td>抓取节点主机</td><td>0～1 台</td><td>树莓派 Zero 2W 约 ¥100（若复用现有 HomeAssistant 主机则为 ¥0）</td><td>¥0～100</td></tr>
+    <tr><td colspan="3"><b>一次性合计（估算区间）</b></td><td><b>约 ¥4100～8000</b></td></tr>
+  </table>
+  <p>相比最初"随便一台安卓平板"的预算（约 ¥1300~2100）高出 3~6 倍，主要是 iPad Pro 屏幕素质和比例换来的成本。年度使用成本仍接近零，不依赖云端订阅，主要开销是电费。可压缩空间在屏幕采购环节——多蹲几次闲鱼低价捡漏、接受个别台次成色稍差、或以 32GB 版本为主，都能进一步压低预算。</p>
+</section>
+
+<section id="build">
+  <h2><span class="no">08</span>施工纲要</h2>
+  <table>
+    <tr><th>顺序</th><th>工序</th><th>分工</th></tr>
+    <tr><td>1</td><td>采购 9 台二手平板/手机并验机、统一刷入轮播用的浏览器书签或相册 App</td><td><span class="diy self">自己动手</span></td></tr>
+    <tr><td>2</td><td>木框制作、打磨、上木蜡油/清漆</td><td><span class="diy self">自己动手</span></td></tr>
+    <tr><td>3</td><td>抓取脚本部署到常驻主机、局域网共享目录搭建</td><td><span class="diy self">自己动手</span>（需要写少量 Python，属于对着教程能完成的难度）</td></tr>
+    <tr><td>4</td><td>墙面挂载点定位、打孔挂钩</td><td><span class="diy self">自己动手</span></td></tr>
+    <tr><td>5</td><td>走线、供电、整体上墙调试</td><td><span class="diy self">自己动手</span></td></tr>
+  </table>
+  <p>这个模块全程不涉及强电改造、燃气、结构承重开洞或防水层，按目前信息评估不需要找工人。如果后续现场勘察发现木屋墙面本身取电点位不够、需要新拉插座回路，那部分插座改造建议找电工，原因是涉及新增强电回路的安全规范。</p>
+</section>
+
+<section id="risk">
+  <h2><span class="no">09</span>风险</h2>
+  <div class="risk"><b>Pinterest 页面结构变化或访问受限</b>——公开网页的抓取方式可能随时失效，且需要遵守 Pinterest 的使用条款，不能做成对外公开分发。兜底方案：保留一份手动导出的本地图片作为基础内容池，抓取失效时墙面至少不会空白，同时定期检查抓取脚本是否还能正常工作。</div>
+  <div class="risk"><b>二手屏幕质量参差</b>——闲鱼渠道无法保证 9 台设备状态完全一致，可能出现亮度、色温、边框宽度不一。兜底：验机阶段多测几台备选，优先凑齐同批次同型号。</div>
+  <div class="risk"><b>长期亮屏烧屏/老化</b>——老屏幕连续显示同一画面容易留影。兜底：轮播加入淡入淡出和图片位置轻微偏移，夜间可选择自动降低亮度或断电。</div>
+  <div class="risk"><b>iPad Pro 12.9 一代已停产近 10 年，电池鼓包风险</b>——长期插电本身不构成充放电循环，但老化电池仍有鼓包可能。兜底：采购时逐台检查背壳是否有凸起、电池健康度尽量高，装框前后定期抽查。</div>
+  <div class="risk"><b>预算大幅超出最初"低成本"目标</b>——从约 ¥1300~2100 上调到约 ¥4100~8000，是这次改动里最大的取舍，需要确认这个预算是你能接受的范围。</div>
+  <div class="risk"><b>版权与隐私</b>——图片来源于 Pinterest，仅限家庭内部私人展示，不做二次公开发布或商用。</div>
+</section>
+
+<section id="decisions">
+  <h2><span class="no">10</span>决策点（需要你拍板）</h2>
+
+  <div class="decision resolved">
+    <h3>1. 屏幕技术路线 <span class="tag">已拍板：A</span></h3>
+    <div class="opts">
+      <div class="picked"><b>A. 闲鱼二手平板/旧手机</b>——细化为 <b>iPad Pro 12.9 英寸一代</b>，屏幕比例更接近 A4、素质更好，但预算上调至约 ¥4100~8000（见成本核算）</div>
+      <div class="dim">B. 成品 WiFi 电子相框——无法自动拉取 Pinterest</div>
+      <div class="dim">C. ESP32 + 彩色墨水屏——成本高、调试工作量大</div>
+    </div>
+  </div>
+
+  <div class="decision resolved">
+    <h3>2. 抓取节点用什么硬件 <span class="tag">已拍板：A</span></h3>
+    <div class="opts">
+      <div class="picked"><b>A. 复用现有 HomeAssistant 主机</b>——零新增成本</div>
+      <div class="dim">B. 单独买一台树莓派 Zero 2W——不采用</div>
+    </div>
+  </div>
+
+  <div class="decision resolved">
+    <h3>3. 9 块屏幕的内容策略 <span class="tag">已拍板：A</span></h3>
+    <div class="opts">
+      <div class="picked"><b>A. 统一轮播</b>——9 块屏幕各自随机播放同一个完整图片池</div>
+      <div class="dim">B. 分区展示——不采用</div>
+    </div>
+  </div>
+
+  <div class="decision resolved">
+    <h3>4. 木框风格 <span class="tag">已拍板：A</span></h3>
+    <div class="opts">
+      <div class="picked"><b>A. 深色木（胡桃色系）</b>——更沉稳，接近地堡/暖村木屋整体基调</div>
+      <div class="dim">B. 浅色原木——不采用</div>
+    </div>
+  </div>
+
+  <p class="sans" style="font-size:14px;color:#8A7F6A;">四个决策点均已确定，方案原理推演阶段完成，可以进入下一阶段「设备电商平台选型」。</p>
+</section>
+
+</main>
+
+<footer>SurviveOs · 01 暖村木屋 · 0103 电子画框墙 · 方案原理推演 · 生成于 2026-09-03</footer>
+
+</body>
+</html>

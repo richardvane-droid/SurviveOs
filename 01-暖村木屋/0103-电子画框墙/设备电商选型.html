@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>0103 · 电子画框墙 — 设备电商平台选型</title>
+<style>
+  :root{
+    --paper:#EDE7DC;
+    --panel:#FFFFFF;
+    --wood-dark:#3E2B21;
+    --wood-mid:#8A5A38;
+    --ink:#2A241D;
+    --moss:#5C6B4A;
+    --brass:#A97C3F;
+    --line:#D8CFBE;
+    --maxw:880px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:"Songti SC","STSong","Noto Serif SC",serif;line-height:1.75;}
+  h1,h2,h3{font-family:"Noto Serif SC","Songti SC",serif;font-weight:700;color:var(--wood-dark);}
+  .sans{font-family:"PingFang SC","Microsoft YaHei",sans-serif;}
+
+  header.hero{
+    background:linear-gradient(180deg, rgba(62,43,33,0.88), rgba(62,43,33,0.72)),
+      repeating-linear-gradient(90deg, #6b4530 0 2px, #7a4f36 2px 90px);
+    color:#F3E9D8;padding:56px 24px 40px;text-align:center;
+  }
+  header.hero .eyebrow{font-size:14px;letter-spacing:0.08em;opacity:0.75;margin-bottom:10px;}
+  header.hero h1{color:#F7EEDE;font-size:clamp(26px,4.2vw,40px);margin:0 0 12px;}
+  header.hero p{max-width:600px;margin:0 auto;font-size:15px;opacity:0.9;}
+
+  nav.toc{position:sticky;top:0;z-index:10;background:rgba(237,231,220,0.96);backdrop-filter:blur(4px);
+    border-bottom:1px solid var(--line);padding:10px 16px;overflow-x:auto;white-space:nowrap;}
+  nav.toc a{font-size:13px;color:var(--wood-dark);text-decoration:none;margin-right:16px;padding-bottom:2px;border-bottom:2px solid transparent;}
+  nav.toc a:hover{border-bottom-color:var(--brass);}
+
+  main{max-width:var(--maxw);margin:0 auto;padding:8px 24px 80px;}
+
+  .budget{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;
+    margin:24px 0 8px;
+  }
+  .budget .card{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--brass);
+    border-radius:2px;padding:12px 14px;font-family:"PingFang SC",sans-serif;}
+  .budget .card .label{font-size:12px;color:#8A7F6A;margin-bottom:4px;}
+  .budget .card .value{font-size:18px;font-weight:600;color:var(--wood-dark);}
+  .budget .card.total{border-top-color:var(--moss);}
+
+  section.item{padding:44px 0;border-bottom:1px solid var(--line);}
+  section.item:last-of-type{border-bottom:none;}
+  section.item h2{font-size:22px;margin:0 0 6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  section.item h2 .idx{font-family:"PingFang SC",sans-serif;font-size:12px;color:#fff;background:var(--wood-mid);
+    padding:3px 9px;border-radius:10px;}
+  .principle{font-size:15px;color:#4a4136;margin:10px 0 18px;}
+
+  .diagram{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:20px;margin-bottom:18px;}
+  .diagram .row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;font-family:"PingFang SC",sans-serif;font-size:12px;color:#5a5142;}
+  .diagram .box{border:1.5px dashed var(--wood-mid);border-radius:4px;padding:10px 14px;background:#F7F2E7;text-align:center;min-width:80px;}
+  .diagram .arrow{color:var(--brass);font-size:16px;}
+
+  table.spec{width:100%;border-collapse:collapse;font-family:"PingFang SC",sans-serif;font-size:13px;margin:8px 0 18px;background:var(--panel);}
+  table.spec th, table.spec td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top;}
+  table.spec th{background:#F2E9D8;color:var(--wood-dark);width:110px;}
+
+  .buy-row{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 6px;}
+  .buy{flex:1;min-width:220px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--wood-mid);
+    border-radius:2px;padding:14px 16px;font-family:"PingFang SC",sans-serif;}
+  .buy.xianyu{border-left-color:var(--moss);}
+  .buy .platform{font-size:12px;color:#8A7F6A;margin-bottom:4px;}
+  .buy .price{font-size:16px;font-weight:600;color:var(--wood-dark);margin-bottom:8px;}
+  .buy a{display:inline-block;font-size:13px;color:#fff;background:var(--brass);text-decoration:none;
+    padding:6px 14px;border-radius:14px;}
+  .buy.xianyu a{background:var(--moss);}
+
+  .navlink{font-family:"PingFang SC",sans-serif;font-size:13px;margin-top:20px;display:flex;justify-content:space-between;color:var(--brass);}
+  .navlink a{color:inherit;text-decoration:none;}
+  .navlink a:hover{text-decoration:underline;}
+
+  .note{background:#FBF3EA;border:1px solid #E7D3B8;padding:12px 16px;border-radius:2px;
+    font-family:"PingFang SC",sans-serif;font-size:13px;color:#6b4b28;margin-top:10px;}
+
+  table.index{width:100%;border-collapse:collapse;font-family:"PingFang SC",sans-serif;font-size:13px;margin:14px 0;background:var(--panel);}
+  table.index th, table.index td{border:1px solid var(--line);padding:9px 12px;text-align:left;}
+  table.index th{background:#F2E9D8;color:var(--wood-dark);}
+  table.index tr.zero td{color:#8A7F6A;}
+
+  footer{text-align:center;font-family:"PingFang SC",sans-serif;font-size:12px;color:#8A7F6A;padding:30px 24px 50px;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="eyebrow sans">SurviveOs · 01 暖村木屋 · 0103</div>
+  <h1>电子画框墙 · 设备电商平台选型</h1>
+  <p>方案原理推演已定案：9 台闲鱼 iPad Pro 12.9 一代 + 深色胡桃木自制画框。这里把要买的每一件拆成带搜索直达链接的采购卡片。</p>
+</header>
+
+<nav class="toc sans">
+  <a href="#overview">预算总览</a>
+  <a href="#ipad">iPad Pro</a>
+  <a href="#wood">木条</a>
+  <a href="#back">背板</a>
+  <a href="#hardware">五金</a>
+  <a href="#oil">木蜡油</a>
+  <a href="#cable">Lightning线</a>
+  <a href="#charger">充电头</a>
+  <a href="#raceway">理线槽</a>
+  <a href="#hub">抓取节点</a>
+  <a href="#index">汇总索引</a>
+</nav>
+
+<main>
+
+<section id="overview">
+  <h2 class="sans" style="font-size:18px;color:#8A7F6A;font-weight:500;">预算总览（价格区间为估算，下单前请用 WebSearch 复核实时行情）</h2>
+  <div class="budget">
+    <div class="card"><div class="label">屏幕主体 · 9台</div><div class="value">¥3600~7200</div></div>
+    <div class="card"><div class="label">木作用料 · 9套</div><div class="value">¥287~408</div></div>
+    <div class="card"><div class="label">供电配件</div><div class="value">¥107~194</div></div>
+    <div class="card"><div class="label">理线槽</div><div class="value">¥20~40</div></div>
+    <div class="card"><div class="label">抓取节点</div><div class="value">¥0（复用）</div></div>
+    <div class="card total"><div class="label">一次性合计</div><div class="value">约 ¥4014~7842</div></div>
+  </div>
+</section>
+
+<section class="item" id="ipad">
+  <h2><span class="idx">1 / 8</span>iPad Pro 12.9 英寸一代</h2>
+  <p class="principle">画框墙的屏幕主体，负责联网轮播 Pinterest 图片。4:3 比例是目前候选里最接近 A4 的方案，Retina 屏幕素质明显好于普通安卓平板。</p>
+  <div class="diagram">
+    <div class="row">
+      <div class="box">Retina 屏幕<br>2732×2048</div>
+      <div class="arrow">→</div>
+      <div class="box">A9X 芯片<br>4GB RAM</div>
+      <div class="arrow">→</div>
+      <div class="box">WiFi 联网<br>读取局域网图片池</div>
+      <div class="arrow">→</div>
+      <div class="box">访问引导<br>锁定 Safari 全屏</div>
+    </div>
+  </div>
+  <table class="spec">
+    <tr><th>屏幕</th><td>12.9 英寸，2732×2048，264 PPI，4:3</td></tr>
+    <tr><th>芯片/内存</th><td>A9X + 4GB LPDDR4</td></tr>
+    <tr><th>存储</th><td>32GB 起（只做轮播，不需要大容量）</td></tr>
+    <tr><th>接口</th><td>Lightning（注意不是 Type-C）</td></tr>
+    <tr><th>系统</th><td>可升级到 iPadOS 16（最终支持版本）</td></tr>
+    <tr><th>重量</th><td>713g（背板五金需按此承重选型）</td></tr>
+  </table>
+  <div class="buy-row">
+    <div class="buy xianyu">
+      <div class="platform">闲鱼 · 二手主渠道</div>
+      <div class="price">约 ¥400~800/台</div>
+      <a href="https://www.goofish.com/search?q=ipad%20pro%2012.9%20一代%202015" target="_blank">闲鱼搜索直达 ↗</a>
+    </div>
+    <div class="buy">
+      <div class="platform">淘宝 · verified二手商家（贵一些但有质检）</div>
+      <div class="price">约 ¥550~950/台</div>
+      <a href="https://s.taobao.com/search?q=ipad%20pro%2012.9%20一代%202015%20二手" target="_blank">淘宝搜索直达 ↗</a>
+    </div>
+  </div>
+  <div class="note">采购要点：逐台检查背壳是否有鼓包凸起、电池健康度、屏幕是否有压痕/亮点；9 台尽量同色同批次（深空灰或银色）；优先选 32GB 版本压成本，别为大容量多花钱。</div>
+  <div class="navlink"><span></span><a href="#wood">下一件：画框木条 →</a></div>
+</section>
+
+<section class="item" id="wood">
+  <h2><span class="idx">2 / 8</span>画框木条（杉木/松木）</h2>
+  <p class="principle">相框外框主体，深色胡桃木风格靠木蜡油着色实现，不需要买本身就是胡桃木的贵木料，杉木/松木现场刷色即可。</p>
+  <div class="diagram">
+    <div class="row">
+      <div class="box">原木条<br>按屏幕尺寸裁切</div>
+      <div class="arrow">→</div>
+      <div class="box">四角 45° 拼接<br>成边框</div>
+      <div class="arrow">→</div>
+      <div class="box">留白撑到<br>A4 视觉尺寸</div>
+    </div>
+  </div>
+  <table class="spec">
+    <tr><th>材质</th><td>杉木或松木指接板条</td></tr>
+    <tr><th>规格</th><td>宽 30~40mm × 厚 15~20mm，按 12.9 寸屏幕外沿+留白现场量尺</td></tr>
+    <tr><th>用量</th><td>每套约 1.2~1.5 米，9 套合计约 12~14 米</td></tr>
+  </table>
+  <div class="buy-row">
+    <div class="buy">
+      <div class="platform">淘宝 · 木料/建材</div>
+      <div class="price">约 ¥15~20/套（约¥12~15/米）</div>
+      <a href="https://s.taobao.com/search?q=杉木条%20实木条%20相框%20木条" target="_blank">淘宝搜索直达 ↗</a>
+    </div>
+    <div class="buy">
+      <div class="platform">1688 · 批量采购更划算</div>
+      <div class="price">约 ¥100~150（9套打包）</div>
+      <a href="https://s.1688.com/selloffer/offer_search.htm?keywords=杉木条%20相框%20木条" target="_blank">1688搜索直达 ↗</a>
+    </div>
+  </div>
+  <div class="navlink"><a href="#ipad">← 上一件：iPad Pro</a><a href="#back">下一件：背板 →</a></div>
+</section>
+
+<section class="item" id="back">
+  <h2><span class="idx">3 / 8</span>背板材料（薄木板/密度板）</h2>
+  <p class="principle">固定 iPad 和走线孔的承重结构，藏在外框后面不可见，材质不用讲究，但要能稳固支撑 713g 的设备重量。</p>
+  <table class="spec">
+    <tr><th>材质</th><td>5~9mm 密度板或多层板</td></tr>
+    <tr><th>规格</th><td>整块大板裁 9 份，每份略大于屏幕外沿</td></tr>
+    <tr><th>加工</th><td>开走线孔+散热孔，四角预钻螺丝孔</td></tr>
+  </table>
+  <div class="buy-row">
+    <div class="buy">
+      <div class="platform">淘宝 · 板材/DIY定制切割</div>
+      <div class="price">整板约 ¥80~120（够裁9块）</div>
+      <a href="https://s.taobao.com/search?q=密度板%20多层板%20diy%20定制切割" target="_blank">淘宝搜索直达 ↗</a>
+    </div>
+  </div>
+  <div class="note">很多淘宝板材店支持按尺寸代切，下单时备注 9 块的具体长宽，省去自己用手锯裁板的功夫。</div>
+  <div class="navlink"><a href="#wood">← 上一件：画框木条</a><a href="#hardware">下一件：五金 →</a></div>
+</section>
+
+<section class="item" id="hardware">
+  <h2><span class="idx">4 / 8</span>相框五金（挂钩/背板挂条/螺丝）</h2>
+  <p class="principle">把画框固定上墙、把 iPad 固定在背板上的连接件，因为单台设备较重，五金规格要比普通轻量画框挂钩高一档。</p>
+  <table class="spec">
+    <tr><th>画框挂件</th><td>加强型金属挂钩或背板挂条，单件承重建议≥1kg</td></tr>
+    <tr><th>固定螺丝</th><td>iPad 四角固定用短螺丝+软垫圈，避免顶到屏幕</td></tr>
+    <tr><th>墙面挂钉</th><td>木板墙专用钉挂钩，与挂件配套</td></tr>
+  </table>
+  <div class="buy-row">
+    <div class="buy">
+      <div class="platform">淘宝 · 五金/相框配件</div>
+      <div class="price">约 ¥8~12/套，9套合计 ¥72~108</div>
+      <a href="https://s.taobao.com/search?q=相框挂钩%20背板挂条%20加强承重" target="_blank">淘宝搜索直达 ↗</a>
+    </div>
+  </div>
+  <div class="navlink"><a href="#back">← 上一件：背板</a><a href="#oil">下一件：木蜡油 →</a></div>
+</section>
+
+<section class="item" id="oil">
+  <h2><span class="idx">5 / 8</span>木蜡油/清漆（胡桃色）</h2>
+  <p class="principle">给杉木/松木外框上色，实现决策点里定下的"深色胡桃木系"外观，同时起到防潮防污的表面保护作用。</p>
+  <table class="spec">
+    <tr><th>类型</th><td>木蜡油（比清漆更好操作，无需兑稀释剂）</td></tr>
+    <tr><th>色号</th><td>胡桃色/深棕色系</td></tr>
+    <tr><th>用量</th><td>1L 装通常够刷 9 个画框（两遍）</td></tr>
+  </table>
+  <div class="buy-row">
+    <div class="buy">
+      <div class="platform">淘宝 · 木蜡油</div>
+      <div class="price">约 ¥60~90/瓶（1L装）</div>
+      <a href="https://s.taobao.com/search?q=木蜡油%20胡桃色%201L" target="_blank">淘宝搜索直达 ↗</a>
+    </div>
+  </div>
+  <div class="navlink"><a href="#hardware">← 上一件：五金</a><a href="#cable">下一件：Lightning数据线 →</a></div>
+</section>
+
+<section class="item" id="cable">
+  <h2><span class="idx">6 / 8</span>Lightning 数据线</h2>
+  <p class="principle">iPad Pro 一代常年供电用，注意不是 Type-C，别和后续其他模块的配件混采购。</p>
+  <table class="spec">
+    <tr><th>接口</th><td>USB-A 转 Lightning（或 Type-C 转 Lightning，视充电头而定）</td></tr>
+    <tr><th>长度</th><td>建议 1.5~2 米，方便藏线</td></tr>
+    <tr><th>数量</th><td>9 根</td></tr>
+  </table>
+  <div class="buy-row">
+    <div class="buy">
+      <div class="platform">淘宝 · 数据线</div>
+      <div class="price">约 ¥3~6/根，9根合计 ¥27~54</div>
+      <a href="https://s.taobao.com/search?q=Lightning数据线%20苹果充电线%201.5米" target="_blank">淘宝搜索直达 ↗</a>
+    </div>
+  </div>
+  <div class="navlink"><a href="#oil">← 上一件：木蜡油</a><a href="#charger">下一件：充电头 →</a></div>
+</section>
+
+<section class="item" id="charger">
+  <h2><span class="idx">7 / 8</span>多口 USB-A 充电头</h2>
+  <p class="principle">9 台 iPad 集中供电，减少插座数量和裸露插头，配合 Lightning 数据线常年通电。</p>
+  <table class="spec">
+    <tr><th>规格</th><td>5~6 口 USB-A 充电头，总功率≥40W</td></tr>
+    <tr><th>数量</th><td>2 个（每个带 5 台左右）</td></tr>
+  </table>
+  <div class="buy-row">
+    <div class="buy">
+      <div class="platform">淘宝 · 多口充电头</div>
+      <div class="price">约 ¥40~70/个，2个合计 ¥80~140</div>
+      <a href="https://s.taobao.com/search?q=多口USB充电头%206口%2040W" target="_blank">淘宝搜索直达 ↗</a>
+    </div>
+  </div>
+  <div class="navlink"><a href="#cable">← 上一件：Lightning数据线</a><a href="#raceway">下一件：理线槽 →</a></div>
+</section>
+
+<section class="item" id="raceway">
+  <h2><span class="idx">8 / 8</span>明装理线槽</h2>
+  <p class="principle">走线沿墙角/画框边缘收纳，避免破坏木板墙面结构，同时让 9 根线不会乱糟糟挂在墙上影响画框墙的美观。</p>
+  <table class="spec">
+    <tr><th>类型</th><td>明装塑料理线槽或木纹理线槽（配色贴近墙面）</td></tr>
+    <tr><th>用量</th><td>视墙面走线路径，约 3~5 米</td></tr>
+  </table>
+  <div class="buy-row">
+    <div class="buy">
+      <div class="platform">淘宝 · 理线槽</div>
+      <div class="price">约 ¥20~40（3~5米）</div>
+      <a href="https://s.taobao.com/search?q=明装理线槽%20木纹%20走线槽" target="_blank">淘宝搜索直达 ↗</a>
+    </div>
+  </div>
+  <div class="note">这项是阶段1成本核算里没有单列的小补充，金额很小，不影响整体预算区间。</div>
+  <div class="navlink"><a href="#charger">← 上一件：充电头</a><a href="#hub">下一件：抓取节点 →</a></div>
+</section>
+
+<section class="item" id="hub">
+  <h2><span class="idx">— / 8</span>抓取节点主机</h2>
+  <p class="principle">定时抓取 Pinterest 图片、缓存到本地共享文件夹的常驻小主机。</p>
+  <div class="note" style="margin-top:0;">决策点已确定：<b>复用现有 HomeAssistant 主机</b>，不需要单独采购，成本 ¥0。若后续发现该主机负载吃紧，可以再补一台树莓派 Zero 2W（约¥100），到时候单独开一次选型即可。</div>
+  <div class="navlink"><a href="#raceway">← 上一件：理线槽</a><span></span></div>
+</section>
+
+<section id="index" style="padding-top:44px;">
+  <h2>汇总索引</h2>
+  <table class="index">
+    <tr><th>类别</th><th>物品</th><th>数量</th><th>单价区间</th><th>小计</th><th>渠道</th></tr>
+    <tr><td>屏幕</td><td>iPad Pro 12.9 一代</td><td>9</td><td>¥400~800</td><td>¥3600~7200</td><td>闲鱼/淘宝</td></tr>
+    <tr><td>木作</td><td>画框木条</td><td>9</td><td>¥15~20</td><td>¥135~180</td><td>淘宝/1688</td></tr>
+    <tr><td>木作</td><td>背板（整板裁9份）</td><td>1</td><td>¥80~120</td><td>¥80~120</td><td>淘宝</td></tr>
+    <tr><td>木作</td><td>相框五金</td><td>9</td><td>¥8~12</td><td>¥72~108</td><td>淘宝</td></tr>
+    <tr><td>木作</td><td>木蜡油（1L）</td><td>1</td><td>¥60~90</td><td>¥60~90</td><td>淘宝</td></tr>
+    <tr><td>供电</td><td>Lightning数据线</td><td>9</td><td>¥3~6</td><td>¥27~54</td><td>淘宝</td></tr>
+    <tr><td>供电</td><td>多口USB-A充电头</td><td>2</td><td>¥40~70</td><td>¥80~140</td><td>淘宝</td></tr>
+    <tr><td>走线</td><td>明装理线槽</td><td>1套</td><td>—</td><td>¥20~40</td><td>淘宝</td></tr>
+    <tr class="zero"><td>抓取节点</td><td>复用HomeAssistant主机</td><td>—</td><td>—</td><td>¥0</td><td>已有</td></tr>
+    <tr><td colspan="4"><b>一次性合计</b></td><td><b>约 ¥4074~7932</b></td><td></td></tr>
+  </table>
+  <div class="note">价格标注的是今天（2026-09-03）的估算区间，实际下单前请让 Claude 用 WebSearch 复核实时价格和链接是否失效，尤其是闲鱼 iPad Pro 这项波动最大。</div>
+</section>
+
+</main>
+
+<footer>SurviveOs · 01 暖村木屋 · 0103 电子画框墙 · 设备电商平台选型 · 生成于 2026-09-03</footer>
+
+</body>
+</html>
