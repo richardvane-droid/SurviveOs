@@ -1,0 +1,243 @@
+# ============================================================
+# 3.5米电动滑轨 ESPHome 配置 v2
+# 变更（相对原版）：
+#   1. 新增两端限位开关，上电自动寻零，不再是"假装回零"
+#   2. 新增软件行程极限，双重保护
+#   3. 新增硬件急停按钮输入，触发后立即切断电机使能
+# 硬件：ESP32 + TMC2209驱动 + 57步进电机 + 同步带滑台 + 2×限位开关(EE-SX672) + 1×急停按钮
+# ============================================================
+
+esphome:
+  name: sunlight-slider
+  friendly_name: 阳光模拟滑轨
+  comment: 3.5米同步带电动滑轨 v2，加入限位回零与急停保护
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.1.101
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+  ap:
+    ssid: "Sunlight-Slider-Hotspot"
+    password: "12345678"
+
+captive_portal:
+ota:
+  platform: esphome
+  password: !secret ota_password
+logger:
+  level: INFO
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+# ============================================================
+# 步进电机 - TMC2209 UART模式
+# 接线不变：EN->GPIO26 DIR->GPIO27 STEP->GPIO14 TX->GPIO17 RX->GPIO16
+# ============================================================
+
+uart:
+  id: uart_tmc
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 115200
+
+tmc2209:
+  - id: tmc_slider
+    uart_id: uart_tmc
+    address: 0x00
+    run_current: 1.5A
+    hold_current: 0.8A
+    microsteps: 16
+    stealthchop_threshold: 50
+
+stepper:
+  - platform: tmc2209
+    id: slider_motor
+    tmc2209_id: tmc_slider
+    step_pin: GPIO14
+    dir_pin: GPIO27
+    max_speed: 2000 steps/s
+    acceleration: 800 steps/s²
+    # 同步带导程140mm/转，57电机200步/转，16细分=3200步/转
+    # 每步距离 = 0.04375mm/步，3500mm行程 = 80000步
+
+# ============================================================
+# 新增：两端限位开关（EE-SX672，槽型光电开关或常开限位）
+# 接线：床头端限位 -> GPIO34（仅输入引脚）
+#      电视墙端限位 -> GPIO35（仅输入引脚）
+# ============================================================
+
+binary_sensor:
+  - platform: gpio
+    name: "滑轨-床头端限位"
+    id: limit_home
+    pin:
+      number: GPIO34
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on: 20ms
+      - delayed_off: 20ms
+
+  - platform: gpio
+    name: "滑轨-电视墙端限位"
+    id: limit_far
+    pin:
+      number: GPIO35
+      mode: INPUT_PULLUP
+      inverted: true
+    filters:
+      - delayed_on: 20ms
+      - delayed_off: 20ms
+
+  # 新增：硬件急停按钮（16mm蘑菇头自锁，常闭触点）
+  # 接线：急停按钮 -> GPIO4，正常状态为闭合（低电平），按下后断开（高电平）
+  - platform: gpio
+    name: "急停按钮触发"
+    id: estop_triggered
+    pin:
+      number: GPIO4
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      - logger.log: "急停触发！立即切断滑轨电机使能"
+      - output.set_level:
+          id: motor_en
+          level: 100%   # TMC2209 EN高电平=失能
+      - switch.turn_off: slider_enable
+
+# ============================================================
+# 是否已完成寻零标志位（内部变量，不暴露给HA）
+# ============================================================
+
+globals:
+  - id: has_homed
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+
+# ============================================================
+# 位置反馈（寻零后基于真实零点）
+# ============================================================
+
+sensor:
+  - platform: template
+    name: "滑轨当前位置"
+    id: slider_position
+    unit_of_measurement: "mm"
+    accuracy_decimals: 0
+    lambda: |-
+      return id(slider_motor).current_position * 0.04375;
+    update_interval: 500ms
+
+# ============================================================
+# 位置控制 - 加入软件极限（比机械限位提前10mm停止，双重保护）
+# 只有完成寻零后才接受新的位置指令
+# ============================================================
+
+number:
+  - platform: template
+    name: "滑轨目标位置"
+    id: slider_target
+    unit_of_measurement: "mm"
+    min_value: 0
+    max_value: 3490    # 比机械行程3500mm留10mm软件余量
+    step: 1
+    optimistic: true
+    set_action:
+      - if:
+          condition:
+            lambda: 'return id(has_homed);'
+          then:
+            - stepper.set_target:
+                id: slider_motor
+                target: !lambda 'return x / 0.04375;'
+          else:
+            - logger.log: "尚未完成寻零，忽略位置指令，请先执行寻零"
+
+# ============================================================
+# 寻零流程：低速反向运动直到触发床头端限位开关，标定为0点
+# ============================================================
+
+button:
+  - platform: template
+    name: "执行寻零"
+    on_press:
+      - logger.log: "开始寻零..."
+      - stepper.set_speed:
+          id: slider_motor
+          speed: 300 steps/s   # 寻零用低速，避免撞击损坏
+      - stepper.set_target:
+          id: slider_motor
+          target: -100000   # 持续反向，直到限位触发中断
+      - wait_until:
+          condition:
+            binary_sensor.is_on: limit_home
+          timeout: 30s
+      - stepper.stop: slider_motor
+      - lambda: |-
+          id(slider_motor).set_current_position(0);
+          id(has_homed) = true;
+      - stepper.set_speed:
+          id: slider_motor
+          speed: 2000 steps/s   # 恢复正常速度
+      - logger.log: "寻零完成，零点已标定"
+
+  - platform: template
+    name: "位置1-床头(0mm)"
+    on_press:
+      - number.set: {id: slider_target, value: 0}
+  - platform: template
+    name: "位置2-运动区(1100mm)"
+    on_press:
+      - number.set: {id: slider_target, value: 1100}
+  - platform: template
+    name: "位置3-书桌(2300mm)"
+    on_press:
+      - number.set: {id: slider_target, value: 2300}
+  - platform: template
+    name: "位置4-电视墙(3450mm)"
+    on_press:
+      - number.set: {id: slider_target, value: 3450}
+
+# ============================================================
+# 电机使能开关 + 输出定义
+# ============================================================
+
+switch:
+  - platform: template
+    name: "滑轨电机使能"
+    id: slider_enable
+    optimistic: true
+    turn_on_action:
+      - output.set_level: {id: motor_en, level: 0%}
+    turn_off_action:
+      - output.set_level: {id: motor_en, level: 100%}
+
+output:
+  - platform: gpio
+    id: motor_en
+    pin: GPIO26
+
+light:
+  - platform: status_led
+    name: "滑轨状态灯"
+    pin: GPIO2
+
+# ============================================================
+# 部署说明：
+# 1. 上电后必须先按一次"执行寻零"按钮（或在HA自动化里设为
+#    ESP32上线时自动触发一次），寻零完成前所有位置指令会被忽略
+# 2. 限位开关物理安装位置：床头端(0mm)/电视墙端(3500mm)各一个，
+#    建议装在机械行程死点前5-10mm处，留缓冲距离
+# 3. 急停按钮建议同时串接在24V电源主回路的硬件互锁上，
+#    此处GPIO4只是软件层面的快速响应，不能替代硬件断电
+# ============================================================

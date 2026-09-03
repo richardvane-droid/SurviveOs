@@ -1,0 +1,186 @@
+# ============================================================
+# HomeAssistant 自动化脚本 v2 - 阳光模拟系统四个场景
+# 变更（相对原版，对应本次评审 D2/B5 决策）：
+#   1. 四个场景全部补全 time trigger，对齐采购清单的场景时间
+#      (7:00 / 9:00 / 10:00 / 19:00)
+#   2. 灯光控制改为"插座通断为主"：只控制
+#      switch.huawei_socket_fs300b 通断，不再调用蓝牙的
+#      light.fs300b_light 服务（协议未验证，避免场景卡死在
+#      不存在的服务调用上）。亮度/色温改为提前在 NANLINK App
+#      里手动预设好、依赖灯具的断电记忆功能保持
+#   3. 依赖实体新增：
+#        number.slider_target（滑轨，需先手动触发一次
+#        button.执行寻零 完成寻零后才会响应）
+#        number.gimbal_pitch_angle / yaw_angle / fresnel_angle
+#        （云台，需先手动触发一次 button.执行云台寻零）
+#        switch.huawei_socket_fs300b
+# ============================================================
+
+# ------------------------------------------------------------
+# 场景1：早晨唤醒 - 床头位置，大光斑
+# ------------------------------------------------------------
+- id: sunlight_scene_morning_wakeup
+  alias: "阳光模拟-场景1-早晨唤醒"
+  description: "滑轨移到床头，灯头下倾30°，大光斑38°；灯光亮度/色温由App断电记忆预设为5000K约50%"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.scene_morning_wakeup
+      to: "on"
+    - platform: time
+      at: "07:00:00"
+  condition: []
+  action:
+    - service: switch.turn_on
+      target: {entity_id: switch.huawei_socket_fs300b}
+    - delay: "00:00:03"
+    - service: number.set_value
+      target: {entity_id: number.slider_target}
+      data: {value: 0}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_pitch_angle}
+      data: {value: 30}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_yaw_angle}
+      data: {value: 0}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_fresnel_angle}
+      data: {value: 38}
+    - service: input_boolean.turn_off
+      target: {entity_id: input_boolean.scene_morning_wakeup}
+  mode: single
+
+# ------------------------------------------------------------
+# 场景2：上午运动 - 运动区域，中光斑
+# ------------------------------------------------------------
+- id: sunlight_scene_morning_exercise
+  alias: "阳光模拟-场景2-上午运动"
+  description: "滑轨移到运动区，灯头下倾20°，30°光斑；灯光由App预设约5000K 60%"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.scene_morning_exercise
+      to: "on"
+    - platform: time
+      at: "09:00:00"
+  condition: []
+  action:
+    - service: switch.turn_on
+      target: {entity_id: switch.huawei_socket_fs300b}
+    - delay: "00:00:03"
+    - service: number.set_value
+      target: {entity_id: number.slider_target}
+      data: {value: 1100}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_pitch_angle}
+      data: {value: 20}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_yaw_angle}
+      data: {value: 0}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_fresnel_angle}
+      data: {value: 30}
+    - service: input_boolean.turn_off
+      target: {entity_id: input_boolean.scene_morning_exercise}
+  mode: single
+
+# ------------------------------------------------------------
+# 场景3：工作写字 - 书桌位置，聚焦光斑
+# ------------------------------------------------------------
+- id: sunlight_scene_work
+  alias: "阳光模拟-场景3-工作写字"
+  description: "滑轨移到书桌，灯头下倾35°，25°聚焦光斑；灯光由App预设约4500K 70%"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.scene_work
+      to: "on"
+    - platform: time
+      at: "10:00:00"
+  condition: []
+  action:
+    - service: switch.turn_on
+      target: {entity_id: switch.huawei_socket_fs300b}
+    - delay: "00:00:03"
+    - service: number.set_value
+      target: {entity_id: number.slider_target}
+      data: {value: 2300}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_pitch_angle}
+      data: {value: 35}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_yaw_angle}
+      data: {value: 0}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_fresnel_angle}
+      data: {value: 25}
+    - service: input_boolean.turn_off
+      target: {entity_id: input_boolean.scene_work}
+  mode: single
+
+# ------------------------------------------------------------
+# 场景4：电视模拟自然窗 - 电视旁窄光束
+# ------------------------------------------------------------
+- id: sunlight_scene_tv_window
+  alias: "阳光模拟-场景4-电视模拟窗"
+  description: "滑轨移到电视旁，灯头下倾45°偏向侧墙，20°窄光束；灯光由App预设约3500K 40%"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.scene_tv_window
+      to: "on"
+    - platform: time
+      at: "19:00:00"
+  condition: []
+  action:
+    - service: switch.turn_on
+      target: {entity_id: switch.huawei_socket_fs300b}
+    - delay: "00:00:03"
+    - service: number.set_value
+      target: {entity_id: number.slider_target}
+      data: {value: 3450}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_pitch_angle}
+      data: {value: 45}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_yaw_angle}
+      data: {value: -30}
+    - service: number.set_value
+      target: {entity_id: number.gimbal_fresnel_angle}
+      data: {value: 20}
+    - service: input_boolean.turn_off
+      target: {entity_id: input_boolean.scene_tv_window}
+  mode: single
+
+# ------------------------------------------------------------
+# 全局关闭
+# ------------------------------------------------------------
+- id: sunlight_system_off
+  alias: "阳光模拟-全局关闭"
+  description: "关闭FS-300B电源插座"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.sunlight_system_off
+      to: "on"
+  condition: []
+  action:
+    - service: switch.turn_off
+      target: {entity_id: switch.huawei_socket_fs300b}
+    - service: input_boolean.turn_off
+      target: {entity_id: input_boolean.sunlight_system_off}
+  mode: single
+
+# ------------------------------------------------------------
+# 新增：系统启动时自动执行滑轨+云台寻零
+# 避免每次断电重启都要手动点两次寻零按钮
+# ------------------------------------------------------------
+- id: sunlight_auto_home_on_boot
+  alias: "阳光模拟-开机自动寻零"
+  trigger:
+    - platform: homeassistant
+      event: start
+  condition: []
+  action:
+    - delay: "00:00:30"   # 等ESP32联网稳定
+    - service: button.press
+      target: {entity_id: button.执行寻零}
+    - delay: "00:00:15"
+    - service: button.press
+      target: {entity_id: button.执行云台寻零}
+  mode: single

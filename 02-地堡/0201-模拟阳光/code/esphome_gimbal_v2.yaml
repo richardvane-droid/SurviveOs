@@ -1,0 +1,285 @@
+# ============================================================
+# 双轴电动云台 + 菲涅尔电动调焦 ESPHome 配置 v2
+# 变更（相对原版）：
+#   1. 俯仰轴、旋转轴各新增两端限位开关，上电自动寻零
+#   2. 新增软件行程极限
+#   3. 新增硬件急停按钮输入
+# 注意：本文件的减速比(1:90 / 1:50)仍是占位假设值，
+#       等 D1 决策的成品云台底座选型确定后，需要按实际
+#       减速机构重新核算并修改这两个数字。
+# ============================================================
+
+esphome:
+  name: sunlight-gimbal
+  friendly_name: 阳光模拟云台+调焦
+  comment: 双轴电动云台+FL-20G菲涅尔电动调焦 v2，加入限位回零与急停保护
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.1.102
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+  ap:
+    ssid: "Sunlight-Gimbal-Hotspot"
+    password: "12345678"
+
+captive_portal:
+ota:
+  platform: esphome
+  password: !secret ota_password
+logger:
+  level: INFO
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+uart:
+  id: uart_tmc
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 115200
+
+tmc2209:
+  - id: tmc_pitch
+    uart_id: uart_tmc
+    address: 0x00
+    run_current: 1.2A
+    hold_current: 0.6A
+    microsteps: 16
+    stealthchop_threshold: 30
+  - id: tmc_yaw
+    uart_id: uart_tmc
+    address: 0x01
+    run_current: 1.2A
+    hold_current: 0.6A
+    microsteps: 16
+    stealthchop_threshold: 30
+
+stepper:
+  # ⚠️ 减速比1:90为占位假设值，云台底座选型确定后需重新核算
+  - platform: tmc2209
+    id: pitch_motor
+    tmc2209_id: tmc_pitch
+    step_pin: GPIO14
+    dir_pin: GPIO27
+    max_speed: 1600 steps/s
+    acceleration: 400 steps/s²
+  # ⚠️ 减速比1:50为占位假设值，云台底座选型确定后需重新核算
+  - platform: tmc2209
+    id: yaw_motor
+    tmc2209_id: tmc_yaw
+    step_pin: GPIO32
+    dir_pin: GPIO33
+    max_speed: 2000 steps/s
+    acceleration: 500 steps/s²
+
+# ============================================================
+# 新增：俯仰轴/旋转轴各两端限位开关 + 硬件急停
+# 接线：
+#   俯仰轴上限(-90°端) -> GPIO34   俯仰轴下限(+90°端) -> GPIO35
+#   旋转轴左限(-180°端) -> GPIO36   旋转轴右限(+180°端) -> GPIO39
+#   急停按钮 -> GPIO4（常闭触点，按下断开）
+# ============================================================
+
+binary_sensor:
+  - platform: gpio
+    name: "俯仰轴-上限位"
+    id: pitch_limit_neg
+    pin: {number: GPIO34, mode: INPUT_PULLUP, inverted: true}
+    filters: [{delayed_on: 20ms}, {delayed_off: 20ms}]
+  - platform: gpio
+    name: "俯仰轴-下限位"
+    id: pitch_limit_pos
+    pin: {number: GPIO35, mode: INPUT_PULLUP, inverted: true}
+    filters: [{delayed_on: 20ms}, {delayed_off: 20ms}]
+  - platform: gpio
+    name: "旋转轴-左限位"
+    id: yaw_limit_neg
+    pin: {number: GPIO36, mode: INPUT_PULLUP, inverted: true}
+    filters: [{delayed_on: 20ms}, {delayed_off: 20ms}]
+  - platform: gpio
+    name: "旋转轴-右限位"
+    id: yaw_limit_pos
+    pin: {number: GPIO39, mode: INPUT_PULLUP, inverted: true}
+    filters: [{delayed_on: 20ms}, {delayed_off: 20ms}]
+
+  - platform: gpio
+    name: "急停按钮触发"
+    id: estop_triggered
+    pin: {number: GPIO4, mode: INPUT_PULLUP, inverted: true}
+    on_press:
+      - logger.log: "急停触发！立即切断云台电机使能"
+      - output.set_level: {id: pitch_en, level: 100%}
+      - output.set_level: {id: yaw_en, level: 100%}
+
+globals:
+  - id: has_homed
+    type: bool
+    restore_value: no
+    initial_value: 'false'
+
+output:
+  - platform: ledc
+    id: fresnel_servo
+    pin: GPIO13
+    frequency: 50 Hz
+    min_power: 2.5%
+    max_power: 12.5%
+    zero_means_zero: true
+  - platform: gpio
+    id: pitch_en
+    pin: GPIO26
+  - platform: gpio
+    id: yaw_en
+    pin: GPIO25
+
+# ============================================================
+# 角度控制 - 加入软件极限（比机械限位提前2°停止）与寻零校验
+# ============================================================
+
+number:
+  - platform: template
+    name: "云台俯仰角"
+    id: pitch_angle
+    unit_of_measurement: "°"
+    min_value: -88
+    max_value: 88
+    step: 0.5
+    optimistic: true
+    set_action:
+      - if:
+          condition:
+            lambda: 'return id(has_homed);'
+          then:
+            - stepper.set_target: {id: pitch_motor, target: !lambda 'return (x + 90) * 800;'}
+          else:
+            - logger.log: "尚未寻零，忽略俯仰角指令"
+
+  - platform: template
+    name: "云台旋转角"
+    id: yaw_angle
+    unit_of_measurement: "°"
+    min_value: -178
+    max_value: 178
+    step: 0.5
+    optimistic: true
+    set_action:
+      - if:
+          condition:
+            lambda: 'return id(has_homed);'
+          then:
+            - stepper.set_target: {id: yaw_motor, target: !lambda 'return (x + 180) * 444.4;'}
+          else:
+            - logger.log: "尚未寻零，忽略旋转角指令"
+
+  - platform: template
+    name: "菲涅尔光束角"
+    id: fresnel_angle
+    unit_of_measurement: "°"
+    min_value: 10
+    max_value: 45
+    step: 1
+    optimistic: true
+    set_action:
+      - output.set_level:
+          id: fresnel_servo
+          level: !lambda 'return ((x - 10) * 2) / 180.0;'
+
+sensor:
+  - platform: template
+    name: "俯仰当前角度"
+    lambda: 'return id(pitch_motor).current_position / 800.0 - 90;'
+    unit_of_measurement: "°"
+    update_interval: 500ms
+  - platform: template
+    name: "旋转当前角度"
+    lambda: 'return id(yaw_motor).current_position / 444.4 - 180;'
+    unit_of_measurement: "°"
+    update_interval: 500ms
+
+# ============================================================
+# 寻零流程：俯仰轴、旋转轴分别低速反向运动到各自负向限位
+# ============================================================
+
+button:
+  - platform: template
+    name: "执行云台寻零"
+    on_press:
+      - logger.log: "开始云台寻零..."
+      - stepper.set_speed: {id: pitch_motor, speed: 300 steps/s}
+      - stepper.set_target: {id: pitch_motor, target: -300000}
+      - wait_until:
+          condition: {binary_sensor.is_on: pitch_limit_neg}
+          timeout: 30s
+      - stepper.stop: pitch_motor
+      - lambda: 'id(pitch_motor).set_current_position(0);'
+      - stepper.set_speed: {id: pitch_motor, speed: 1600 steps/s}
+
+      - stepper.set_speed: {id: yaw_motor, speed: 300 steps/s}
+      - stepper.set_target: {id: yaw_motor, target: -200000}
+      - wait_until:
+          condition: {binary_sensor.is_on: yaw_limit_neg}
+          timeout: 30s
+      - stepper.stop: yaw_motor
+      - lambda: |-
+          id(yaw_motor).set_current_position(0);
+          id(has_homed) = true;
+      - stepper.set_speed: {id: yaw_motor, speed: 2000 steps/s}
+      - logger.log: "云台寻零完成"
+
+  - platform: template
+    name: "场景1-早晨唤醒"
+    on_press:
+      - number.set: {id: pitch_angle, value: 30}
+      - number.set: {id: yaw_angle, value: 0}
+      - number.set: {id: fresnel_angle, value: 38}
+  - platform: template
+    name: "场景2-上午运动"
+    on_press:
+      - number.set: {id: pitch_angle, value: 20}
+      - number.set: {id: yaw_angle, value: 0}
+      - number.set: {id: fresnel_angle, value: 30}
+  - platform: template
+    name: "场景3-工作写字"
+    on_press:
+      - number.set: {id: pitch_angle, value: 35}
+      - number.set: {id: yaw_angle, value: 0}
+      - number.set: {id: fresnel_angle, value: 25}
+  - platform: template
+    name: "场景4-电视模拟窗"
+    on_press:
+      - number.set: {id: pitch_angle, value: 45}
+      - number.set: {id: yaw_angle, value: -30}
+      - number.set: {id: fresnel_angle, value: 20}
+
+switch:
+  - platform: template
+    name: "俯仰电机使能"
+    optimistic: true
+    turn_on_action: [{output.set_level: {id: pitch_en, level: 0%}}]
+    turn_off_action: [{output.set_level: {id: pitch_en, level: 100%}}]
+  - platform: template
+    name: "旋转电机使能"
+    optimistic: true
+    turn_on_action: [{output.set_level: {id: yaw_en, level: 0%}}]
+    turn_off_action: [{output.set_level: {id: yaw_en, level: 100%}}]
+
+light:
+  - platform: status_led
+    name: "云台状态灯"
+    pin: GPIO2
+
+# ============================================================
+# 部署说明：
+# 1. GPIO 引脚分配（限位/急停）为本次评审新增建议值，实际接线
+#    要结合选定的云台底座产品的走线空间做微调
+# 2. 减速比数字必须在 D1（云台成品选型）确定后重新核算修改，
+#    目前仍是原方案的占位假设值，不能直接按此刷入使用
+# ============================================================
