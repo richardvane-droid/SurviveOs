@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>0008 户型图与空间标注 · SurviveOs</title>
+<style>
+:root{
+  --paper:#EDE7DC; --paper2:#F6F2E9; --walnut:#3E2B21; --ink2:#6B5646;
+  --brass:#A97C3F; --mute:#9A9287; --est:#97897A;
+  --z01:#A6603C; --z02:#A97C3F; --z03:#4A6B7C; --z04:#6E5A7A;
+  --z05:#4A5C3A; --z06:#7D8C4F; --z07:#2E7B8C; --warn:#A34A32;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--paper); color:var(--walnut);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  font-size:16px; line-height:1.75; font-variant-numeric:tabular-nums;
+}
+.wrap{max-width:760px; margin:0 auto; padding:40px 22px 90px}
+header{border-bottom:2px solid var(--walnut); padding-bottom:20px; margin-bottom:8px}
+h1{font-size:27px; line-height:1.3; font-weight:600; margin:0 0 10px}
+.meta{color:var(--ink2); font-size:13.5px; line-height:1.6}
+nav{margin:26px 0 44px; padding:16px 18px; background:var(--paper2); border-left:3px solid var(--brass)}
+nav a{display:inline-block; margin:2px 18px 2px 0; color:var(--ink2); text-decoration:none; border-bottom:1px solid rgba(107,86,70,.3); font-size:14px}
+nav a:hover,nav a:focus{color:var(--walnut); border-bottom-color:var(--walnut)}
+h2{font-size:20px; font-weight:600; margin:52px 0 14px; padding-bottom:7px; border-bottom:1px solid rgba(62,43,33,.25)}
+h3{font-size:16px; font-weight:600; margin:30px 0 8px}
+p{margin:0 0 14px}
+ul{margin:0 0 16px; padding-left:20px}
+li{margin-bottom:6px}
+figure{margin:22px 0 28px}
+figure svg{width:100%; height:auto; display:block; background:var(--paper2); border:1px solid rgba(62,43,33,.18)}
+figcaption{font-size:13px; color:var(--ink2); margin-top:9px; line-height:1.6}
+table{width:100%; border-collapse:collapse; margin:16px 0 22px; font-size:14px}
+th,td{text-align:left; padding:8px 10px; border-bottom:1px solid rgba(62,43,33,.16); vertical-align:top}
+th{font-weight:600; border-bottom:1.5px solid rgba(62,43,33,.4); white-space:nowrap}
+td.n{white-space:nowrap}
+.est,.est td{color:var(--est); font-style:italic}
+.key{display:flex; flex-wrap:wrap; gap:6px 20px; margin:14px 0 30px; padding:14px 16px; background:var(--paper2); border:1px solid rgba(62,43,33,.18)}
+.key span{display:flex; align-items:center; gap:7px; font-size:13.5px; white-space:nowrap}
+.key i{width:13px; height:13px; display:block; border:1px solid rgba(62,43,33,.5)}
+.note{padding:14px 18px; margin:18px 0 24px; background:var(--paper2); border-left:3px solid var(--brass); font-size:14.5px; line-height:1.7}
+.note.block{border-left-color:var(--warn)}
+.note p:last-child{margin-bottom:0}
+.note b{font-weight:600}
+svg text{font-size:11px; fill:var(--walnut); font-family:inherit}
+svg .b{font-size:12.5px; font-weight:600}
+svg .s{font-size:10px; fill:var(--ink2)}
+svg .g{fill:var(--est); font-style:italic}
+svg .wl{fill:none; stroke:var(--walnut); stroke-width:1.8}
+svg .wm{fill:none; stroke:var(--walnut); stroke-width:1.2}
+svg .wt{fill:none; stroke:var(--ink2); stroke-width:.7}
+svg .eave{fill:none; stroke:var(--mute); stroke-width:.6; stroke-dasharray:4 3}
+svg .dsh{fill:none; stroke:var(--brass); stroke-width:1.5; stroke-dasharray:6 3}
+svg .fx{fill:var(--paper2); stroke:var(--ink2); stroke-width:.8}
+svg .lead{fill:none; stroke:var(--ink2); stroke-width:.6; stroke-dasharray:2 2}
+svg .f01{fill:var(--z01); fill-opacity:.20; stroke:var(--z01); stroke-width:.6}
+svg .f02{fill:var(--z02); fill-opacity:.20; stroke:var(--z02); stroke-width:.6}
+svg .f03{fill:var(--z03); fill-opacity:.20; stroke:var(--z03); stroke-width:.6}
+svg .f04{fill:var(--z04); fill-opacity:.18; stroke:var(--z04); stroke-width:.6}
+svg .f05{fill:var(--z05); fill-opacity:.22; stroke:var(--z05); stroke-width:.6}
+svg .f06{fill:var(--z06); fill-opacity:.22; stroke:var(--z06); stroke-width:.6}
+svg .f07{fill:var(--z07); fill-opacity:.24; stroke:var(--z07); stroke-width:.6}
+svg .fw{fill:var(--warn); fill-opacity:.22; stroke:var(--warn); stroke-width:.6}
+svg .fn{fill:var(--mute); fill-opacity:.16; stroke:var(--mute); stroke-width:.6}
+svg .t01{fill:var(--z01)} svg .t02{fill:var(--z02)} svg .t03{fill:var(--z03)}
+svg .t04{fill:var(--z04)} svg .t05{fill:var(--z05)} svg .t06{fill:var(--z06)}
+svg .t07{fill:var(--z07)} svg .tw{fill:var(--warn)} svg .tn{fill:var(--ink2)}
+footer{margin-top:64px; padding-top:20px; border-top:1px solid rgba(62,43,33,.25); font-size:13px; color:var(--ink2)}
+@media (max-width:560px){ .wrap{padding:28px 16px 70px} h1{font-size:23px} body{font-size:15px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+<h1>0008 户型图与空间标注</h1>
+<p class="meta">SurviveOs · 建筑 55# · 杭州<br>
+版本 v1 · 2026-09-05 · 状态 🚧 设计中<br>
+底图来源：《55#一层平面图 1:100》《55#屋顶平面图 1:100》（合同附件二）+ 用户手绘家具布置图</p>
+</header>
+
+<nav>
+<a href="#a">坐标与图例</a>
+<a href="#b">场地总图</a>
+<a href="#c">一层平面</a>
+<a href="#d">阁楼层</a>
+<a href="#e">地堡与木屋</a>
+<a href="#f">木屋北墙</a>
+<a href="#g">尺寸汇总</a>
+<a href="#h">预估依据</a>
+<a href="#i">阻塞问题</a>
+<a href="#j">待实测</a>
+</nav>
+
+<p>这份文档把 55# 的两张原始图纸翻译成七个区域的空间归属，并把每个模块落到具体位置。所有图都按原图尺寸链重绘，比例可信；<span class="est">凡是灰色斜体标注的数字都是按图面比例预估的，尚未现场实测</span>。后续任何模块对话开始前，先在这里确认自己那块地的尺寸和净高。</p>
+
+<h2 id="a">一、坐标约定与区域图例</h2>
+<p>所有平面图统一上北下南，与原图指北针一致。尺寸单位毫米，面积按净使用面积计。区域配色在全部图纸中保持一致：</p>
+
+<div class="key">
+<span><i style="background:#A6603C"></i>01 暖村木屋</span>
+<span><i style="background:#A97C3F"></i>02 地堡</span>
+<span><i style="background:#4A6B7C"></i>03 阁楼间</span>
+<span><i style="background:#6E5A7A"></i>04 阁楼仓库</span>
+<span><i style="background:#4A5C3A"></i>05 庭院</span>
+<span><i style="background:#7D8C4F"></i>06 草地</span>
+<span><i style="background:#2E7B8C"></i>07 钓台</span>
+<span><i style="background:#9A9287"></i>他人产权 · 不可用</span>
+</div>
+
+<h2 id="b">二、场地总图</h2>
+<p>七个区域中有五个落在这张图上。建筑本体六户，你拥有东南角一户（原图 37.90㎡）以及整个阁楼层；一层其余五户是邻居的，全程不可进入、不可布置模块。</p>
+
+<figure>
+<svg viewBox="0 0 380 600" role="img" aria-label="场地总图">
+<defs><marker id="ar1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#6B5646" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="32" y1="40" x2="32" y2="20" stroke="#6B5646" stroke-width="1.2" marker-end="url(#ar1)"/><text x="42" y="34" class="s">北</text>
+<rect class="f06" x="268.6" y="60.5" width="91.4" height="326.2"/>
+<rect class="fn" x="40.7" y="60.5" width="217.5" height="239.1"/>
+<rect class="f02" x="170.2" y="172.7" width="88" height="88.1"/>
+<rect class="f01" x="170.2" y="260.8" width="88" height="38.8"/>
+<rect class="f05" x="170.2" y="299.6" width="88" height="75.1"/>
+<rect class="fn" x="170.2" y="374.7" width="88" height="34.5"/>
+<rect class="fn" x="170.2" y="409.2" width="88" height="103.6"/>
+<rect class="fn" x="20" y="512.8" width="340" height="52.2"/>
+<rect class="f07" x="195" y="480.9" width="51.8" height="31.9"/>
+<line x1="170.2" y1="60.5" x2="170.2" y2="299.6" class="wm"/>
+<line x1="40.7" y1="172.7" x2="258.2" y2="172.7" class="wm"/>
+<line x1="105" y1="60.5" x2="105" y2="299.6" class="wm"/>
+<rect class="wl" x="40.7" y="60.5" width="217.5" height="239.1"/>
+<line x1="170.2" y1="260.8" x2="258.2" y2="260.8" class="wl"/>
+<line x1="20" y1="527" x2="360" y2="527" class="wt"/>
+<line x1="20" y1="543" x2="360" y2="543" class="wt"/>
+<line x1="20" y1="559" x2="360" y2="559" class="wt"/>
+<text x="105" y="125" text-anchor="middle" class="tn">其他五户</text>
+<text x="105" y="230" text-anchor="middle" class="tn">不可用</text>
+<text x="214" y="212" text-anchor="middle" class="b t02">02 地堡</text>
+<text x="214" y="284" text-anchor="middle" class="b t01">01 木屋</text>
+<text x="214" y="330" text-anchor="middle" class="b t05">05 庭院</text>
+<text x="214" y="346" text-anchor="middle" class="g">≈ 22.2㎡</text>
+<text x="314" y="196" text-anchor="middle" class="b t06">06 草地</text>
+<text x="314" y="212" text-anchor="middle" class="g">5.3 × 18.9m</text>
+<text x="314" y="228" text-anchor="middle" class="g">≈ 100㎡</text>
+<text x="214" y="396" text-anchor="middle" class="tn">过道 2m</text>
+<text x="214" y="440" text-anchor="middle" class="tn">缓坡 6m</text>
+<text x="221" y="495" text-anchor="middle" class="b t07">07</text>
+<text x="221" y="509" text-anchor="middle" class="t07">钓台</text>
+<text x="298" y="500" text-anchor="middle" class="g">≈ 5.5㎡</text>
+<text x="88" y="547" text-anchor="middle" class="tn">河 · 宽 10m</text>
+</svg>
+<figcaption>场地总图。庭院往南依次是 2m 过道、6m 缓坡、10m 宽的河；钓台位于缓坡临河端。<span class="est">钓台尺寸与形状按庭院四分之一面积预估，实测数据待补。</span></figcaption>
+</figure>
+
+<h2 id="c">三、一层平面分区</h2>
+<p>原图六户各带独立厨卫，面积相加正好 186.00㎡。东南角这户是水泥地面、层高 2660，南侧有一道梁底 2400 的横梁——<b>梁的北缘就是地堡与木屋的分界线</b>。</p>
+
+<figure>
+<svg viewBox="0 0 380 440" role="img" aria-label="一层平面分区">
+<defs><marker id="ar2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#6B5646" stroke-width="1.5" stroke-linecap="round"/></marker></defs>
+<line x1="352" y1="36" x2="352" y2="16" stroke="#6B5646" stroke-width="1.2" marker-end="url(#ar2)"/><text x="344" y="30" text-anchor="end" class="s">北</text>
+<rect class="eave" x="20" y="40" width="339.8" height="383.5"/>
+<rect class="fn" x="48.3" y="61.2" width="75.5" height="115.7"/>
+<rect class="fn" x="48.3" y="176.9" width="75.5" height="211.2"/>
+<rect class="fn" x="123.8" y="61.2" width="101.5" height="115.7"/>
+<rect class="fn" x="123.8" y="176.9" width="101.5" height="211.2"/>
+<rect class="fn" x="225.3" y="61.2" width="120.4" height="153.4"/>
+<rect class="f05" x="225.3" y="388.1" width="120.4" height="35"/>
+<rect class="f02" x="225.3" y="214.6" width="120.4" height="120.4"/>
+<rect class="f01" x="225.3" y="335" width="120.4" height="53.1"/>
+<line x1="48.3" y1="139.1" x2="225.3" y2="139.1" class="wt"/>
+<line x1="48.3" y1="176.9" x2="225.3" y2="176.9" class="wm"/>
+<line x1="48.3" y1="214.6" x2="225.3" y2="214.6" class="wt"/>
+<line x1="86" y1="139.1" x2="86" y2="214.6" class="wt"/>
+<line x1="174" y1="139.1" x2="174" y2="214.6" class="wt"/>
+<line x1="123.8" y1="61.2" x2="123.8" y2="388.1" class="wm"/>
+<line x1="225.3" y1="61.2" x2="225.3" y2="388.1" class="wm"/>
+<line x1="310.3" y1="148.6" x2="310.3" y2="335" class="wt"/>
+<line x1="225.3" y1="214.6" x2="345.7" y2="214.6" class="wm"/>
+<line x1="310.3" y1="148.6" x2="345.7" y2="148.6" class="wt"/>
+<line x1="310.3" y1="184" x2="345.7" y2="184" class="wt"/>
+<line x1="310.3" y1="257.1" x2="345.7" y2="257.1" class="wt"/>
+<line x1="310.3" y1="287.8" x2="345.7" y2="287.8" class="wt"/>
+<line x1="225.3" y1="335" x2="345.7" y2="335" stroke="#3E2B21" stroke-width="1.6"/>
+<line x1="225.3" y1="339.7" x2="345.7" y2="339.7" class="wt"/>
+<rect class="wl" x="48.3" y="61.2" width="297.4" height="326.9"/>
+<rect class="fx" x="62.1" y="59.7" width="28.3" height="3"/>
+<rect class="fx" x="96.6" y="59.7" width="21.2" height="3"/>
+<rect class="fx" x="153.3" y="59.7" width="42.5" height="3"/>
+<rect class="fx" x="202.2" y="59.7" width="21.2" height="3"/>
+<rect class="fx" x="274.9" y="59.7" width="21.2" height="3"/>
+<rect class="fx" x="300.8" y="59.7" width="35.4" height="3"/>
+<rect class="fx" x="55.4" y="386.6" width="35.4" height="3"/>
+<rect class="fx" x="107.3" y="386.6" width="21.3" height="3"/>
+<rect class="fx" x="142.7" y="386.6" width="70.8" height="3"/>
+<rect class="fx" x="238.3" y="386.6" width="21.2" height="3"/>
+<rect class="fx" x="276.1" y="386.6" width="35.4" height="3"/>
+<rect class="fx" x="344.2" y="148.6" width="3" height="28.3"/>
+<text x="86" y="102" text-anchor="middle" class="tn">24.35㎡</text>
+<text x="86" y="300" text-anchor="middle" class="tn">29.87㎡</text>
+<text x="174" y="102" text-anchor="middle" class="tn">32.05㎡</text>
+<text x="174" y="300" text-anchor="middle" class="tn">25.20㎡</text>
+<text x="267" y="130" text-anchor="middle" class="tn">36.70㎡</text>
+<text x="265" y="248" text-anchor="middle" class="b t02">02 地堡</text>
+<text x="265" y="265" text-anchor="middle" class="t02">无窗 · 净高 2660</text>
+<text x="328" y="239" text-anchor="middle" class="t02">0202</text>
+<text x="270" y="315" text-anchor="middle" class="t02">储藏室</text>
+<line x1="297" y1="311" x2="309" y2="311" class="lead"/>
+<text x="285" y="356" text-anchor="middle" class="b t01">01 暖村木屋</text>
+<text x="285" y="373" text-anchor="middle" class="t01">梁北缘以南</text>
+<text x="285" y="410" text-anchor="middle" class="b t05">05 庭院</text>
+</svg>
+<figcaption>一层平面。地堡完全无窗（原图东侧洞口经确认不存在）；卫生间即 0202 灯箱所在，其下方原标"厨房"的房间实际用作地堡内储藏室。庭院以木屋宽度为界，向南延伸至石墩。</figcaption>
+</figure>
+
+<h2 id="d">四、阁楼层：分区、净高与功能分配</h2>
+<p>阁楼整层归你，包含楼梯、过道和四周房间。屋面是 45° 四坡、中间最高 2060。由此可以推出一条随身可用的规则：</p>
+
+<div class="note">
+<p><b>离外墙多少米，天花板就多高。</b>所以净高 2060 的可站立区，就是把建筑外轮廓向内缩 2060mm 得到的那个矩形——8.48 × 9.73m，约 82㎡，占整层的 47%。这与"每个空间只有一半左右可用"的实感吻合。</p>
+</div>
+
+<figure>
+<svg viewBox="0 0 380 400" role="img" aria-label="阁楼层分区与功能分配">
+<defs>
+<marker id="ar3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#6B5646" stroke-width="1.5" stroke-linecap="round"/></marker>
+<pattern id="lz" width="6" height="6" patternUnits="userSpaceOnUse"><line x1="0" y1="6" x2="6" y2="0" stroke="#9A9287" stroke-width=".6"/></pattern>
+</defs>
+<line x1="352" y1="36" x2="352" y2="16" stroke="#6B5646" stroke-width="1.2" marker-end="url(#ar3)"/><text x="344" y="30" text-anchor="end" class="s">北</text>
+<rect class="fn" x="48.3" y="332.6" width="94.4" height="55.5"/>
+<rect class="fn" x="142.7" y="311.4" width="82.6" height="76.7"/>
+<rect class="f04" x="48.3" y="61.2" width="177" height="77.9"/>
+<rect class="f04" x="225.3" y="61.2" width="120.4" height="250.2"/>
+<rect class="f04" x="225.3" y="311.4" width="120.4" height="76.7"/>
+<rect class="f04" x="142.7" y="139.1" width="82.6" height="75.5"/>
+<rect class="f04" x="25" y="139.1" width="117.7" height="75.5"/>
+<polygon class="f03" points="48.3,214.6 225.3,214.6 225.3,311.4 142.7,311.4 142.7,332.6 48.3,332.6"/>
+<path d="M48.3,61.2 H345.7 V388.1 H48.3 Z M96.9,109.9 H297.1 V339.5 H96.9 Z" fill="url(#lz)" fill-rule="evenodd"/>
+<rect class="wl" x="48.3" y="61.2" width="297.4" height="326.9"/>
+<polygon points="48.3,214.6 225.3,214.6 225.3,311.4 142.7,311.4 142.7,332.6 48.3,332.6" fill="none" stroke="#3E2B21" stroke-width="1.6"/>
+<rect class="wm" x="25" y="139.1" width="117.7" height="75.5"/>
+<line x1="142.7" y1="139.1" x2="142.7" y2="214.6" class="wm"/>
+<line x1="48.3" y1="139.1" x2="225.3" y2="139.1" class="wm"/>
+<line x1="225.3" y1="61.2" x2="225.3" y2="388.1" class="wm"/>
+<line x1="225.3" y1="311.4" x2="345.7" y2="311.4" class="wm"/>
+<rect class="fx" x="93.9" y="214.6" width="55.4" height="48.9"/>
+<rect class="fx" x="154.8" y="221" width="44.3" height="19.8"/>
+<rect class="dsh" x="96.9" y="109.9" width="200.2" height="229.6"/>
+<rect class="fx" x="23.5" y="155" width="3" height="35.4"/>
+<line x1="298" y1="264" x2="343" y2="264" stroke="#6B5646" stroke-width="1.2" marker-end="url(#ar3)"/>
+<rect class="fw" x="261.7" y="252.4" width="35.4" height="23.6"/>
+<rect class="fx" x="173.4" y="283.1" width="18.9" height="22.4" stroke-width="1.2"/>
+<line x1="173.4" y1="283.1" x2="192.3" y2="305.5" class="wt"/>
+<line x1="192.3" y1="283.1" x2="173.4" y2="305.5" class="wt"/>
+<line x1="127" y1="317" x2="171" y2="303" class="lead"/>
+<text x="137" y="98" text-anchor="middle" class="b t04">0402 材料仓库</text>
+<text x="137" y="115" text-anchor="middle" class="t04">24.8㎡ · 可站立 6.7</text>
+<text x="283" y="170" text-anchor="middle" class="b t04">0404 木工间</text>
+<text x="283" y="187" text-anchor="middle" class="t04">54.1㎡ · 可站立 26.0</text>
+<text x="184" y="170" text-anchor="middle" class="b t04">过道 0401</text>
+<text x="184" y="187" text-anchor="middle" class="t04">11.2㎡ 全可站</text>
+<text x="84" y="180" text-anchor="middle" class="t04">楼梯</text>
+<text x="285" y="345" text-anchor="middle" class="b t04">成品暂存</text>
+<text x="285" y="362" text-anchor="middle" class="t04">16.6㎡ · 低矮</text>
+<text x="121.6" y="234" text-anchor="middle" class="tn">0303</text>
+<text x="121.6" y="250" text-anchor="middle" class="tn">帐篷</text>
+<text x="177" y="235" text-anchor="middle" class="tn">0301</text>
+<text x="177" y="257" text-anchor="middle" class="tn">工具台</text>
+<text x="279" y="246" text-anchor="middle" class="tw">喷涂柜</text>
+<text x="279" y="268" text-anchor="middle" class="tw">0403</text>
+<text x="320" y="257" text-anchor="middle" class="tn">排风出东墙</text>
+<text x="105" y="280" text-anchor="middle" class="b t03">03 阁楼间</text>
+<text x="105" y="296" text-anchor="middle" class="t03">可站立 24.1㎡</text>
+<text x="92" y="322" text-anchor="middle" class="g">天窗 800×900</text>
+<text x="95" y="364" text-anchor="middle" class="tn">爬行储物</text>
+<text x="184" y="356" text-anchor="middle" class="tn">爬行储物</text>
+</svg>
+<figcaption>阁楼层。虚线框内为净高 2060 的可站立核心区；斜线带是檐口低矮圈，越靠外越矮。帐篷（约 2.35 × 2.16m）与工具台（约 1.88 × 0.84m）都落在核心区内。<span class="est">天窗尺寸 800 × 900 按屋顶平面图上的方框比例预估。</span></figcaption>
+</figure>
+
+<h3>功能分配的理由</h3>
+<ul>
+<li><b>0402 材料仓库放北条</b>——板材和方料要长直货架，这条 12.6m 长的北墙正好；靠外的低矮带本来就只能放货架，不浪费能站直的地方，靠内 1.24m 的站立带当取货通道。</li>
+<li><b>0404 木工间占整个东侧</b>——南北向 8.54m 的直线站立核心，3m 板材前后各留 2.7m，台锯纵切够用。斜坡下两侧放集尘桶、料架、砂光机这些矮设备。</li>
+<li><b>0403 不做独立喷漆间，改为喷涂柜</b>——东南端只有 3.6㎡ 能站直（3.04 × 1.19m 的窄条），装不下走入式喷房。改为在木工间站立核心东缘放 1.5 × 1.0m 下抽式喷涂柜，排风管向东穿低矮圈出墙，全长约 2.06m 一根到底不拐弯。柜位在木工间南段，与建议放在北段的台锯拉开 5m 以上，避免粉尘落到湿漆面。</li>
+<li><b>南侧两块全在低矮圈内</b>，改作爬行储物（周转箱、闲置工具），不再当"待分配余量"。</li>
+</ul>
+
+<h2 id="e">五、地堡与木屋内部布置</h2>
+<p>两个空间之间隔着那道梁，梁下是 98 寸电视的挂墙面（电视在地堡一侧），梁下另有一道通向木屋的暗门，开在梯子床底下。</p>
+
+<figure>
+<svg viewBox="0 0 380 470" role="img" aria-label="地堡与木屋家具平面">
+<rect class="f02" x="35" y="15" width="310" height="300.7"/>
+<rect class="f01" x="35" y="321.9" width="310" height="124"/>
+<rect x="35" y="315.7" width="310" height="6.2" fill="#3E2B21"/>
+<rect class="fx" x="35" y="15" width="74.4" height="124" rx="2"/>
+<rect class="fx" x="112.5" y="15" width="124" height="15.5" rx="2"/>
+<rect class="fx" x="113.7" y="89.4" width="86.8" height="55.8" rx="2"/>
+<rect class="fx" x="35" y="139" width="74.4" height="37.2" rx="2"/>
+<rect class="fx" x="121.8" y="152.6" width="114.7" height="111.6" rx="2"/>
+<rect class="fx" x="35" y="194.8" width="49.6" height="99.2" rx="2"/>
+<rect class="fx" x="242.7" y="15" width="102.3" height="77.5" rx="2"/>
+<rect class="fx" x="242.7" y="92.5" width="102.3" height="151.9" rx="2"/>
+<rect class="fx" x="286.1" y="250.6" width="51.9" height="55.8" rx="2"/>
+<rect class="fx" x="338" y="250.6" width="7" height="43.4" rx="1"/>
+<rect class="fx" x="97" y="303.3" width="136.4" height="12.4" rx="1" stroke-width="1.2"/>
+<rect class="fx" x="35" y="325" width="117.8" height="34.1" rx="2"/>
+<line x1="59.8" y1="325" x2="59.8" y2="359.1" class="wt"/>
+<line x1="85.8" y1="325" x2="85.8" y2="359.1" class="wt"/>
+<line x1="110.6" y1="325" x2="110.6" y2="359.1" class="wt"/>
+<rect class="fx" x="36.9" y="364.7" width="12.4" height="40.3" rx="1"/>
+<rect class="fx" x="128" y="411.8" width="24.8" height="24.8" rx="2"/>
+<rect class="fx" x="177.6" y="399.4" width="108.5" height="43.4" rx="2"/>
+<rect class="fx" x="286.1" y="325" width="55.8" height="114.7" rx="2"/>
+<rect class="wl" x="35" y="15" width="310" height="430.9"/>
+<text x="72" y="70" text-anchor="middle" class="tn">床（架空）</text>
+<text x="72" y="86" text-anchor="middle" class="tn">200×120</text>
+<text x="72" y="102" text-anchor="middle" class="t02">下方 0209</text>
+<text x="174" y="27" text-anchor="middle" class="tn">书架 200×25</text>
+<text x="157" y="111" text-anchor="middle" class="tn">沙发</text>
+<text x="157" y="127" text-anchor="middle" class="tn">140×90</text>
+<text x="72" y="153" text-anchor="middle" class="tn">双层衣架</text>
+<text x="72" y="169" text-anchor="middle" class="tn">120×60</text>
+<text x="179" y="204" text-anchor="middle" class="tn">地毯</text>
+<text x="179" y="220" text-anchor="middle" class="tn">180×180</text>
+<text x="60" y="232" text-anchor="middle" class="tn">写字台</text>
+<text x="60" y="248" text-anchor="middle" class="tn">0204</text>
+<text x="60" y="264" text-anchor="middle" class="tn">80×160</text>
+<text x="294" y="48" text-anchor="middle" class="tn">卫生间</text>
+<text x="294" y="64" text-anchor="middle" class="t02">0202 灯箱</text>
+<text x="294" y="160" text-anchor="middle" class="tn">储藏室</text>
+<text x="294" y="176" text-anchor="middle" class="t02">0210 防灾食品</text>
+<text x="312" y="272" text-anchor="middle" class="tn">开门</text>
+<text x="312" y="288" text-anchor="middle" class="tn">90×90</text>
+<text x="165" y="290" text-anchor="middle" class="t02">98寸电视 220 · 0207</text>
+<text x="94" y="346" text-anchor="middle" class="t01">0107 吧台设备带</text>
+<text x="55" y="388" class="tn">空调</text>
+<text x="124" y="427" text-anchor="end" class="t01">0106 炉区 40×40</text>
+<text x="232" y="418" text-anchor="middle" class="tn">写字台 0105</text>
+<text x="232" y="434" text-anchor="middle" class="tn">260×70（床下）</text>
+<text x="314" y="370" text-anchor="middle" class="tn">梯子床</text>
+<text x="314" y="386" text-anchor="middle" class="tn">90×185</text>
+<text x="314" y="402" text-anchor="middle" class="t01">床下暗门</text>
+</svg>
+<figcaption>地堡 4.85 × 5.00m，木屋 2.00 × 5.00m，两者层高同为 2660，中间隔墙上方即梁底 2400。<span class="est">开间进深按家具图比例反推，未现场实测。</span></figcaption>
+</figure>
+
+<div class="note">
+<p><b>两张床的共同原则：都架空，床下全部利用。</b>地堡的架子床下是 0209 藏宝阁（1.2 × 1.5m，床下净高 1700，床板定 1750）；木屋的梯子床床板 1850，下方是写字台和通向地堡的暗门（净高 1800，可直立通过）。两张床上方均只有 810~910mm，<b>按爬进爬出设计，不要求坐直</b>。以后凡是设计床，默认按这个模式推。</p>
+</div>
+
+<h2 id="f">六、木屋北墙立面</h2>
+<p>木屋四面墙里，南墙是门窗，东墙给了梯子床，西墙是空调，唯一完整的展示面就是这道北墙（隔墙的木屋一侧，电视挂在背面的地堡侧）。吧台是 900 高的矮柜，台面小电器只到 1500，上方全是可用墙面——四个展示模块正好排得下。</p>
+
+<figure>
+<svg viewBox="0 0 380 245" role="img" aria-label="木屋北墙立面">
+<rect class="f01" x="25" y="44.4" width="330" height="175.6"/>
+<rect class="fn" x="25" y="44.4" width="330" height="17.2"/>
+<rect class="fx" x="25" y="160.6" width="165" height="59.4" rx="2"/>
+<rect class="fx" x="25" y="127.6" width="33" height="33" rx="2"/>
+<rect class="fx" x="58" y="127.6" width="33" height="33" rx="2"/>
+<rect class="fx" x="91" y="127.6" width="33" height="33" rx="2"/>
+<rect class="f03" x="130.6" y="121" width="52.8" height="39.6" rx="2"/>
+<rect class="f04" x="38.2" y="61.6" width="79.2" height="59.4" rx="2"/>
+<rect class="f04" x="124" y="61.6" width="66" height="59.4" rx="2"/>
+<rect class="f04" x="196.6" y="64.9" width="89.1" height="89.1" rx="2"/>
+<rect class="f04" x="196.6" y="160.6" width="89.1" height="46.2" rx="2"/>
+<rect class="fx" x="292.3" y="61.6" width="59.4" height="36.4" rx="2"/>
+<rect x="292.3" y="92" width="59.4" height="6" fill="#3E2B21"/>
+<rect class="dsh" x="298.9" y="101.2" width="46.2" height="118.8"/>
+<line x1="25" y1="220" x2="355" y2="220" stroke="#3E2B21" stroke-width="2"/>
+<rect class="wm" x="25" y="44.4" width="330" height="175.6"/>
+<text x="190" y="57" text-anchor="middle" class="tn">梁 · 梁底 2400</text>
+<text x="107" y="194" text-anchor="middle" class="t01">0107 吧台矮柜 · 900 高</text>
+<text x="157" y="145" text-anchor="middle" class="t03">0205</text>
+<text x="78" y="82" text-anchor="middle" class="t04">0103</text>
+<text x="78" y="98" text-anchor="middle" class="t04">电子画框墙</text>
+<text x="78" y="114" text-anchor="middle" class="t04">1200×900</text>
+<text x="157" y="85" text-anchor="middle" class="t04">0104</text>
+<text x="157" y="101" text-anchor="middle" class="t04">照片墙</text>
+<text x="241" y="95" text-anchor="middle" class="t04">0102</text>
+<text x="241" y="111" text-anchor="middle" class="t04">作品展示墙</text>
+<text x="241" y="127" text-anchor="middle" class="g">3×3 每框 430</text>
+<text x="241" y="178" text-anchor="middle" class="t04">0101</text>
+<text x="241" y="194" text-anchor="middle" class="t04">主产品展示</text>
+<text x="322" y="75" text-anchor="middle" class="tn">梯子床</text>
+<text x="322" y="89" text-anchor="middle" class="tn">床板 1850</text>
+<text x="322" y="152" text-anchor="middle" class="t01">暗门</text>
+<text x="322" y="168" text-anchor="middle" class="t01">→ 地堡</text>
+</svg>
+<figcaption>木屋北墙 5000 × 2660，自室内向北看。台面上四件小电器（管线热水机、制冰机、咖啡机、0205 生态鱼缸）都在 900~1500 之间，不遮挡上方展示墙。<span class="est">0102 的 3×3 网格每框约 430 × 430，按 1350mm 见方的分配区反算。</span></figcaption>
+</figure>
+
+<h2 id="g">七、关键尺寸与净高汇总</h2>
+<table>
+<thead><tr><th>区域 / 空间</th><th class="n">尺寸</th><th class="n">面积</th><th class="n">净高</th></tr></thead>
+<tbody>
+<tr><td>01 暖村木屋</td><td class="n est">2.00 × 5.00m</td><td class="n est">10.0㎡</td><td class="n">2660（梁下 2400）</td></tr>
+<tr><td>02 地堡（含卫生间、储藏室）</td><td class="n est">4.85 × 5.00m</td><td class="n est">24.3㎡</td><td class="n">2660</td></tr>
+<tr><td>03 阁楼间</td><td class="n est">7.5 × 5.35m（带缺口）</td><td class="n est">34.5㎡ / 可站立 24.1㎡</td><td class="n">最高 2060 · 均 1830</td></tr>
+<tr><td>0401 过道</td><td class="n est">3.5 × 3.2m</td><td class="n est">11.2㎡ 全可站</td><td class="n">2060</td></tr>
+<tr><td>0402 材料仓库</td><td class="n est">7.5 × 3.3m</td><td class="n est">24.8㎡ / 可站立 6.7㎡</td><td class="n">0 → 2060 渐变</td></tr>
+<tr><td>0404 木工间</td><td class="n est">5.1 × 10.6m</td><td class="n est">54.1㎡ / 可站立 26.0㎡</td><td class="n">0 → 2060 渐变</td></tr>
+<tr><td>成品暂存</td><td class="n est">5.1 × 3.25m</td><td class="n est">16.6㎡ / 可站立 3.6㎡</td><td class="n">低矮为主</td></tr>
+<tr><td>05 庭院</td><td class="n est">5.1 × 4.35m</td><td class="n est">22.2㎡</td><td class="n">露天</td></tr>
+<tr><td>06 草地</td><td class="n est">5.3 × 18.9m</td><td class="n">100㎡</td><td class="n">露天</td></tr>
+<tr><td>07 钓台</td><td class="n est">约 2.5 × 2.2m</td><td class="n est">≈5.5㎡</td><td class="n">露天</td></tr>
+<tr><td>天窗</td><td class="n est">800 × 900</td><td class="n">—</td><td class="n">可开启</td></tr>
+</tbody>
+</table>
+
+<h2 id="h">八、预估数据是怎么来的</h2>
+<p>下面这些数字目前没有实测值，是按图面比例或几何关系推出来的。每一条都写清了推法，实测后直接替换即可，不需要重新推理。</p>
+<table>
+<thead><tr><th>项目</th><th>预估值</th><th>推算依据</th></tr></thead>
+<tbody>
+<tr><td>天窗尺寸</td><td class="n">800 × 900</td><td>屋顶平面图上天窗方框对照 14400 总长标尺量出约 705 × 840，向上取整到常见规格</td></tr>
+<tr><td>阁楼檐口净高</td><td class="n">0（无矮墙）</td><td>按"45° 坡 + 最高 2060"直接推导。此模型算出的可站立面积占比 47%，与实感"一半左右"吻合，故采用</td></tr>
+<tr><td>阁楼楼板活荷载</td><td class="n">2.0 kN/㎡</td><td>农村自建砖混/框架楼板常见设计值。<b>仅作占位，重型设备必须实际核算后才可采购</b></td></tr>
+<tr><td>地堡 / 木屋开间进深</td><td class="n">4.85 / 2.00 × 5.00m</td><td>按手绘家具图中已知尺寸的家具（床 200×120、梯子床 90×185）反算图面比例</td></tr>
+<tr><td>庭院面积</td><td class="n">22.2㎡</td><td>木屋宽度 5.1m × 一层平面图上南墙到石墩的 4.35m</td></tr>
+<tr><td>草地宽度</td><td class="n">5.3m</td><td>长度 18.9m 取自图面尺寸线，宽度由 100㎡ 反算</td></tr>
+<tr><td>钓台尺寸</td><td class="n">2.5 × 2.2m</td><td>按"庭院面积的四分之一"折算，形状暂设近方形</td></tr>
+<tr><td>0102 单框尺寸</td><td class="n">430 × 430</td><td>北墙中段 1550 × 2400 中划出 1350 见方的九宫格，减去框间缝</td></tr>
+<tr><td>吧台电器高度</td><td class="n">柜 900 / 电器顶 1500</td><td>标准吧台柜高度 + 台面小家电常见高度</td></tr>
+</tbody>
+</table>
+
+<h2 id="i">九、跨模块阻塞问题</h2>
+
+<div class="note block">
+<p><b>1 · 0601~0603 稀树草原方案面积翻倍，建议状态从 ✅ 退回 🚧。</b>已完成方案按 50㎡ 设计（地埋滴灌管网长度、水泵扬程流量、1500L 雨水罐、植物配置、BOM ¥7,135）。实测草地 100㎡，是原设计的两倍；且形状从近方形变成 5.3 × 18.9m 的长条，乔木间距、视线通廊、分区阀门位置的布局逻辑都不同，需要重做一轮。</p>
+</div>
+
+<div class="note block">
+<p><b>2 · 0201 模拟阳光可用净高从 2660 降到 2400。</b>滑轨贴梁固定在梁内侧天花板上，梁底就是轨道的实际净高上限。原方案按 2660 推的灯具吊挂高度、光斑落点、云台俯仰行程全部需要重算。</p>
+</div>
+
+<div class="note block">
+<p><b>3 · 阁楼楼板承重未核算，重型设备暂不采购。</b>台锯、平刨、压刨合计 250~400kg，加上材料仓库满载板材可能上吨。这属于结构承重，按方法论第二节必须找有资质的人核算，不能自己拍板。核算完成前，0404 的重型设备停留在选型阶段。</p>
+</div>
+
+<div class="note block">
+<p><b>4 · 木屋内明火与睡眠同处一室。</b>0106 炉区（40 × 40）距南墙仅 150mm、距写字台 400mm，低于木质可燃物 300~500mm 的常见防火间距要求；而梯子床就在同一个 10㎡ 空间内。一氧化碳报警器是必装项不是选配；烟囱穿墙或穿顶属于必须找工人的工序。</p>
+</div>
+
+<h2 id="j">十、待实测清单</h2>
+<p>下面这些量到之后，把第八节对应的预估值替换掉，本文档升到 v2。</p>
+<ul>
+<li>阁楼四周墙根处净高（验证 45° 反推模型是否成立，以及是否存在矮墙）</li>
+<li>阁楼最高点净高及其在房间中的确切位置</li>
+<li>天窗实际洞口尺寸与开启方式</li>
+<li>阁楼楼板结构做法（板厚、配筋或梁格），用于承重核算</li>
+<li>地堡、木屋的实测开间与进深</li>
+<li>03 阁楼间东南角那个缺口的实际形状与尺寸</li>
+<li>草地实测边界（现估 ±1m 误差）</li>
+<li>07 钓台的实际尺寸、缓坡坡度、河岸线位置</li>
+<li>东南角弧形雨棚的覆盖范围（是否压在庭院上）</li>
+</ul>
+
+<footer>
+<p>SurviveOs · 00-总览 / 0008-户型图与空间标注 · v1 · 2026-09-05<br>
+收尾流程见《0003-项目部署与组织规划》第六节：本文档落到本地仓库 <code>~/Projects/SurviveOs/00-总览/</code> 后 git commit，并同步更新《0002-区域与子模块清单》中 0601~0603 的状态。</p>
+</footer>
+
+</div>
+</body>
+</html>
