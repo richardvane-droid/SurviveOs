@@ -27,29 +27,44 @@
 
 **一个模块 = 一个文件夹 = 一个 MD**：每个模块在所属区域目录下有一个 `四位编号-模块名/` 文件夹，里面固定一份 `README.md` 承载正文，代码/STL/图片/单页 HTML 放同一文件夹的子目录里。详见根目录 `CLAUDE.md` 与《0003-项目部署与组织规划》第四节。
 
-## 日常怎么用
+## 日常怎么用（手机就够，不需要电脑）
 
-**设计讨论还是在 claude.ai 的 SurviveOs 项目里进行**——39 个模块各自的对话、以及以后新开的对话，都还在那边，这一点不变。变的只是"讨论完之后内容写到哪"：
+**设计讨论还是在 claude.ai 的 SurviveOs 项目里进行**——每个模块各自的对话、以及以后新开的对话，都还在那边，这一点不变。变的只是"讨论完之后内容写到哪"：
 
 1. 在某个模块的 claude.ai 对话里把方案/选型/施工内容聊定
-2. 把这次对话的产出（文本内容、代码、STL、BOM 等）带到本地维护环节，有两种做法：
-   - **在云端 Cowork 会话里**：跟会话说"帮我把刚才 0203 对话里定的方案写进本地仓库"，用 Bash/Read/Write/Edit 改文件、`git commit`，需要的话再 `git push`
-   - **在你 Mac 本地用 Claude Code CLI**：`cd ~/Projects/SurviveOs`，把对话产出贴给本地的 Claude Code，让它改文件、`git commit`
+2. 开一个云端 Cowork / Claude Code 会话（手机浏览器或 App 都行），跟它说"帮我把刚才 0203 对话里定的方案写进仓库"，它会改文件、`git commit`、`git push`
 3. 顺手更新 `00-总览/0002-区域与子模块清单.md` 里对应条目的状态
-4. 如果状态跨了一档（⬜→🚧、🚧→✅），按 `00-总览/0004-对外站点与发布规范.md` 重新生成总站/画布
+4. 状态跨档（⬜→🚧、🚧→✅）时，push 完 GitHub Actions 会自动重建总站，不用手动做网页
 
-`00-总览/` 这几份文档在 claude.ai Project 里还留着一份同步副本，方便新开模块对话时直接读到背景（claude.ai 对话没法直接读你电脑上的这个仓库）；但权威版本以本仓库为准，改完本地记得找时间把关键改动同步贴回 claude.ai 那边，避免两边长期不一致。
+手机上各环节分别用什么：
 
-## GitHub 备份
+| 环节 | 用什么 |
+| --- | --- |
+| 设计对话 | claude.ai App |
+| 改仓库、commit、push | 云端 Cowork / Claude Code 会话 |
+| 看文档 | GitHub App / 网页（点进模块目录自动渲染 README.md） |
+| 看方案页（HTML） | 总站 https://richardvane-droid.github.io/SurviveOs/ |
+| 存素材（照片/说明书/商品页截图） | Google Drive App，`SurviveOs-素材/` 下对应模块文件夹 |
+| 随手记任务 | 丢进 `inbox/`，下次会话说"处理 inbox" |
 
-本仓库已 `git init` 并完成首次 commit，尚未关联远程仓库。备份到 GitHub：
+在 Mac 上用 Claude Code CLI 做同样的事当然也可以（`git clone` 下来直接改），但**不是必须的**——整条链路不依赖任何一台特定电脑，权威版本是 GitHub 上的这个仓库，不是某台机器上的本地目录。
 
-```bash
-gh auth login          # 如果还没登录过
-gh repo create SurviveOs --private --source=. --remote=origin --push
-```
+`00-总览/` 这几份文档在 claude.ai Project 里还留着一份同步副本，方便新开模块对话时直接读到背景（claude.ai 对话没法直接读 GitHub 仓库）；但权威版本以本仓库为准，改完记得找时间把关键改动同步贴回 claude.ai 那边，避免两边长期不一致。
 
-之后每次改动 `git add -A && git commit -m "说明"`，定期 `git push` 即可。
+## 仓库与素材的分层
+
+- **本仓库（公开）**：纯文本文档——方案推演、选型结论、施工要点、模块依赖关系
+- **Google Drive `SurviveOs-素材/`（私有）**：二进制素材——施工照片、说明书 PDF、商品页截图、手绘草图拍照、视频
+
+两边靠**四位编号 + 模块名**一一对应，改名必须两边同时改。完整对照见 `00-总览/0009-仓库与Drive素材对照表.md`，约定见根目录 `CLAUDE.md`。
+
+## 总站
+
+`tools/build_site.py` 读仓库内容生成 `docs/`（进度仪表盘 + 区域索引 + 把 .md 渲染成网页 + 原样搬运 HTML 方案页 + git 历史时间线），push 到 master 后由 `.github/workflows/pages.yml` 自动构建发布到：
+
+**https://richardvane-droid.github.io/SurviveOs/**
+
+站点是仓库内容的**视图**，不单独维护第二份内容；不需要在本地跑任何东西。要手动触发重建，在 GitHub 的 Actions 页点一下 Run workflow 即可（手机也能点）。
 
 ## 原始备份包的去向
 

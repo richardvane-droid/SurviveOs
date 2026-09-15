@@ -1,0 +1,46 @@
+name: 构建并发布总站
+
+# 推到 master 就重建总站；也可以在 Actions 页手动点 Run workflow（手机也能点）
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一时间只跑一个发布，后来的排队不打断已在进行的
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # 首页的"最新动态"时间线要读完整 git 历史
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 生成 docs/
+        run: python3 tools/build_site.py
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true        # 仓库还没开 Pages 的话自动开
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
