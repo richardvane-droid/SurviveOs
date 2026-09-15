@@ -1,3 +1,6 @@
 .DS_Store
 Thumbs.db
 *.tmp
+
+# 总站由 tools/build_site.py 生成，CI 里构建，不进版本库
+docs/
