@@ -51,6 +51,24 @@
 
 `00-总览/` 这几份文档在 claude.ai Project 里还留着一份同步副本，方便新开模块对话时直接读到背景（claude.ai 对话没法直接读 GitHub 仓库）；但权威版本以本仓库为准，改完记得找时间把关键改动同步贴回 claude.ai 那边，避免两边长期不一致。
 
+## 如果你电脑上还有旧克隆
+
+2026-09-15 这轮改造把所有模块从「单个 .md」改成了「文件夹 + README.md」，还迁了编号（0206→0801、0211→0802）。电脑上那份旧克隆（比如 `~/Projects/SurviveOs/`）的结构已经对不上了，下次在电脑前打开它，**先拉再改**：
+
+```bash
+cd ~/Projects/SurviveOs && git pull
+```
+
+旧克隆里如果有没提交的改动，先 `git stash` 再拉。嫌麻烦就直接删掉重新 clone——仓库里没有任何只存在于本地的东西，权威版本全在 GitHub：
+
+```bash
+rm -rf ~/Projects/SurviveOs && git clone https://github.com/richardvane-droid/SurviveOs.git ~/Projects/SurviveOs
+```
+
+## 仓库自带的技能
+
+`.claude/skills/surviveos-sync/` 是「把某个模块对话的产出写进仓库」的操作手册，在这个仓库里开的 Claude 会话会自动读到，不需要手动挂。如果你账号里还留着同名的旧版技能（描述里写着 `~/Projects/SurviveOs`、把本地路径当权威来源的那个），去 claude.ai 的技能设置里删掉它，避免两份打架。
+
 ## 仓库与素材的分层
 
 - **本仓库（公开）**：纯文本文档——方案推演、选型结论、施工要点、模块依赖关系

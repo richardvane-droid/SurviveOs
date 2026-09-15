@@ -9,7 +9,7 @@
 
 ## 产出位置
 
-- 独立公开仓库（源码 + 站点）：`~/Projects/surviveos-vision/`，GitHub `richardvane-droid/surviveos-vision`，Pages 从 main 分支 `/docs` 发布
+- 独立公开仓库（源码 + 站点）：GitHub `richardvane-droid/surviveos-vision`，Pages 从 main 分支 `/docs` 发布；2026-09-15 起由 GitHub Actions 自动构建，本地克隆只是可选
 - 站点网址（已上线）：https://richardvane-droid.github.io/surviveos-vision/ ；仓库通过浏览器自动化在 github.com 网页端建库 + 分目录上传提交（6 次 commit），未经本地 git push
 - 结构：`data/0X.json` 模块文案（每区域一个文件）、`illos/NNNN.svg` + `illos/area-0X.svg` 速写、`build.py` 生成器、`docs/` 生成结果、`STYLE.md` 文案与插图规范
 
@@ -41,9 +41,13 @@
 
 站点加了一页“序”（`docs/preface.html`，导航第一位 + 首页入口）：以旁观者视角把 2026-09-03 一段豆包对话“一个人 40 岁拥有暖村系统是什么体验”提炼成约 1000 字（三条网 / 一天的样子 / 时间作材质 / 游乐场 + 避难所 / 三条线 / 三道门 / 从陶渊明到李宗盛的队伍），配一张“三道门”钢笔速写与“序”字印章。文本在 `data/preface.json`，改完 `python3 build.py` 即可。
 
-## 维护
+## 维护（2026-09-15 起不需要电脑）
 
-改文案改 `data/0X.json`，改图改 `illos/NNNN.svg`，`python3 build.py` 重新生成 `docs/`，commit + push 即可
+改文案改 `data/0X.json`，改图改 `illos/NNNN.svg`，push 到 `main` 即可——`.github/workflows/build.yml` 会自动跑 `build.py`、把重新生成的 `docs/` 提交回 `main`，Pages 随即更新。手动触发：该仓库 Actions 页 →「重新生成设想版站点」→ Run workflow。
+
+**不要手工提交 `docs/`**，让 CI 生成。接 CI 时发现已提交的 `docs/` 比 `data/` 落后了 7 个 teardown 页（0105/0106/0205/0501/0502/0504/0505），正是手工生成漏掉的那种漂移。
+
+想在电脑上预览仍然可以：`pip install jinja2 && python3 build.py && python3 -m http.server -d docs 8000`。
 
 ## 素材
 
