@@ -44,3 +44,9 @@
 ## 维护
 
 改文案改 `data/0X.json`，改图改 `illos/NNNN.svg`，`python3 build.py` 重新生成 `docs/`，commit + push 即可
+
+## 素材
+
+Drive: SurviveOs-素材/09-设想/0901-完整形态设想网站/
+- <日期> <说明>(施工照片/)
+- <型号> 说明书(说明书与保修卡/)
